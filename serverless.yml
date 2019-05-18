@@ -1,4 +1,4 @@
-service: serverless-stack-python-starter
+service: instrument-inventory
 
 plugins:
   - serverless-python-requirements
@@ -6,17 +6,26 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: false
+  stage: ${opt:stage, self:provider.stage}
+  environment: ${file(env.yml):${self:custom.stage}, file(env.yml):default}
 
 provider:
   name: aws
-  runtime: python3.6
+  runtime: python3.7
   stage: dev
   region: us-east-1
 
 functions:
-  hello:
-    handler: handler.hello
+  retrieve:
+    handler: retrieve.main
     events:
       - http:
-          path: /
-          method: get
+          path: retrieve
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+resources:
+  - ${file(resources/api-gateway-errors.yml)}
+  - ${file(resources/cognito-user-pool.yml)}
+  - ${file(resources/cognito-identity-pool.yml)}
