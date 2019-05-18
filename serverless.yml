@@ -2,6 +2,7 @@ service: instrument-inventory
 
 plugins:
   - serverless-python-requirements
+  - serverless-offline
 
 custom:
   pythonRequirements:
@@ -14,13 +15,26 @@ provider:
   runtime: python3.7
   stage: dev
   region: us-east-1
+  environment:
+    TABLE_NAME: ${self:custom.environment.table_name}
+    AIRTABLE_BASE_KEY: ${self:custom.environment.base_key}
+    AIRTABLE_API_KEY: ${self:custom.environment.api_key}
 
 functions:
-  retrieve:
-    handler: retrieve.main
+  retrieve-single:
+    handler: retrieve.single
     events:
       - http:
-          path: retrieve
+          path: retrieve/single
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  retrieve-multiple:
+    handler: retrieve.multiple
+    events:
+      - http:
+          path: retrieve/multiple
           method: post
           cors: true
           authorizer: aws_iam

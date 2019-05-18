@@ -7,16 +7,18 @@ Resources:
         - email
       AutoVerifiedAttributes:
         - email
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
 
-    CognitoUserPoolClient:
-      Type: AWS::Cognito::UserPoolClient
-      Properties:
-        ClientName: ${self:custom.stage}-instrument-client
-        UserPoolId:
-          Ref: CognitoUserPool
-        ExplicitAuthFlows:
-          - ADMIN_NO_SRP_AUTH
-        GenerateSecret: false
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: ${self:custom.stage}-instrument-client
+      UserPoolId:
+        Ref: CognitoUserPool
+      ExplicitAuthFlows:
+        - ADMIN_NO_SRP_AUTH
+      GenerateSecret: false
 
 Outputs:
   UserPoolId:

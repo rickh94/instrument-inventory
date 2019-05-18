@@ -21,5 +21,8 @@
   "homepage": "https://github.com/AnomalyInnovations/serverless-stack-python-starter#readme",
   "dependencies": {
     "serverless-python-requirements": "^3.0.9"
+  },
+  "devDependencies": {
+    "serverless-offline": "^4.10.3"
   }
 }

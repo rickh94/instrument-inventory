@@ -111,3 +111,4 @@ node_modules
 
 # IntelliJ
 .idea/
+env.yml

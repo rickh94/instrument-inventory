@@ -1,0 +1,8 @@
+{
+  "body": "{\"instrumentNumbers\":[\"1-001\", \"1-002\",\"1-003\",\"1-004\"]}",
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}
