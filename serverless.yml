@@ -25,7 +25,7 @@ functions:
     handler: retrieve.single
     events:
       - http:
-          path: retrieve/single
+          path: retrieve-single
           method: post
           cors: true
           authorizer: aws_iam
@@ -34,7 +34,7 @@ functions:
     handler: retrieve.multiple
     events:
       - http:
-          path: retrieve/multiple
+          path: retrieve-multiple
           method: post
           cors: true
           authorizer: aws_iam
