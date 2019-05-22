@@ -1,21 +1,14 @@
 import json
-import os
 
-from airtable import Airtable
+from common import setup_airtable
 from responses import success, failure
-
-
-def _setup_airtable():
-    base_key = os.environ.get("AIRTABLE_BASE_KEY")
-    table_name = os.environ.get("TABLE_NAME")
-    return Airtable(base_key, table_name)
 
 
 def single(event, _context):
     """Mark an instrument as having been retrieved"""
     data = json.loads(event["body"])
     try:
-        at = _setup_airtable()
+        at = setup_airtable()
     except Exception as err:
         return failure(f"Could not connect to airtable: {err}")
     try:
@@ -32,7 +25,7 @@ def multiple(event, _context):
     data = json.loads(event["body"])
     response_body = {"instrumentsUpdated": [], "instrumentsFailed": []}
     try:
-        at = _setup_airtable()
+        at = setup_airtable()
     except Exception as err:
         return failure(f"Could not connect to airtable: {err}")
 

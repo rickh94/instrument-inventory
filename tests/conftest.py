@@ -23,3 +23,8 @@ def retrieve_event():
 @pytest.fixture
 def retrieve_multiple_event():
     return read_event("retrieve-multiple-event")
+
+
+@pytest.fixture
+def sign_out_event():
+    return read_event("sign-out-event")

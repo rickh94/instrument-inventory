@@ -1,0 +1,8 @@
+{
+  "body": "{\"instrumentNumber\":\"1-201\", \"studentName\":\"Test Student\", \"school\":\"Grant Elementary School\"}",
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}

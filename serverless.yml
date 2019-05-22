@@ -38,6 +38,14 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+  sign-out:
+    handler: sign_out.main
+    events:
+      - http:
+          path: sign-out
+          method: post
+          cors: true
+          authorizer: aws_iam
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}

@@ -1,7 +1,5 @@
-import json
 from unittest import mock
 
-import pytest
 import retrieve
 
 
@@ -11,8 +9,6 @@ def test_retrieve_successful_no_history(monkeypatch, retrieve_event):
     monkeypatch.setenv("AIRTABLE_API_KEY", "testkey")
     monkeypatch.setenv("AIRTABLE_BASE_KEY", "apptest")
     at_object_mock = mock.MagicMock()
-    at_object_mock.update_by_field = mock.MagicMock()
-    at_object_mock.search = mock.MagicMock()
     at_object_mock.search.return_value = [
         {
             "id": "recid",
@@ -29,7 +25,7 @@ def test_retrieve_successful_no_history(monkeypatch, retrieve_event):
     def at_mock(*args, **kwargs):
         return at_object_mock
 
-    monkeypatch.setattr("retrieve.Airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
 
     response = retrieve.single(retrieve_event, {})
     at_object_mock.search.assert_called_with("Number", "1-201")
@@ -42,12 +38,7 @@ def test_retrieve_successful_no_history(monkeypatch, retrieve_event):
 
 def test_retrieve_successful_with_history(monkeypatch, retrieve_event):
     """Test retrieving an instrument"""
-    monkeypatch.setenv("TABLE_NAME", "test_table_name")
-    monkeypatch.setenv("AIRTABLE_API_KEY", "testkey")
-    monkeypatch.setenv("AIRTABLE_BASE_KEY", "apptest")
     at_object_mock = mock.MagicMock()
-    at_object_mock.update_by_field = mock.MagicMock()
-    at_object_mock.search = mock.MagicMock()
     at_object_mock.search.return_value = [
         {
             "id": "recid",
@@ -65,7 +56,8 @@ def test_retrieve_successful_with_history(monkeypatch, retrieve_event):
     def at_mock(*args, **kwargs):
         return at_object_mock
 
-    monkeypatch.setattr("retrieve.Airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
+
     response = retrieve.single(retrieve_event, {})
     at_object_mock.search.assert_called_with("Number", "1-201")
     at_object_mock.update.assert_called_with(
@@ -81,9 +73,6 @@ def test_retrieve_successful_with_history(monkeypatch, retrieve_event):
 
 def test_retrieve_successful_without_assigned_to(monkeypatch, retrieve_event):
     """Test retrieving an instrument"""
-    monkeypatch.setenv("TABLE_NAME", "test_table_name")
-    monkeypatch.setenv("AIRTABLE_API_KEY", "testkey")
-    monkeypatch.setenv("AIRTABLE_BASE_KEY", "apptest")
     at_object_mock = mock.MagicMock()
     at_object_mock.update_by_field = mock.MagicMock()
     at_object_mock.search = mock.MagicMock()
@@ -103,7 +92,8 @@ def test_retrieve_successful_without_assigned_to(monkeypatch, retrieve_event):
     def at_mock(*args, **kwargs):
         return at_object_mock
 
-    monkeypatch.setattr("retrieve.Airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
+
     response = retrieve.single(retrieve_event, {})
     at_object_mock.search.assert_called_with("Number", "1-201")
     at_object_mock.update.assert_called_with(
@@ -115,14 +105,11 @@ def test_retrieve_successful_without_assigned_to(monkeypatch, retrieve_event):
 
 def test_airtable_raises_error(monkeypatch, retrieve_event):
     """Test airtable raising an error"""
-    monkeypatch.setenv("TABLE_NAME", "test_table_name")
-    monkeypatch.setenv("AIRTABLE_API_KEY", "testkey")
-    monkeypatch.setenv("AIRTABLE_BASE_KEY", "apptest")
-
     def at_mock(*args, **kwargs):
         raise Exception
 
-    monkeypatch.setattr("retrieve.Airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
+
     response = retrieve.single(retrieve_event, {})
 
     assert response["statusCode"] == 500
@@ -130,18 +117,14 @@ def test_airtable_raises_error(monkeypatch, retrieve_event):
 
 def test_no_records_found(monkeypatch, retrieve_event):
     """Test error is returned when no records are found"""
-    monkeypatch.setenv("TABLE_NAME", "test_table_name")
-    monkeypatch.setenv("AIRTABLE_API_KEY", "testkey")
-    monkeypatch.setenv("AIRTABLE_BASE_KEY", "apptest")
     at_object_mock = mock.MagicMock()
-    at_object_mock.update_by_field = mock.MagicMock()
-    at_object_mock.search = mock.MagicMock()
     at_object_mock.search.return_value = []
 
     def at_mock(*args, **kwargs):
         return at_object_mock
 
-    monkeypatch.setattr("retrieve.Airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
+
     response = retrieve.single(retrieve_event, {})
 
     assert response["statusCode"] == 500
@@ -179,9 +162,6 @@ def test_retrieve_instrument_helper():
 
 def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event):
     """Test basic retrieve multiple instruments"""
-    monkeypatch.setenv("TABLE_NAME", "test_table_name")
-    monkeypatch.setenv("AIRTABLE_API_KEY", "testkey")
-    monkeypatch.setenv("AIRTABLE_BASE_KEY", "apptest")
     at_object_mock = mock.MagicMock()
     at_object_mock.update_by_field = mock.MagicMock()
     at_object_mock.search = mock.MagicMock()
@@ -241,7 +221,7 @@ def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event):
     def at_mock(*args, **kwargs):
         return at_object_mock
 
-    monkeypatch.setattr("retrieve.Airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
 
     response = retrieve.multiple(retrieve_multiple_event, {})
     at_object_mock.search.assert_any_call("Number", "1-001")
@@ -283,9 +263,6 @@ def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event):
 
 def test_retrieve_multiple_some_fail(monkeypatch, retrieve_multiple_event):
     """Test retrieving multiple with some failures"""
-    monkeypatch.setenv("TABLE_NAME", "test_table_name")
-    monkeypatch.setenv("AIRTABLE_API_KEY", "testkey")
-    monkeypatch.setenv("AIRTABLE_BASE_KEY", "apptest")
     at_object_mock = mock.MagicMock()
     at_object_mock.update_by_field = mock.MagicMock()
     at_object_mock.search = mock.MagicMock()
@@ -333,7 +310,7 @@ def test_retrieve_multiple_some_fail(monkeypatch, retrieve_multiple_event):
     def at_mock(*args, **kwargs):
         return at_object_mock
 
-    monkeypatch.setattr("retrieve.Airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
 
     response = retrieve.multiple(retrieve_multiple_event, {})
     at_object_mock.search.assert_any_call("Number", "1-001")
