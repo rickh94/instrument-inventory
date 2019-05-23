@@ -24,6 +24,7 @@ def test_sign_out_successful(monkeypatch, sign_out_event):
 
 def test_airtable_raises_error(monkeypatch, sign_out_event):
     """Test airtable raising an error"""
+
     def at_mock(*args, **kwargs):
         raise Exception
 

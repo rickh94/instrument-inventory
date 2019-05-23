@@ -28,3 +28,13 @@ def retrieve_multiple_event():
 @pytest.fixture
 def sign_out_event():
     return read_event("sign-out-event")
+
+
+@pytest.fixture
+def basic_create_event():
+    return read_event("create-event")
+
+
+@pytest.fixture
+def full_create_event():
+    return read_event("create-event-full")

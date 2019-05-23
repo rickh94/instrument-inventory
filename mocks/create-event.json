@@ -1,0 +1,8 @@
+{
+  "body": "{\"instrumentNumber\":\"1-601\", \"instrumentType\": \"violin\", \"size\": \"4/4\", \"location\": \"office\" }",
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}

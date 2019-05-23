@@ -5,9 +5,6 @@ import retrieve
 
 def test_retrieve_successful_no_history(monkeypatch, retrieve_event):
     """Test retrieving an instrument"""
-    monkeypatch.setenv("TABLE_NAME", "test_table_name")
-    monkeypatch.setenv("AIRTABLE_API_KEY", "testkey")
-    monkeypatch.setenv("AIRTABLE_BASE_KEY", "apptest")
     at_object_mock = mock.MagicMock()
     at_object_mock.search.return_value = [
         {
@@ -105,6 +102,7 @@ def test_retrieve_successful_without_assigned_to(monkeypatch, retrieve_event):
 
 def test_airtable_raises_error(monkeypatch, retrieve_event):
     """Test airtable raising an error"""
+
     def at_mock(*args, **kwargs):
         raise Exception
 

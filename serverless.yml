@@ -46,6 +46,14 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+  create:
+    handler: create.main
+    event:
+      - http:
+          path: create
+          method: post
+          cors: true
+          authorizer: aws_iam
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
