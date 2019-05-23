@@ -38,6 +38,7 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+
   sign-out:
     handler: sign_out.main
     events:
@@ -46,9 +47,10 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+
   create:
     handler: create.main
-    event:
+    events:
       - http:
           path: create
           method: post

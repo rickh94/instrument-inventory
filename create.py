@@ -39,6 +39,12 @@ def main(event, _context):
             "Gifted to student": data.get("gifted", False),
         }
         rec = at.insert(fields)
-        return success({"item": rec["fields"]}, 201)
+        return success(
+            {
+                "message": f"Instrument {rec['fields']['Number']} created",
+                "item": rec["fields"],
+            },
+            201,
+        )
     except Exception as err:
         return failure(f"Something has gone wrong: {err}")
