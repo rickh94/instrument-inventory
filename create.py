@@ -23,19 +23,19 @@ def main(event, _context):
         return failure(f"Could not connect to airtable: {err}")
     try:
         fields = {
-            "Number": data["instrumentNumber"],
+            "Number": data["instrumentNumber"].upper(),
             "Instrument Type": data["instrumentType"],
             "Size": data["size"],
             "Location": data["location"],
-            "Maintenance Notes": data.get("maintenanceNotes", ""),
             "Assigned To": data.get("studentName", ""),
+            "Maintenance Notes": data.get("maintenanceNotes", ""),
             "Condition Notes": data.get("conditionNotes", ""),
-            "Ready To Go": data.get("readyToGo", False),
             "Condition": data.get("condition", None),
             "Quality": data.get("quality", None),
             "Rosin": data.get("rosin", False),
             "Bow": data.get("bow", False),
             "Shoulder Rest/Endpin Rest": data.get("shoulderRestRockStop", False),
+            "Ready To Go": data.get("readyToGo", False),
             "Gifted to student": data.get("gifted", False),
         }
         rec = at.insert(fields)
