@@ -31,6 +31,7 @@ def pages(records):
 @pytest.fixture
 def fake_airtable(pages):
     class FakeAirtable:
+        @staticmethod
         def get_iter(self):
             for page in pages:
                 yield page
