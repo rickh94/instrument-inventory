@@ -32,7 +32,7 @@ def pages(records):
 def fake_airtable(pages):
     class FakeAirtable:
         @staticmethod
-        def get_iter(self):
+        def get_iter():
             for page in pages:
                 yield page
 
