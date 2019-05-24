@@ -48,3 +48,8 @@ def search_number_event():
 @pytest.fixture
 def search_assigned_event():
     return read_event("search-assigned-event")
+
+
+@pytest.fixture
+def get_event():
+    return read_event("get-event")

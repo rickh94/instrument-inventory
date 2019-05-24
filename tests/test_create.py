@@ -7,7 +7,10 @@ import create
 def test_basic_create_successful(monkeypatch, basic_create_event):
     """Test a minimal create"""
     at_object_mock = mock.MagicMock()
-    at_object_mock.insert.return_value = {"fields": {"test": "test", "Number": "1234"}}
+    at_object_mock.insert.return_value = {
+        "fields": {"test": "test", "Number": "1234"},
+        "id": "newrecid",
+    }
 
     def at_mock():
         return at_object_mock
@@ -42,7 +45,10 @@ def test_basic_create_successful(monkeypatch, basic_create_event):
 def test_full_create_successful(monkeypatch, full_create_event):
     """Test full create full"""
     at_object_mock = mock.MagicMock()
-    at_object_mock.insert.return_value = {"fields": {"test": "test", "Number": "1234"}}
+    at_object_mock.insert.return_value = {
+        "fields": {"test": "test", "Number": "1234"},
+        "id": "newrecid2",
+    }
 
     def at_mock():
         return at_object_mock

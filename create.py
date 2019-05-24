@@ -45,6 +45,7 @@ def main(event, _context):
             {
                 "message": f"Instrument {rec['fields']['Number']} created",
                 "item": rec["fields"],
+                "id": rec["id"],
             },
             201,
         )
