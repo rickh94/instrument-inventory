@@ -57,6 +57,24 @@ functions:
           cors: true
           authorizer: aws_iam
 
+  search-number:
+    handler: search.number
+    events:
+      - http:
+          path: search/number
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  search-assigned:
+    handler: search.assigned
+    events:
+      - http:
+         path: search/assigned
+         method: post
+         cors: true
+         authorizer: aws_iam
+
 resources:
   - ${file(resources/api-gateway-errors.yml)}
   - ${file(resources/cognito-user-pool.yml)}

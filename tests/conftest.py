@@ -46,5 +46,5 @@ def search_number_event():
 
 
 @pytest.fixture
-def search_name_event():
-    return read_event("search-name-event")
+def search_assigned_event():
+    return read_event("search-assigned-event")

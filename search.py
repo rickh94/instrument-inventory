@@ -1,6 +1,6 @@
 import json
 
-from common import setup_airtable
+from common import setup_airtable, validate_request
 from fuzzywuzzy import fuzz
 
 from responses import failure, success
@@ -9,6 +9,9 @@ from responses import failure, success
 def number(event, _context):
     """Find an instrument by number"""
     data = json.loads(event["body"])
+    err_response = validate_request(data, {"instrumentNumber": "Instrument Number"})
+    if err_response:
+        return err_response
     try:
         result = search_helper(
             "Number", data["instrumentNumber"], multiple=False, exact=True
@@ -21,8 +24,22 @@ def number(event, _context):
         return failure(f"Something has gone wrong: {err}")
 
 
-def student(event, _context):
-    pass
+def assigned(event, _context):
+    """Find an instrument by who it's assigned to"""
+    data = json.loads(event["body"])
+    err_response = validate_request(data, {"assignedTo": "Assigned To"})
+    if err_response:
+        return err_response
+    try:
+        result = search_helper(
+            "Assigned To", data["assignedTo"], multiple=True, exact=False
+        )
+        if result:
+            return success(result)
+        else:
+            return failure(f"No matching instrument was found", 404)
+    except Exception as err:
+        return failure(f"Something has gone wrong {err}")
 
 
 def search_helper(field, value, multiple=False, exact=True):
@@ -40,6 +57,8 @@ def search_helper(field, value, multiple=False, exact=True):
 
 
 def _check_item(item, field, value, exact):
+    if field not in item["fields"]:
+        return False
     actual_value = item["fields"].get(field)
     if actual_value.lower() == value.lower():
         return True

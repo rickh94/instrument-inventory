@@ -1,5 +1,5 @@
 {
-  "body": "{\"studentName\":\"1-201\"}",
+  "body": "{\"assignedTo\":\"Test Name\"}",
   "requestContext": {
     "identity": {
       "cognitoIdentityId": "USER-SUB-1234"

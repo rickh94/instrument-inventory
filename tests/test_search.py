@@ -21,12 +21,13 @@ def records():
         },
         {"id": "rec7", "fields": {"Number": "B1-502", "Assigned To": "Bass Player"}},
         {"id": "rec8", "fields": {"Number": "C2-508", "Assigned To": "Test Name"}},
+        {"id": "rec9", "fields": {"Number": "1-606"}},
     ]
 
 
 @pytest.fixture
 def pages(records):
-    return [records[0:4], records[4:8], [records[8]]]
+    return [records[0:4], records[4:8], records[8:10]]
 
 
 @pytest.fixture
@@ -99,12 +100,12 @@ def test_search_number(monkeypatch, search_number_event):
     search_helper_mock.return_value = found
     monkeypatch.setattr("search.search_helper", search_helper_mock)
 
-    result = search.number(search_number_event, {})
+    response = search.number(search_number_event, {})
 
     search_helper_mock.assert_called_with("Number", "1-201", multiple=False, exact=True)
 
-    assert result["statusCode"] == 200
-    assert result["body"] == json.dumps(found)
+    assert response["statusCode"] == 200
+    assert response["body"] == json.dumps(found)
 
 
 def test_search_number_not_found(monkeypatch, search_number_event):
@@ -114,12 +115,38 @@ def test_search_number_not_found(monkeypatch, search_number_event):
     search_helper_mock.return_value = found
     monkeypatch.setattr("search.search_helper", search_helper_mock)
 
-    result = search.number(search_number_event, {})
+    response = search.number(search_number_event, {})
 
     search_helper_mock.assert_called_with("Number", "1-201", multiple=False, exact=True)
 
-    assert result["statusCode"] == 404
+    assert response["statusCode"] == 404
 
 
-def test_search_name(monkeypatch, search_name_event):
+def test_search_number_bad_request():
+    """Test request missing data returns bad request"""
+    response = search.number({"body": "{}"}, {})
+
+    assert response["statusCode"] == 400
+
+
+def test_search_assigned(monkeypatch, search_assigned_event, records):
     """Test searching for a student name"""
+    found = [records[1], records[2], records[8]]
+    search_helper_mock = mock.MagicMock()
+    search_helper_mock.return_value = found
+    monkeypatch.setattr("search.search_helper", search_helper_mock)
+
+    response = search.assigned(search_assigned_event, {})
+
+    search_helper_mock.assert_called_with(
+        "Assigned To", "Test Name", multiple=True, exact=False
+    )
+    assert response["statusCode"] == 200
+    assert response["body"] == json.dumps(found)
+
+
+def test_search_assigned_bad_request():
+    """Test searching for a name missing data returns bad request"""
+    response = search.assigned({"body": "{}"}, {})
+
+    assert response["statusCode"] == 400
