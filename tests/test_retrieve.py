@@ -125,7 +125,7 @@ def test_no_records_found(monkeypatch, retrieve_event):
 
     response = retrieve.single(retrieve_event, {})
 
-    assert response["statusCode"] == 500
+    assert response["statusCode"] == 404
 
 
 def test_retrieve_instrument_helper():

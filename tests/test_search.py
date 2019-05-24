@@ -1,3 +1,4 @@
+import json
 from unittest import mock
 
 import pytest
@@ -54,7 +55,7 @@ def test_search_helper_multiple(monkeypatch, fake_airtable, records):
 
     results = search.search_helper("Assigned To", "Test Name", multiple=True)
 
-    assert set([rec["id"] for rec in results]) == {records[1]["id"], records[8]["id"]}
+    assert {rec["id"] for rec in results} == {records[1]["id"], records[8]["id"]}
 
 
 def test_search_helper_single_gets_only_one(monkeypatch, fake_airtable):
@@ -67,3 +68,54 @@ def test_search_helper_single_gets_only_one(monkeypatch, fake_airtable):
     result = search.search_helper("Assigned To", "Test Name", multiple=False)
 
     assert not isinstance(result, list)
+
+
+def test_search_helper_partial_matches(monkeypatch, fake_airtable, records):
+    """Test that the search helper returns partial patches"""
+    monkeypatch.setattr("search.setup_airtable", lambda: fake_airtable)
+
+    results = search.search_helper("Assigned To", "Name", multiple=True, exact=False)
+
+    assert len(results) == 4
+    assert {rec["id"] for rec in results} == {
+        records[0]["id"],
+        records[1]["id"],
+        records[2]["id"],
+        records[8]["id"],
+    }
+
+
+def test_search_number(monkeypatch, search_number_event):
+    """Test searching for an instrument number"""
+    found = {
+        "id": "rec15",
+        "fields": {
+            "Number": "1-201",
+            "Instrument Type": "violin",
+            "Assigned To": "Test Name",
+        },
+    }
+    search_helper_mock = mock.MagicMock()
+    search_helper_mock.return_value = found
+    monkeypatch.setattr("search.search_helper", search_helper_mock)
+
+    result = search.number(search_number_event, {})
+
+    search_helper_mock.assert_called_with("Number", "1-201", multiple=False, exact=True)
+
+    assert result["statusCode"] == 200
+    assert result["body"] == json.dumps(found)
+
+
+def test_search_number_not_found(monkeypatch, search_number_event):
+    """Test searching for an instrument number"""
+    found = []
+    search_helper_mock = mock.MagicMock()
+    search_helper_mock.return_value = found
+    monkeypatch.setattr("search.search_helper", search_helper_mock)
+
+    result = search.number(search_number_event, {})
+
+    search_helper_mock.assert_called_with("Number", "1-201", multiple=False, exact=True)
+
+    assert result["statusCode"] == 404

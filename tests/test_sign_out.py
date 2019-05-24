@@ -47,4 +47,4 @@ def test_no_records_match(monkeypatch, sign_out_event):
 
     response = sign_out.main(sign_out_event, {})
 
-    assert response["statusCode"] == 500
+    assert response["statusCode"] == 400

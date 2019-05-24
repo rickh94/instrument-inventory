@@ -101,4 +101,4 @@ def test_incomplete_create(monkeypatch):
 
     response = create.main(incomplete_event, {})
 
-    assert response["statusCode"] == 500
+    assert response["statusCode"] == 400

@@ -38,3 +38,13 @@ def basic_create_event():
 @pytest.fixture
 def full_create_event():
     return read_event("create-event-full")
+
+
+@pytest.fixture
+def search_number_event():
+    return read_event("search-event")
+
+
+@pytest.fixture
+def search_name_event():
+    return read_event("search-name-event")

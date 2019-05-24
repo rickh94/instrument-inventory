@@ -16,7 +16,7 @@ def single(event, _context):
         return success("Instrument retrieved")
     except Exception as err:
         if isinstance(err, IndexError):
-            return failure("Could not find matching instrument")
+            return failure("Could not find matching instrument", 404)
         return failure(f"Something has gone wrong: {err}")
 
 

@@ -9,14 +9,16 @@ def main(event, _context):
     data = json.loads(event["body"])
     if not data.get("instrumentNumber", False):
         return failure(
-            {"errors": {"instrumentNumber": "Instrument Number is required"}}
+            {"errors": {"instrumentNumber": "Instrument Number is required"}}, 400
         )
     if not data.get("instrumentType", False):
-        return failure({"errors": {"instrumentType": "Instrument Type is required"}})
+        return failure(
+            {"errors": {"instrumentType": "Instrument Type is required"}}, 400
+        )
     if not data.get("location", False):
-        return failure({"errors": {"location": "Location is required"}})
+        return failure({"errors": {"location": "Location is required"}}, 400)
     if not data.get("size", False):
-        return failure({"errors": {"size": "Size is required"}})
+        return failure({"errors": {"size": "Size is required"}}, 400)
     try:
         at = setup_airtable()
     except Exception as err:

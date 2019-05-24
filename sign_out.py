@@ -20,7 +20,8 @@ def main(event, _context):
         )
         if not rec:
             return failure(
-                {"errors": {"instrumentNumber": "Could not find matching instrument"}}
+                {"errors": {"instrumentNumber": "Could not find matching instrument"}},
+                400,
             )
 
         return success(
