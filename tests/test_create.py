@@ -7,7 +7,7 @@ import create
 def test_basic_create_successful(monkeypatch, basic_create_event):
     """Test a minimal create"""
     at_object_mock = mock.MagicMock()
-    at_object_mock.insert.return_value = {"fields": {"test": "test"}}
+    at_object_mock.insert.return_value = {"fields": {"test": "test", "Number": "1234"}}
 
     def at_mock():
         return at_object_mock
@@ -32,6 +32,7 @@ def test_basic_create_successful(monkeypatch, basic_create_event):
             "Bow": False,
             "Shoulder Rest/Endpin Rest": False,
             "Gifted to student": False,
+            "Photo": [],
         }
     )
 
@@ -41,7 +42,7 @@ def test_basic_create_successful(monkeypatch, basic_create_event):
 def test_full_create_successful(monkeypatch, full_create_event):
     """Test full create full"""
     at_object_mock = mock.MagicMock()
-    at_object_mock.insert.return_value = {"fields": {"test": "test"}}
+    at_object_mock.insert.return_value = {"fields": {"test": "test", "Number": "1234"}}
 
     def at_mock():
         return at_object_mock
@@ -66,6 +67,9 @@ def test_full_create_successful(monkeypatch, full_create_event):
             "Bow": True,
             "Shoulder Rest/Endpin Rest": True,
             "Gifted to student": True,
+            "Photo": [
+                {"url": "https://unsplash.com/photos/uqKyeMaaAOQ/download?force=true"}
+            ],
         }
     )
 

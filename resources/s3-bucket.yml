@@ -1,0 +1,28 @@
+Resources:
+  PhotosBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      CorsConfiguration:
+        CorsRules:
+          -
+            AllowedOrigins:
+              - '*'
+            AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - PUT
+              - POST
+              - DELETE
+              - HEAD
+            MaxAge: 3000
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: '10'
+            Prefix: ''
+            Status: Enabled
+
+Outputs:
+  PhotosBucketName:
+    Value:
+      Ref: PhotosBucket

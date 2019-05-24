@@ -1,5 +1,5 @@
 {
-  "body": "{\"instrumentNumber\":\"1-602\",\"instrumentType\":\"violin\", \"studentName\":\"Test Student\", \"location\":\"Grant Elementary School\", \"maintenanceNotes\": \"test notes\", \"studentName\": \"Test Name\", \"conditionNotes\": \"test condition\", \"readyToGo\": true, \"condition\": 5, \"quality\": 3, \"rosin\": true, \"bow\": true, \"shoulderRestRockStop\": true, \"gifted\": true, \"size\": \"4/4\"}",
+  "body": "{\"instrumentNumber\":\"1-602\",\"instrumentType\":\"violin\", \"studentName\":\"Test Student\", \"location\":\"Grant Elementary School\", \"maintenanceNotes\": \"test notes\", \"studentName\": \"Test Name\", \"conditionNotes\": \"test condition\", \"readyToGo\": true, \"condition\": 5, \"quality\": 3, \"rosin\": true, \"bow\": true, \"shoulderRestRockStop\": true, \"gifted\": true, \"size\": \"4/4\", \"photo\": \"https://unsplash.com/photos/uqKyeMaaAOQ/download?force=true\"}",
   "requestContext": {
     "identity": {
       "cognitoIdentityId": "USER-SUB-1234"

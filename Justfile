@@ -9,7 +9,7 @@ sls-test-deploy FUNCTION MOCK:
     pipenv run sls invoke -f {{FUNCTION}} --path {{MOCK}}
 
 deploy:
-    sls deploy
+    sls deploy -v
 
 deploy-prod:
-    sls deploy --stage prod
+    sls deploy --stage prod -v

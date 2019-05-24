@@ -37,6 +37,7 @@ def main(event, _context):
             "Shoulder Rest/Endpin Rest": data.get("shoulderRestRockStop", False),
             "Ready To Go": data.get("readyToGo", False),
             "Gifted to student": data.get("gifted", False),
+            "Photo": [{"url": data.get("photo")}] if data.get("photo") else [],
         }
         rec = at.insert(fields)
         return success(

@@ -64,6 +64,18 @@ Resources:
                       - ':'
                       - Ref: ApiGatewayRestApi
                       - '/*'
+              - Effect: 'Allow'
+                Action:
+                  - 's3:*'
+                Resource:
+                  - Fn::Join:
+                      - ''
+                      -
+                        - Fn::GetAtt: [PhotosBucket, Arn]
+                        - '/private/'
+                        - '$'
+                        - '{cognito-identity.amazonaws.com:sub}/*'
+
 Outputs:
   IdentityPoolId:
     Value:
