@@ -1,12 +1,17 @@
 import json
 
-from common import setup_airtable
+from common import setup_airtable, validate_request
 from responses import success, failure
 
 
 def single(event, _context):
     """Mark an instrument as having been retrieved"""
     data = json.loads(event["body"])
+    err_response = validate_request(
+        body=data, required_fields={"instrumentNumber": "Instrument Number"}
+    )
+    if err_response:
+        return err_response
     try:
         at = setup_airtable()
     except Exception as err:
@@ -23,6 +28,11 @@ def single(event, _context):
 def multiple(event, _context):
     """Mark multiple instruments as having been retrieved"""
     data = json.loads(event["body"])
+    err_response = validate_request(
+        body=data, required_fields={"instrumentNumbers": "Instrument Number List"}
+    )
+    if err_response:
+        return err_response
     response_body = {"instrumentsUpdated": [], "instrumentsFailed": []}
     try:
         at = setup_airtable()

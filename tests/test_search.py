@@ -119,3 +119,7 @@ def test_search_number_not_found(monkeypatch, search_number_event):
     search_helper_mock.assert_called_with("Number", "1-201", multiple=False, exact=True)
 
     assert result["statusCode"] == 404
+
+
+def test_search_name(monkeypatch, search_name_event):
+    """Test searching for a student name"""

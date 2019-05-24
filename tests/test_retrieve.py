@@ -19,10 +19,7 @@ def test_retrieve_successful_no_history(monkeypatch, retrieve_event):
         }
     ]
 
-    def at_mock(*args, **kwargs):
-        return at_object_mock
-
-    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
 
     response = retrieve.single(retrieve_event, {})
     at_object_mock.search.assert_called_with("Number", "1-201")
@@ -50,10 +47,7 @@ def test_retrieve_successful_with_history(monkeypatch, retrieve_event):
         }
     ]
 
-    def at_mock(*args, **kwargs):
-        return at_object_mock
-
-    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
 
     response = retrieve.single(retrieve_event, {})
     at_object_mock.search.assert_called_with("Number", "1-201")
@@ -86,10 +80,7 @@ def test_retrieve_successful_without_assigned_to(monkeypatch, retrieve_event):
         }
     ]
 
-    def at_mock(*args, **kwargs):
-        return at_object_mock
-
-    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
 
     response = retrieve.single(retrieve_event, {})
     at_object_mock.search.assert_called_with("Number", "1-201")
@@ -118,10 +109,7 @@ def test_no_records_found(monkeypatch, retrieve_event):
     at_object_mock = mock.MagicMock()
     at_object_mock.search.return_value = []
 
-    def at_mock(*args, **kwargs):
-        return at_object_mock
-
-    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
 
     response = retrieve.single(retrieve_event, {})
 
@@ -216,10 +204,7 @@ def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event):
         ],
     ]
 
-    def at_mock(*args, **kwargs):
-        return at_object_mock
-
-    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
 
     response = retrieve.multiple(retrieve_multiple_event, {})
     at_object_mock.search.assert_any_call("Number", "1-001")
@@ -305,10 +290,7 @@ def test_retrieve_multiple_some_fail(monkeypatch, retrieve_multiple_event):
         ],
     ]
 
-    def at_mock(*args, **kwargs):
-        return at_object_mock
-
-    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
 
     response = retrieve.multiple(retrieve_multiple_event, {})
     at_object_mock.search.assert_any_call("Number", "1-001")
@@ -339,3 +321,17 @@ def test_retrieve_multiple_some_fail(monkeypatch, retrieve_multiple_event):
         "]"
         "}"
     )
+
+
+def test_bad_request_single():
+    """Test missing data returns bad request"""
+    response = retrieve.single({"body": "{}"}, {})
+
+    assert response["statusCode"] == 400
+
+
+def test_bad_request_multiple():
+    """Test missing data returns bad request"""
+    response = retrieve.multiple({"body": "{}"}, {})
+
+    assert response["statusCode"] == 400
