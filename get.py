@@ -1,6 +1,4 @@
-import json
-
-from common import setup_airtable, validate_request
+from common import setup_airtable
 from responses import success, failure
 
 
