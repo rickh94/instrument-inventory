@@ -1,7 +1,7 @@
 import json
 
 from common import setup_airtable, validate_request
-from responses import success, failure
+from responses import failure, success
 
 
 def single(event, _context):

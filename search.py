@@ -1,7 +1,6 @@
 import json
 
-from common import setup_airtable, validate_request, make_filter_formula
-
+from common import make_filter_formula, setup_airtable, validate_request
 from responses import failure, success
 
 

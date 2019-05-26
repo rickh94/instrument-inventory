@@ -1,8 +1,6 @@
 import os
 
-from airtable import Airtable
-from airtable import params
-
+from airtable import Airtable, params
 from responses import failure
 
 

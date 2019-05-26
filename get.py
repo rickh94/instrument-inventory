@@ -1,5 +1,5 @@
 from common import setup_airtable
-from responses import success, failure
+from responses import failure, success
 
 
 def main(event, _context):
