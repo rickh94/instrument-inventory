@@ -60,13 +60,13 @@ def test_search_number(monkeypatch, search_number_event):
             "Assigned To": "Test Name",
         },
     }
-    search_helper_mock = mock.MagicMock()
-    search_helper_mock.return_value = found
-    monkeypatch.setattr("search.search_helper", search_helper_mock)
+    at_mock = mock.MagicMock()
+    at_mock.get_all.return_value = found
+    monkeypatch.setattr("search.setup_airtable", lambda: at_mock)
 
     response = search.number(search_number_event, {})
 
-    search_helper_mock.assert_called_with("Number", "1-201", multiple=False, exact=True)
+    at_mock.get_all.assert_called_with(formula="{Number}='1-201'")
 
     assert response["statusCode"] == 200
     assert response["body"] == json.dumps(found)
@@ -75,13 +75,13 @@ def test_search_number(monkeypatch, search_number_event):
 def test_search_number_not_found(monkeypatch, search_number_event):
     """Test searching for an instrument number"""
     found = []
-    search_helper_mock = mock.MagicMock()
-    search_helper_mock.return_value = found
-    monkeypatch.setattr("search.search_helper", search_helper_mock)
+    at_mock = mock.MagicMock()
+    at_mock.get_all.return_value = found
+    monkeypatch.setattr("search.setup_airtable", lambda: at_mock)
 
     response = search.number(search_number_event, {})
 
-    search_helper_mock.assert_called_with("Number", "1-201", multiple=False, exact=True)
+    at_mock.get_all.assert_called_with(formula="{Number}='1-201'")
 
     assert response["statusCode"] == 404
 
