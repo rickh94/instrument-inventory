@@ -13,7 +13,6 @@ ptpython = "*"
 [packages]
 requests = "*"
 airtable-python-wrapper = "*"
-fuzzywuzzy = {extras = ["speedup"],version = "*"}
 
 [requires]
 python_version = "3.7"
