@@ -1,0 +1,11 @@
+{
+  "pathParameters": {
+    "id":"reciMq9N5Ry5uNQgf"
+  },
+  "body": "{ \"photoUrl\": \"https://unsplash.com/photos/wPaBwop_rSo/download?force=true\"}",
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}
