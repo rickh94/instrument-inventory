@@ -1,0 +1,11 @@
+{
+  "pathParameters": {
+    "id":"reciMq9N5Ry5uNQgf"
+  },
+  "body": "{ \"condition\": \"4\", \"maintenanceNotes\": \"test notes\"}",
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}

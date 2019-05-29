@@ -4,11 +4,10 @@ from responses import failure, success
 
 def main(event, _context):
     """Get a record from airtable"""
-    if not event.get("pathParameters"):
+    try:
+        rec_id = event["pathParameters"]["id"]
+    except KeyError:
         return failure(f"Please supply id", 404)
-    if not event["pathParameters"].get("id"):
-        return failure(f"Please supply id", 404)
-    rec_id = event["pathParameters"]["id"]
     try:
         at = setup_airtable()
         item = at.get(rec_id)

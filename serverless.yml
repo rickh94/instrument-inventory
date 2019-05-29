@@ -102,6 +102,20 @@ functions:
           cors: true
           authorizer: aws_iam
 
+  update-full:
+    handler: update.full
+    events:
+      - http:
+          path: update/{id}
+          method: patch
+          cors: true
+          authorizer: aws_iam
+      - http:
+          path: update/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+
 resources:
   - ${file(resources/api-gateway-errors.yml)}
   - ${file(resources/cognito-user-pool.yml)}
