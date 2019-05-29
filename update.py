@@ -1,10 +1,8 @@
 import json
-from collections import namedtuple
 
 from common import setup_airtable, validate_request
 from responses import failure, success
 
-FieldName = namedtuple("FieldName", ["frontend", "airtable"])
 
 frontend_backend_field_names = {
     "instrumentType": "Instrument Type",

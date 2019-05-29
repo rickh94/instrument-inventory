@@ -74,6 +74,7 @@ def test_update_full_record(monkeypatch):
             "Instrument Type": fields["Instrument Type"],
             "Maintenance Notes": fields["Maintenance Notes"],
         },
+        typecast=True,
     )
 
     assert response["statusCode"] == 200

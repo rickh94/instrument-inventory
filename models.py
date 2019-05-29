@@ -1,7 +1,7 @@
 import os
 
 from pynamodb.models import Model
-from pynamodb.attributes import UnicodeAttribute
+from pynamodb.attributes import UnicodeAttribute, BooleanAttribute
 
 
 TODOS_TABLE_NAME = os.environ.get("TODOS_TABLE_NAME")
@@ -16,5 +16,5 @@ class TodoModel(Model):
     userId = UnicodeAttribute(hash_key=True)
     todoId = UnicodeAttribute(range_key=True)
     content = UnicodeAttribute()
-    createdAt = UnicodeAttribute()
     relevantInstrument = UnicodeAttribute(null=True)
+    completed = BooleanAttribute(default=False)

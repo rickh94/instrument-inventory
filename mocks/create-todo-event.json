@@ -1,0 +1,8 @@
+{
+  "body": "{\"content\": \"Get instrument for student\"}",
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}
