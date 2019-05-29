@@ -13,6 +13,7 @@ ptpython = "*"
 [packages]
 requests = "*"
 airtable-python-wrapper = "*"
+pynamodb = "*"
 
 [requires]
 python_version = "3.7"
