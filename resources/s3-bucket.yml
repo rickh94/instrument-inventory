@@ -21,6 +21,11 @@ Resources:
           - ExpirationInDays: '10'
             Prefix: ''
             Status: Enabled
+      Tags:
+        -
+          Key: 'CostCenter'
+          Value: 'Instrument Inventory'
+
 
 Outputs:
   PhotosBucketName:

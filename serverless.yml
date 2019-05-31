@@ -41,6 +41,8 @@ provider:
 functions:
   retrieve-single:
     handler: retrieve.single
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: retrieve-single
@@ -50,6 +52,8 @@ functions:
 
   retrieve-multiple:
     handler: retrieve.multiple
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: retrieve-multiple
@@ -59,6 +63,8 @@ functions:
 
   sign-out:
     handler: sign_out.main
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: sign-out
@@ -68,6 +74,8 @@ functions:
 
   create:
     handler: create.main
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: create
@@ -77,6 +85,8 @@ functions:
 
   search-number:
     handler: search.number
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: search/number
@@ -86,6 +96,8 @@ functions:
 
   search-assigned:
     handler: search.assigned
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
          path: search/assigned
@@ -95,6 +107,8 @@ functions:
 
   get:
     handler: get.main
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: get/{id}
@@ -104,6 +118,8 @@ functions:
 
   filter:
     handler: filter.main
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: filter
@@ -113,6 +129,8 @@ functions:
 
   update-photo:
     handler: update.photo
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: update/photo/{id}
@@ -122,6 +140,8 @@ functions:
 
   update-full:
     handler: update.full
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: update/{id}
@@ -136,6 +156,8 @@ functions:
 
   todos-create:
     handler: todos.create
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: todos
@@ -145,6 +167,8 @@ functions:
 
   todos-read-single:
     handler: todos.read_single
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: todos/{id}
@@ -154,6 +178,8 @@ functions:
 
   todos-read-active:
     handler: todos.read_active
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: todos/active
@@ -163,6 +189,8 @@ functions:
 
   todos-read-completed:
     handler: todos.read_completed
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: todos/completed
@@ -172,6 +200,8 @@ functions:
 
   todos-mark-completed:
     handler: todos.mark_completed
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: todos/{id}/mark-completed
@@ -181,6 +211,8 @@ functions:
 
   todos-unmark-completed:
     handler: todos.unmark_completed
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: todos/{id}/unmark-completed
@@ -190,6 +222,8 @@ functions:
 
   todos-update:
     handler: todos.update
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: todos/{id}
@@ -204,6 +238,8 @@ functions:
 
   todos-delete:
     handler: todos.delete
+    tags:
+      CostCenter: 'Instrument Inventory'
     events:
       - http:
           path: todos/{id}

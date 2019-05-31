@@ -18,5 +18,5 @@ Resources:
         WriteCapacityUnits: ${self:custom.tableThroughput}
       Tags:
         -
-          Key: "CostCenter"
-          Value: "Instrument Inventory"
+          Key: 'CostCenter'
+          Value: 'Instrument Inventory'
