@@ -4,7 +4,7 @@ from pynamodb.models import Model
 from pynamodb.attributes import UnicodeAttribute, BooleanAttribute
 
 
-TODOS_TABLE_NAME = os.environ.get("TODOS_TABLE_NAME")
+TODOS_TABLE_NAME = os.environ.get("TODOS_TABLE_NAME", "fake_table")
 
 
 class TodoModel(Model):

@@ -1,5 +1,5 @@
 test:
-    pipenv run pytest
+    pipenv run pytest -p no:warnings
 
 sls-test-local FUNCTION MOCK:
     pipenv run sls invoke local -f {{FUNCTION}} --path {{MOCK}}

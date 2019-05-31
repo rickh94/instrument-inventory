@@ -138,7 +138,52 @@ functions:
     handler: todos.create
     events:
       - http:
-          path: todos/create
+          path: todos
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  todos-read-single:
+    handler: todos.read_single
+    events:
+      - http:
+          path: todos/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+
+  todos-read-active:
+    handler: todos.read_active
+    events:
+      - http:
+          path: todos/active
+          method: get
+          cors: true
+          authorizer: aws_iam
+
+  todos-read-completed:
+    handler: todos.read_completed
+    events:
+      - http:
+          path: todos/completed
+          method: get
+          cors: true
+          authorizer: aws_iam
+
+  todos-mark-completed:
+    handler: todos.mark_completed
+    events:
+      - http:
+          path: todos/{id}/mark-completed
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  todos-unmark-completed:
+    handler: todos.unmark_completed
+    events:
+      - http:
+          path: todos/{id}/unmark-completed
           method: post
           cors: true
           authorizer: aws_iam
