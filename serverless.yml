@@ -6,7 +6,7 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: false
+    dockerizePip: true
   stage: ${opt:stage, self:provider.stage}
   environment: ${file(env.yml):${self:custom.stage}, file(env.yml):default}
   todosTableName: ${self:custom.stage}-instrument-inventory-todos
@@ -192,19 +192,24 @@ functions:
     handler: todos.update
     events:
       - http:
-        path: todos/{id}
-        method: patch
-        cors: true
-        authorizer: aws_iam
+          path: todos/{id}
+          method: patch
+          cors: true
+          authorizer: aws_iam
+      - http:
+          path: todos/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
 
   todos-delete:
     handler: todos.delete
     events:
       - http:
-        path: todos/{id}
-        method: delete
-        cors: true
-        authorizer: aws_iam
+          path: todos/{id}
+          method: delete
+          cors: true
+          authorizer: aws_iam
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
