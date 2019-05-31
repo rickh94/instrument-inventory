@@ -117,8 +117,46 @@ def unmark_completed(event, _context):
 
 
 def update(event, _context):
-    pass
+    """Update the content or instrument of a to do item"""
+    data = json.loads(event["body"])
+    try:
+        user_id = event["requestContext"]["identity"]["cognitoIdentityId"]
+        todo_id = event["pathParameters"]["id"]
+    except KeyError:
+        return failure("User and todo id are required", 400)
+    try:
+        item = TodoModel.get(user_id, todo_id)
+    except pynamodb.exceptions.DoesNotExist:
+        return failure("Could not find matching item", 404)
+    try:
+        actions = []
+        if data.get("content"):
+            actions.append(TodoModel.content.set(data["content"]))
+        if data.get("relevantInstrument"):
+            actions.append(TodoModel.relevantInstrument.set(data["relevantInstrument"]))
+        item.update(actions=actions)
+        item.save()
+        item.refresh()
+        return success({"message": "Updated", "item": item.attribute_values})
+    except Exception as err:
+        print(err)
+        return failure("Something has gone wrong")
 
 
 def delete(event, _context):
-    pass
+    """Delete a to do item"""
+    try:
+        user_id = event["requestContext"]["identity"]["cognitoIdentityId"]
+        todo_id = event["pathParameters"]["id"]
+    except KeyError:
+        return failure("User and todo id are required", 400)
+    try:
+        item = TodoModel.get(user_id, todo_id)
+    except pynamodb.exceptions.DoesNotExist:
+        return failure("Could not find matching item", 404)
+    try:
+        item.delete()
+        return success({"message": "deleted"}, 204)
+    except Exception as err:
+        print(err)
+        return failure("Something has gone wrong")

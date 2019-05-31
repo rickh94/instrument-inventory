@@ -211,14 +211,18 @@ def test_read_active_fails(monkeypatch):
 @pytest.fixture
 def make_fake_todo_item():
     class FakeTodoItem:
-        def __init__(self, userId, todoId, content, completed=False):
+        def __init__(
+            self, userId, todoId, content, relevantInstrument="", completed=False
+        ):
             self.userId = userId
             self.todoId = todoId
             self.content = content
             self.completed = completed
+            self.relevantInstrument = relevantInstrument
             self.update = mock.MagicMock()
             self.refresh = mock.MagicMock()
             self.save = mock.MagicMock()
+            self.delete = mock.MagicMock()
 
         @property
         def attribute_values(self):
@@ -366,11 +370,16 @@ def test_unmark_item_completed_bad_request():
     assert response["statusCode"] == 400
 
 
-def test_unmark_item_completed_does_not_exist(monkeypatch):
-    """Test id does not exist"""
-
-    def get_explode(*args):
+@pytest.fixture
+def get_explode():
+    def _explode(*args):
         raise pynamodb.exceptions.DoesNotExist
+
+    return _explode
+
+
+def test_unmark_item_completed_does_not_exist(monkeypatch, get_explode):
+    """Test id does not exist"""
 
     monkeypatch.setattr("todos.TodoModel.get", get_explode)
 
@@ -378,6 +387,147 @@ def test_unmark_item_completed_does_not_exist(monkeypatch):
         {
             "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
             "pathParameters": {"id": "id1"},
+        },
+        {},
+    )
+
+    assert response["statusCode"] == 404
+
+
+def test_update_todo_full(monkeypatch, make_fake_todo_item):
+    """Test update a to do item"""
+    fake_todo = mock.MagicMock()
+    todo_item = make_fake_todo_item(
+        "USER-SUB-1234",
+        "id1",
+        content="test todo1",
+        relevantInstrument="1-610",
+        completed=False,
+    )
+    fake_todo.get.return_value = todo_item
+
+    monkeypatch.setattr("todos.TodoModel", fake_todo)
+
+    response = todos.update(
+        {
+            "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
+            "pathParameters": {"id": "id1"},
+            "body": json.dumps(
+                {"content": "some different content", "relevantInstrument": "1-611"}
+            ),
+        },
+        {},
+    )
+
+    fake_todo.get.assert_called_with("USER-SUB-1234", "id1")
+    fake_todo.content.set.assert_called_with("some different content")
+    fake_todo.relevantInstrument.set.assert_called_with("1-611")
+    todo_item.update.assert_called()
+    todo_item.save.assert_called()
+    todo_item.refresh.assert_called()
+
+    assert response["statusCode"] == 200
+
+
+def test_update_todo_partial(monkeypatch, make_fake_todo_item):
+    """Test partially update a to do item"""
+    fake_todo = mock.MagicMock()
+    todo_item = make_fake_todo_item(
+        "USER-SUB-1234",
+        "id1",
+        content="test todo1",
+        relevantInstrument="1-610",
+        completed=False,
+    )
+    fake_todo.get.return_value = todo_item
+
+    monkeypatch.setattr("todos.TodoModel", fake_todo)
+
+    response = todos.update(
+        {
+            "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
+            "pathParameters": {"id": "id1"},
+            "body": json.dumps({"relevantInstrument": "1-611"}),
+        },
+        {},
+    )
+
+    fake_todo.get.assert_called_with("USER-SUB-1234", "id1")
+    fake_todo.content.set.assert_not_called()
+    fake_todo.relevantInstrument.set.assert_called_with("1-611")
+    todo_item.update.assert_called()
+    todo_item.save.assert_called()
+    todo_item.refresh.assert_called()
+
+    assert response["statusCode"] == 200
+
+
+def test_update_no_id_bad_request():
+    """Test missing id returns not found"""
+    response = todos.update({"body": json.dumps({})}, {})
+
+    assert response["statusCode"] == 400
+
+
+def test_update_does_not_exist_not_found(monkeypatch, get_explode):
+    """Test returns 404 error if to do item is not found"""
+    monkeypatch.setattr("todos.TodoModel.get", get_explode)
+
+    response = todos.update(
+        {
+            "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
+            "pathParameters": {"id": "id1"},
+            "body": json.dumps({}),
+        },
+        {},
+    )
+
+    assert response["statusCode"] == 404
+
+
+def test_delete_todo(monkeypatch, make_fake_todo_item):
+    """Test deleting a to do item"""
+    fake_todo = mock.MagicMock()
+    todo_item = make_fake_todo_item(
+        "USER-SUB-1234",
+        "id1",
+        content="test todo1",
+        relevantInstrument="1-610",
+        completed=False,
+    )
+    fake_todo.get.return_value = todo_item
+
+    monkeypatch.setattr("todos.TodoModel", fake_todo)
+
+    response = todos.delete(
+        {
+            "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
+            "pathParameters": {"id": "id1"},
+        }, {}
+    )
+
+    fake_todo.get.assert_called_with("USER-SUB-1234", "id1")
+    todo_item.delete.assert_called()
+
+    assert response['statusCode'] == 204
+
+
+def test_delete_todo_bad_request():
+    """Test no id returns bad request"""
+    response = todos.delete({"body": json.dumps({})}, {})
+
+    assert response["statusCode"] == 400
+
+
+def test_delete_todo_not_found(monkeypatch, get_explode):
+    """Test delete to do not found returns 404"""
+    monkeypatch.setattr("todos.TodoModel.get", get_explode)
+
+    response = todos.delete(
+        {
+            "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
+            "pathParameters": {"id": "id1"},
+            "body": json.dumps({}),
         },
         {},
     )
