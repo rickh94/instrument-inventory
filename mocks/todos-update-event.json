@@ -1,0 +1,11 @@
+{
+  "body": "{\"content\": \"updated\", \"relevantInstrument\": \"1-610\" }",
+  "pathParameters": {
+    "id": "1ca1f0f4-8262-11e9-aa4d-645d864f92b4"
+  },
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}

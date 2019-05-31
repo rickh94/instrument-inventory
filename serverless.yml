@@ -188,6 +188,24 @@ functions:
           cors: true
           authorizer: aws_iam
 
+  todos-update:
+    handler: todos.update
+    events:
+      - http:
+        path: todos/{id}
+        method: patch
+        cors: true
+        authorizer: aws_iam
+
+  todos-delete:
+    handler: todos.delete
+    events:
+      - http:
+        path: todos/{id}
+        method: delete
+        cors: true
+        authorizer: aws_iam
+
 resources:
   - ${file(resources/api-gateway-errors.yml)}
   - ${file(resources/cognito-user-pool.yml)}
