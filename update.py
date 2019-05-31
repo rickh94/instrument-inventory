@@ -55,9 +55,11 @@ def full(event, _context):
     for key, value in data.items():
         if key in frontend_backend_field_names:
             fields[to_airtable_name(key)] = value
+    print(fields)
     try:
         at = setup_airtable()
         updated = at.update(rec_id, fields, typecast=True)
+        print(updated)
         return success({"message": "Update Successful", "item": updated})
     except Exception as err:
         return failure(f"Something has gone wrong: {err}")

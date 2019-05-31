@@ -78,7 +78,7 @@ functions:
       CostCenter: 'Instrument Inventory'
     events:
       - http:
-          path: create
+          path: instruments
           method: post
           cors: true
           authorizer: aws_iam
@@ -111,7 +111,7 @@ functions:
       CostCenter: 'Instrument Inventory'
     events:
       - http:
-          path: get/{id}
+          path: instruments/{id}
           method: get
           cors: true
           authorizer: aws_iam
@@ -133,7 +133,7 @@ functions:
       CostCenter: 'Instrument Inventory'
     events:
       - http:
-          path: update/photo/{id}
+          path: instruments/{id}/photo
           method: patch
           cors: true
           authorizer: aws_iam
@@ -144,12 +144,12 @@ functions:
       CostCenter: 'Instrument Inventory'
     events:
       - http:
-          path: update/{id}
+          path: instruments/{id}
           method: patch
           cors: true
           authorizer: aws_iam
       - http:
-          path: update/{id}
+          path: instruments/{id}
           method: put
           cors: true
           authorizer: aws_iam

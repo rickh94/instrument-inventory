@@ -503,13 +503,14 @@ def test_delete_todo(monkeypatch, make_fake_todo_item):
         {
             "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
             "pathParameters": {"id": "id1"},
-        }, {}
+        },
+        {},
     )
 
     fake_todo.get.assert_called_with("USER-SUB-1234", "id1")
     todo_item.delete.assert_called()
 
-    assert response['statusCode'] == 204
+    assert response["statusCode"] == 204
 
 
 def test_delete_todo_bad_request():
