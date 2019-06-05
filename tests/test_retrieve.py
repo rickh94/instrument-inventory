@@ -1,5 +1,7 @@
+import json
 from unittest import mock
 
+import common
 import retrieve
 
 
@@ -18,6 +20,7 @@ def test_retrieve_successful_no_history(monkeypatch, retrieve_event):
             },
         }
     ]
+    at_object_mock.update.return_value = {"id": "recid", "fields": {"Number": "1-201"}}
 
     monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
 
@@ -28,6 +31,7 @@ def test_retrieve_successful_no_history(monkeypatch, retrieve_event):
     )
 
     assert response["statusCode"] == 200
+    assert json.loads(response["body"])["id"] == "recid"
 
 
 def test_retrieve_successful_with_history(monkeypatch, retrieve_event):
@@ -46,6 +50,8 @@ def test_retrieve_successful_with_history(monkeypatch, retrieve_event):
             },
         }
     ]
+
+    at_object_mock.update.return_value = {"id": "recid", "fields": {"Number": "1-201"}}
 
     monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
 
@@ -79,6 +85,8 @@ def test_retrieve_successful_without_assigned_to(monkeypatch, retrieve_event):
             },
         }
     ]
+
+    at_object_mock.update.return_value = {"id": "recid", "fields": {"Number": "1-201"}}
 
     monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
 
@@ -134,7 +142,7 @@ def test_retrieve_instrument_helper():
         }
     ]
     at.update = mock.MagicMock()
-    retrieve._retrieve_instrument("1-201", at)
+    common.move_instrument("1-201", at)
     at.search.assert_called_once_with("Number", "1-201")
     at.update.assert_called_once_with(
         "recid",

@@ -20,3 +20,30 @@ def setup_airtable():
 
 def make_filter_formula(field, value):
     return params.AirtableParams.FormulaParam.from_name_and_value(field, value)
+
+
+def add_to_history(new, history):
+    """Add a new student to an instrument's history"""
+    if not new:
+        return None
+    if not history:
+        return new
+    return f"{history}, {new}"
+
+
+def move_instrument(instrument_number, at, assigned_to="", location="Storage"):
+    """Perform the operations for retrieving an instrument
+    :param instrument_number: The instrument to move
+    :param at: airtable instance
+    :param assigned_to: person to assign the instrument to
+    :param location: where it is going
+    """
+    result = at.search("Number", instrument_number)[0]
+    old_assigned_to = result["fields"].get("Assigned To", None)
+    history = result["fields"].get("History", None)
+    new_history = add_to_history(old_assigned_to, history)
+    update = {"Location": location, "Assigned To": assigned_to}
+    if new_history:
+        update["History"] = new_history
+    rec = at.update(result["id"], update)
+    return rec
