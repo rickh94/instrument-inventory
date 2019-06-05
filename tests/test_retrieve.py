@@ -24,7 +24,7 @@ def test_retrieve_successful_no_history(monkeypatch, retrieve_event):
     response = retrieve.single(retrieve_event, {})
     at_object_mock.search.assert_called_with("Number", "1-201")
     at_object_mock.update.assert_called_with(
-        "recid", {"Location": "transit", "History": "Test Student", "Assigned To": ""}
+        "recid", {"Location": "Storage", "History": "Test Student", "Assigned To": ""}
     )
 
     assert response["statusCode"] == 200
@@ -54,7 +54,7 @@ def test_retrieve_successful_with_history(monkeypatch, retrieve_event):
     at_object_mock.update.assert_called_with(
         "recid",
         {
-            "Location": "transit",
+            "Location": "Storage",
             "History": "Previous Student, Test Student",
             "Assigned To": "",
         },
@@ -85,7 +85,7 @@ def test_retrieve_successful_without_assigned_to(monkeypatch, retrieve_event):
     response = retrieve.single(retrieve_event, {})
     at_object_mock.search.assert_called_with("Number", "1-201")
     at_object_mock.update.assert_called_with(
-        "recid", {"Location": "transit", "Assigned To": ""}
+        "recid", {"Location": "Storage", "Assigned To": ""}
     )
 
     assert response["statusCode"] == 200
@@ -139,7 +139,7 @@ def test_retrieve_instrument_helper():
     at.update.assert_called_once_with(
         "recid",
         {
-            "Location": "transit",
+            "Location": "Storage",
             "Assigned To": "",
             "History": "Previous Student, Some Student",
         },
@@ -212,15 +212,15 @@ def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event):
     at_object_mock.search.assert_any_call("Number", "1-003")
     at_object_mock.search.assert_any_call("Number", "1-004")
     at_object_mock.update.assert_any_call(
-        "recid1", {"Location": "transit", "History": "Test Student", "Assigned To": ""}
+        "recid1", {"Location": "Storage", "History": "Test Student", "Assigned To": ""}
     )
     at_object_mock.update.assert_any_call(
-        "recid2", {"Location": "transit", "Assigned To": ""}
+        "recid2", {"Location": "Storage", "Assigned To": ""}
     )
     at_object_mock.update.assert_any_call(
         "recid3",
         {
-            "Location": "transit",
+            "Location": "Storage",
             "History": "Previous Student, Test Student2",
             "Assigned To": "",
         },
@@ -228,7 +228,7 @@ def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event):
     at_object_mock.update.assert_any_call(
         "recid4",
         {
-            "Location": "transit",
+            "Location": "Storage",
             "History": "Previous Student4, Test Student",
             "Assigned To": "",
         },
@@ -298,15 +298,15 @@ def test_retrieve_multiple_some_fail(monkeypatch, retrieve_multiple_event):
     at_object_mock.search.assert_any_call("Number", "1-003")
     at_object_mock.search.assert_any_call("Number", "1-004")
     at_object_mock.update.assert_any_call(
-        "recid1", {"Location": "transit", "History": "Test Student", "Assigned To": ""}
+        "recid1", {"Location": "Storage", "History": "Test Student", "Assigned To": ""}
     )
     at_object_mock.update.assert_any_call(
-        "recid2", {"Location": "transit", "Assigned To": ""}
+        "recid2", {"Location": "Storage", "Assigned To": ""}
     )
     at_object_mock.update.assert_any_call(
         "recid4",
         {
-            "Location": "transit",
+            "Location": "Storage",
             "History": "Previous Student4, Test Student",
             "Assigned To": "",
         },

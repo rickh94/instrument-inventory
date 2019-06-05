@@ -68,7 +68,7 @@ def _retrieve_instrument(instrument_number, at):
     assigned_to = result["fields"].get("Assigned To", None)
     history = result["fields"].get("History", None)
     new_history = _add_to_history(assigned_to, history)
-    update = {"Location": "transit", "Assigned To": ""}
+    update = {"Location": "Storage", "Assigned To": ""}
     if new_history:
         update["History"] = new_history
     at.update(result["id"], update)
