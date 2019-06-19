@@ -1,26 +1,28 @@
+import time
 import uuid
-
-import boto3
 
 from models import InstrumentModel
 from common import setup_airtable, handle_photo
 
 at = setup_airtable()
-s3 = boto3.client("s3")
 
 
 def get_items():
     return at.get_all()
 
 
-if __name__ == "__main__":
+def main():
     items = at.get_all()
     for item in items:
+        time.sleep(0.2)
         print("processing item", item["fields"]["Number"])
         photo_key = None
         if item["fields"].get("Photo"):
             photo_key = handle_photo(item["fields"]["Photo"][0]["url"])
         print(photo_key)
+        history = None
+        if item["fields"].get("History"):
+            history = set(item["fields"]["History"].split(", "))
         try:
             new_item = InstrumentModel(
                 str(uuid.uuid4()),
@@ -42,7 +44,12 @@ if __name__ == "__main__":
                 gifted=item["fields"].get("Gifted to student", False),
                 airtableId=item["id"],
                 photo=photo_key,
+                history=history,
             )
             new_item.save()
         except KeyError:
             continue
+
+
+if __name__ == "__main__":
+    main()
