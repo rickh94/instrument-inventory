@@ -1,7 +1,8 @@
 import json
 
 from common import setup_airtable, validate_request, move_instrument
-from responses import failure, success
+from responses import failure, success, not_found, something_has_gone_wrong
+from models import InstrumentModel
 
 
 def single(event, _context):
@@ -13,16 +14,25 @@ def single(event, _context):
     if err_response:
         return err_response
     try:
-        at = setup_airtable()
+        found = list(
+            InstrumentModel.scan(InstrumentModel.number == data["instrumentNumber"])
+        )
+        if not found:
+            return not_found()
+        item = found[0]
+        actions = [
+            InstrumentModel.assignedTo.set(None),
+            InstrumentModel.location.set("Storage"),
+        ]
+        if item.assignedTo:
+            prev = item.assignedTo
+            actions.append(InstrumentModel.history.add({prev}))
+        item.update(actions=actions)
+        item.save()
+        return success({"message": "Instrument retrieved", "id": item.id})
     except Exception as err:
-        return failure(f"Could not connect to airtable: {err}")
-    try:
-        rec = move_instrument(data["instrumentNumber"], at)
-        return success({"message": "Instrument retrieved", "id": rec["id"]})
-    except Exception as err:
-        if isinstance(err, IndexError):
-            return failure("Could not find matching instrument", 404)
-        return failure(f"Something has gone wrong: {err}")
+        print(err)
+        return something_has_gone_wrong()
 
 
 def multiple(event, _context):

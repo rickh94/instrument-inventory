@@ -5,107 +5,68 @@ import common
 import retrieve
 
 
-def test_retrieve_successful_no_history(monkeypatch, retrieve_event):
+def test_retrieve_successful(monkeypatch, retrieve_event, fake_instrument):
     """Test retrieving an instrument"""
-    at_object_mock = mock.MagicMock()
-    at_object_mock.search.return_value = [
-        {
-            "id": "recid",
-            "fields": {
-                "Number": "1-201",
-                "Instrument Type": "violin",
-                "Size": "4/4",
-                "Location": "somewhere",
-                "Assigned To": "Test Student",
-            },
-        }
-    ]
-    at_object_mock.update.return_value = {"id": "recid", "fields": {"Number": "1-201"}}
+    instrument_mock = mock.MagicMock()
+    instrument_item = fake_instrument(
+        "fakeid",
+        number="1-201",
+        type="violin",
+        size="4/4",
+        location="Grant Elementary School",
+        assignedTo="Test Student",
+    )
+    instrument_mock.scan.return_value = [instrument_item]
 
-    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
+    monkeypatch.setattr("retrieve.InstrumentModel", instrument_mock)
 
     response = retrieve.single(retrieve_event, {})
-    at_object_mock.search.assert_called_with("Number", "1-201")
-    at_object_mock.update.assert_called_with(
-        "recid", {"Location": "Storage", "History": "Test Student", "Assigned To": ""}
-    )
+
+    instrument_item.update.assert_called()
+    instrument_item.save.assert_called()
+    instrument_mock.assignedTo.set.assert_called_with(None)
+    instrument_mock.location.set.assert_called_with("Storage")
+    instrument_mock.history.add.assert_called_with({"Test Student"})
 
     assert response["statusCode"] == 200
-    assert json.loads(response["body"])["id"] == "recid"
+    assert json.loads(response["body"])["id"] == "fakeid"
 
 
-def test_retrieve_successful_with_history(monkeypatch, retrieve_event):
+def test_retrieve_successful_without_assigned_to(
+    monkeypatch, retrieve_event, fake_instrument
+):
     """Test retrieving an instrument"""
-    at_object_mock = mock.MagicMock()
-    at_object_mock.search.return_value = [
-        {
-            "id": "recid",
-            "fields": {
-                "Number": "1-201",
-                "Instrument Type": "violin",
-                "Size": "4/4",
-                "Location": "somewhere",
-                "Assigned To": "Test Student",
-                "History": "Previous Student",
-            },
-        }
-    ]
+    instrument_mock = mock.MagicMock()
+    instrument_item = fake_instrument(
+        "fakeid",
+        number="1-201",
+        type="violin",
+        size="4/4",
+        location="Grant Elementary School",
+    )
+    instrument_mock.scan.return_value = [instrument_item]
 
-    at_object_mock.update.return_value = {"id": "recid", "fields": {"Number": "1-201"}}
-
-    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
+    monkeypatch.setattr("retrieve.InstrumentModel", instrument_mock)
 
     response = retrieve.single(retrieve_event, {})
-    at_object_mock.search.assert_called_with("Number", "1-201")
-    at_object_mock.update.assert_called_with(
-        "recid",
-        {
-            "Location": "Storage",
-            "History": "Previous Student, Test Student",
-            "Assigned To": "",
-        },
-    )
-    assert response["statusCode"] == 200
 
-
-def test_retrieve_successful_without_assigned_to(monkeypatch, retrieve_event):
-    """Test retrieving an instrument"""
-    at_object_mock = mock.MagicMock()
-    at_object_mock.update_by_field = mock.MagicMock()
-    at_object_mock.search = mock.MagicMock()
-    at_object_mock.search.return_value = [
-        {
-            "id": "recid",
-            "fields": {
-                "Number": "1-201",
-                "Instrument Type": "violin",
-                "Size": "4/4",
-                "Location": "somewhere",
-                "History": "Previous Student",
-            },
-        }
-    ]
-
-    at_object_mock.update.return_value = {"id": "recid", "fields": {"Number": "1-201"}}
-
-    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
-
-    response = retrieve.single(retrieve_event, {})
-    at_object_mock.search.assert_called_with("Number", "1-201")
-    at_object_mock.update.assert_called_with(
-        "recid", {"Location": "Storage", "Assigned To": ""}
-    )
+    instrument_item.update.assert_called()
+    instrument_item.save.assert_called()
+    instrument_mock.assignedTo.set.assert_called_with(None)
+    instrument_mock.location.set.assert_called_with("Storage")
+    instrument_mock.history.add.assert_not_called()
 
     assert response["statusCode"] == 200
+    assert json.loads(response["body"])["id"] == "fakeid"
 
 
-def test_airtable_raises_error(monkeypatch, retrieve_event):
+def test_dynamo_raises_error(monkeypatch, retrieve_event):
     """Test airtable raising an error"""
 
-    def at_mock(*args, **kwargs):
+    def db_mock(*args, **kwargs):
         raise Exception
 
-    monkeypatch.setattr("retrieve.setup_airtable", at_mock)
+    monkeypatch.setattr("retrieve.setup_airtable", db_mock)
 
     response = retrieve.single(retrieve_event, {})
 
@@ -114,10 +75,10 @@ def test_airtable_raises_error(monkeypatch, retrieve_event):
 
 def test_no_records_found(monkeypatch, retrieve_event):
     """Test error is returned when no records are found"""
-    at_object_mock = mock.MagicMock()
-    at_object_mock.search.return_value = []
+    instrument_mock = mock.MagicMock()
+    instrument_mock.scan.return_value = []
 
-    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
+    monkeypatch.setattr("retrieve.InstrumentModel", instrument_mock)
 
     response = retrieve.single(retrieve_event, {})
 
