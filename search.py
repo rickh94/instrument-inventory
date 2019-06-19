@@ -1,7 +1,8 @@
 import json
 
 from common import make_filter_formula, setup_airtable, validate_request
-from responses import failure, success
+from responses import failure, success, not_found, something_has_gone_wrong
+from models import InstrumentModel
 
 
 def number(event, _context):
@@ -11,16 +12,17 @@ def number(event, _context):
     if err_response:
         return err_response
     try:
-        at = setup_airtable()
-        result = at.get_all(
-            formula=make_filter_formula("Number", data["instrumentNumber"])
+        found_items = InstrumentModel.scan(
+            InstrumentModel.number == data["instrumentNumber"]
         )
-        if result:
-            return success(result)
+        result_data = [item.attribute_values for item in found_items]
+        if result_data:
+            return success(result_data)
         else:
-            return failure("No matching instrument was found.", 404)
+            return not_found()
     except Exception as err:
-        return failure(f"Something has gone wrong: {err}")
+        print(err)
+        return something_has_gone_wrong()
 
 
 def assigned(event, _context):
@@ -30,15 +32,14 @@ def assigned(event, _context):
     if err_response:
         return err_response
     try:
-        at = setup_airtable()
-        results = at.get_all(
-            formula=(
-                "SEARCH('" + data["assignedTo"].lower() + "', LOWER({Assigned To}))"
-            )
+        found_items = InstrumentModel.scan(
+            InstrumentModel.assignedTo.contains(data["assignedTo"])
         )
-        if results:
-            return success(results)
+        result_data = [item.attribute_values for item in found_items]
+        if result_data:
+            return success(result_data)
         else:
-            return failure(f"No matching instrument was found", 404)
+            return not_found()
     except Exception as err:
-        return failure(f"Something has gone wrong {err}")
+        print(err)
+        return something_has_gone_wrong()
