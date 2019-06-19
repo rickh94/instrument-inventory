@@ -1,8 +1,12 @@
 import os
 
 from pynamodb.models import Model
-from pynamodb.attributes import UnicodeAttribute, BooleanAttribute, NumberAttribute
-
+from pynamodb.attributes import (
+    UnicodeAttribute,
+    BooleanAttribute,
+    NumberAttribute,
+    UnicodeSetAttribute,
+)
 
 TODOS_TABLE_NAME = os.environ.get("TODOS_TABLE_NAME", "fake_table")
 INSTRUMENTS_TABLE_NAME = os.environ.get(
@@ -45,4 +49,5 @@ class InstrumentModel(Model):
     ready = BooleanAttribute(default=False)
     gifted = BooleanAttribute(default=False)
     photo = UnicodeAttribute(null=True)
+    history = UnicodeSetAttribute(null=True)
     airtableId = UnicodeAttribute(null=True)

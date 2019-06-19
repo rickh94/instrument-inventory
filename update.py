@@ -1,31 +1,9 @@
 import json
 
-from common import setup_airtable, validate_request, handle_photo, delete_photos
+from common import validate_request, handle_photo, delete_photos
 from responses import failure, success
 from models import InstrumentModel
 import pynamodb.exceptions
-
-
-frontend_backend_field_names = {
-    "instrumentType": "Instrument Type",
-    "number": "Number",
-    "size": "Size",
-    "location": "Location",
-    "assignedTo": "Assigned To",
-    "condition": "Condition",
-    "quality": "Quality",
-    "conditionNotes": "Condition Notes",
-    "maintenanceNotes": "Maintenance Notes",
-    "rosin": "Rosin",
-    "bow": "Bow",
-    "readyToGo": "Ready To Go",
-    "shoulderRestEndpinRest": "Shoulder Rest/Endpin Rest",
-    "giftedToStudent": "Gifted To Student",
-}
-
-
-def to_airtable_name(field_name):
-    return frontend_backend_field_names[field_name]
 
 
 def photo(event, _context):

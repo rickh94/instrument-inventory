@@ -1,65 +1,59 @@
-import json
 from unittest import mock
 
 import sign_out
 
 
-def test_sign_out_successful(monkeypatch, sign_out_event):
+def test_sign_out_successful(monkeypatch, sign_out_event, fake_instrument):
     """Test signing out an instrument"""
-    at_object_mock = mock.MagicMock()
-    at_object_mock.search.return_value = [
-        {
-            "id": "recid",
-            "fields": {
-                "Number": "1-201",
-                "Location": "Storage",
-                "Assigned To": "Test Previous",
-                "Size": "4/4",
-                "History": "Person from History",
-            },
-        }
-    ]
-    at_object_mock.update.return_value = {
-        "id": "recid",
-        "fields": {
-            "Number": "1-201",
-            "Location": "Grant Elementary School",
-            "Assigned To": "Test Student",
-            "History": "Person from History, Test Previous",
-        },
-    }
-
-    def setup_airtable_mock():
-        return at_object_mock
-
-    monkeypatch.setattr("sign_out.setup_airtable", setup_airtable_mock)
+    instrument_mock = mock.MagicMock()
+    instrument_item = fake_instrument(
+        "fakeid", number="1-201", size="4/4", type="violin", location="office"
+    )
+    instrument_mock.scan.return_value = [instrument_item]
+    monkeypatch.setattr("sign_out.InstrumentModel", instrument_mock)
 
     response = sign_out.main(sign_out_event, {})
-    at_object_mock.update.assert_called_with(
-        "recid",
-        {
-            "Location": "Grant Elementary School",
-            "Assigned To": "Test Student",
-            "History": "Person from History, Test Previous",
-        },
-    )
-    # at_object_mock.update_by_field.assert_called_with(
-    #     "Number",
-    #     "1-201",
-    #     {"Assigned To": "Test Student", "Location": "Grant Elementary School"},
-    # )
+
+    instrument_item.update.assert_called()
+    instrument_item.save.assert_called()
+    instrument_mock.assignedTo.set.assert_called_with("Test Student")
+    instrument_mock.location.set.assert_called_with("Grant Elementary School")
 
     assert response["statusCode"] == 200
-    assert json.loads(response["body"])["id"] == "recid"
 
 
-def test_airtable_raises_error(monkeypatch, sign_out_event):
+def test_sign_out_updates_history(monkeypatch, sign_out_event, fake_instrument):
+    """Test signing out and instrument updates the history"""
+    instrument_mock = mock.MagicMock()
+    instrument_item = fake_instrument(
+        "fakeid",
+        number="1-201",
+        size="4/4",
+        type="violin",
+        location="office",
+        assignedTo="Previous Owner",
+    )
+    instrument_mock.scan.return_value = [instrument_item]
+    monkeypatch.setattr("sign_out.InstrumentModel", instrument_mock)
+
+    response = sign_out.main(sign_out_event, {})
+
+    instrument_item.update.assert_called()
+    instrument_item.save.assert_called()
+    instrument_mock.assignedTo.set.assert_called_with("Test Student")
+    instrument_mock.location.set.assert_called_with("Grant Elementary School")
+    instrument_mock.history.add.assert_called_with({"Previous Owner"})
+
+    assert response["statusCode"] == 200
+
+
+def test_dynamo_raises_error(monkeypatch, sign_out_event):
     """Test airtable raising an error"""
 
-    def at_mock(*args, **kwargs):
+    def db_mock(*args, **kwargs):
         raise Exception
 
-    monkeypatch.setattr("sign_out.setup_airtable", at_mock)
+    monkeypatch.setattr("sign_out.InstrumentModel.scan", db_mock)
 
     response = sign_out.main(sign_out_event, {})
 
@@ -68,14 +62,11 @@ def test_airtable_raises_error(monkeypatch, sign_out_event):
 
 def test_no_records_match(monkeypatch, sign_out_event):
     """Test error is returned when no records are found"""
-    at_object_mock = mock.MagicMock()
-    at_object_mock.update.return_value = {}
+    instrument_mock = mock.MagicMock()
+    instrument_mock.scan.return_value = []
 
-    def at_mock(*args, **kwargs):
-        return at_object_mock
-
-    monkeypatch.setattr("sign_out.setup_airtable", at_mock)
+    monkeypatch.setattr("sign_out.InstrumentModel", instrument_mock)
 
     response = sign_out.main(sign_out_event, {})
 
-    assert response["statusCode"] == 400
+    assert response["statusCode"] == 404

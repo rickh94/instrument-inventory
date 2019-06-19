@@ -99,6 +99,7 @@ def fake_instrument():
             self.save = mock.MagicMock()
             self.update = mock.MagicMock()
             self.delete = mock.MagicMock()
+            self.refresh = mock.MagicMock()
 
         @property
         def attribute_values(self):
