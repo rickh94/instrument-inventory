@@ -20,19 +20,25 @@ def single(event, _context):
         if not found:
             return not_found()
         item = found[0]
-        actions = [
-            InstrumentModel.assignedTo.set(None),
-            InstrumentModel.location.set("Storage"),
-        ]
-        if item.assignedTo:
-            prev = item.assignedTo
-            actions.append(InstrumentModel.history.add({prev}))
+        actions = generate_actions(item)
         item.update(actions=actions)
         item.save()
         return success({"message": "Instrument retrieved", "id": item.id})
     except Exception as err:
         print(err)
         return something_has_gone_wrong()
+
+
+def generate_actions(ins):
+    actions = [
+        InstrumentModel.assignedTo.set(None),
+        InstrumentModel.location.set("Storage"),
+    ]
+    if ins.assignedTo:
+        prev = ins.assignedTo
+        actions.append(InstrumentModel.history.add({prev}))
+
+    return actions
 
 
 def multiple(event, _context):
@@ -45,19 +51,25 @@ def multiple(event, _context):
         return err_response
     response_body = {"instrumentsUpdated": [], "instrumentsFailed": []}
     try:
-        at = setup_airtable()
+        scan = InstrumentModel.scan(
+            InstrumentModel.number.is_in(*data["instrumentNumbers"])
+        )
     except Exception as err:
-        return failure(f"Could not connect to airtable: {err}")
-
-    for instrument_number in data["instrumentNumbers"]:
+        print(err)
+        return something_has_gone_wrong()
+    for ins in scan:
         try:
-            move_instrument(instrument_number, at)
-            response_body["instrumentsUpdated"].append(instrument_number)
+            actions = generate_actions(ins)
+            ins.update(actions=actions)
+            ins.save()
+            response_body["instrumentsUpdated"].append(ins.number)
         except Exception as err:
-            message = {"number": instrument_number}
-            if isinstance(err, IndexError):
-                message["error"] = "Could not find instrument"
-            else:
-                message["error"] = err
-            response_body["instrumentsFailed"].append(message)
+            print(err)
+            response_body["instrumentsFailed"].append(ins.number)
+    for instrument_number in data["instrumentNumbers"]:
+        if (
+            instrument_number not in response_body["instrumentsUpdated"]
+            and instrument_number not in response_body["instrumentsFailed"]
+        ):
+            response_body["instrumentsFailed"].append(instrument_number)
     return success(response_body)

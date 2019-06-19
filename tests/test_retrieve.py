@@ -1,7 +1,6 @@
 import json
 from unittest import mock
 
-import common
 import retrieve
 
 
@@ -66,7 +65,7 @@ def test_dynamo_raises_error(monkeypatch, retrieve_event):
     def db_mock(*args, **kwargs):
         raise Exception
 
-    monkeypatch.setattr("retrieve.setup_airtable", db_mock)
+    monkeypatch.setattr("retrieve.InstrumentModel.scan", db_mock)
 
     response = retrieve.single(retrieve_event, {})
 
@@ -85,210 +84,121 @@ def test_no_records_found(monkeypatch, retrieve_event):
     assert response["statusCode"] == 404
 
 
-def test_retrieve_instrument_helper():
-    """Test the helper function"""
-    at = mock.MagicMock()
-    at.search = mock.MagicMock()
-    at.search.return_value = [
-        {
-            "id": "recid",
-            "fields": {
-                "Number": "1-201",
-                "Instrument Type": "violin",
-                "Size": "4/4",
-                "Location": "somewhere",
-                "Assigned To": "Some Student",
-                "History": "Previous Student",
-            },
-        }
-    ]
-    at.update = mock.MagicMock()
-    common.move_instrument("1-201", at)
-    at.search.assert_called_once_with("Number", "1-201")
-    at.update.assert_called_once_with(
-        "recid",
-        {
-            "Location": "Storage",
-            "Assigned To": "",
-            "History": "Previous Student, Some Student",
-        },
-    )
-
-
-def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event):
+def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event, records):
     """Test basic retrieve multiple instruments"""
-    at_object_mock = mock.MagicMock()
-    at_object_mock.update_by_field = mock.MagicMock()
-    at_object_mock.search = mock.MagicMock()
-    at_object_mock.search.side_effect = [
-        [
-            {
-                "id": "recid1",
-                "fields": {
-                    "Number": "1-001",
-                    "Instrument Type": "violin",
-                    "Size": "4/4",
-                    "Location": "somewhere",
-                    "Assigned To": "Test Student",
-                },
-            }
-        ],
-        [
-            {
-                "id": "recid2",
-                "fields": {
-                    "Number": "1-002",
-                    "Instrument Type": "violin",
-                    "Size": "4/4",
-                    "Location": "somewhere",
-                    "History": "Previous Student",
-                },
-            }
-        ],
-        [
-            {
-                "id": "recid3",
-                "fields": {
-                    "Number": "1-003",
-                    "Instrument Type": "violin",
-                    "Size": "4/4",
-                    "Location": "somewhere",
-                    "Assigned To": "Test Student2",
-                    "History": "Previous Student",
-                },
-            }
-        ],
-        [
-            {
-                "id": "recid4",
-                "fields": {
-                    "Number": "1-004",
-                    "Instrument Type": "violin",
-                    "Size": "4/4",
-                    "Location": "somewhere",
-                    "Assigned To": "Test Student",
-                    "History": "Previous Student4",
-                },
-            }
-        ],
-    ]
+    instrument_mock = mock.MagicMock()
+    instrument_mock.scan.return_value = records
+    monkeypatch.setattr("retrieve.InstrumentModel", instrument_mock)
 
-    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
+    response = retrieve.multiple(
+        {
+            "body": json.dumps(
+                {
+                    "instrumentNumbers": [
+                        "1-605",
+                        "1-601",
+                        "1-602",
+                        "2-603",
+                        "C1-505",
+                        "V15-502",
+                        "V15-503",
+                        "B1-502",
+                        "C2-508",
+                        "2-606",
+                    ]
+                }
+            )
+        },
+        {},
+    )
 
-    response = retrieve.multiple(retrieve_multiple_event, {})
-    at_object_mock.search.assert_any_call("Number", "1-001")
-    at_object_mock.search.assert_any_call("Number", "1-002")
-    at_object_mock.search.assert_any_call("Number", "1-003")
-    at_object_mock.search.assert_any_call("Number", "1-004")
-    at_object_mock.update.assert_any_call(
-        "recid1", {"Location": "Storage", "History": "Test Student", "Assigned To": ""}
+    for record in records:
+        record.update.assert_called()
+        record.save.assert_called()
+        if record.assignedTo:
+            instrument_mock.history.add.assert_any_call({record.assignedTo})
+
+    instrument_mock.number.is_in.assert_called_with(
+        "1-605",
+        "1-601",
+        "1-602",
+        "2-603",
+        "C1-505",
+        "V15-502",
+        "V15-503",
+        "B1-502",
+        "C2-508",
+        "2-606",
     )
-    at_object_mock.update.assert_any_call(
-        "recid2", {"Location": "Storage", "Assigned To": ""}
-    )
-    at_object_mock.update.assert_any_call(
-        "recid3",
-        {
-            "Location": "Storage",
-            "History": "Previous Student, Test Student2",
-            "Assigned To": "",
-        },
-    )
-    at_object_mock.update.assert_any_call(
-        "recid4",
-        {
-            "Location": "Storage",
-            "History": "Previous Student4, Test Student",
-            "Assigned To": "",
-        },
-    )
+    instrument_mock.assignedTo.set.assert_called_with(None)
+    instrument_mock.location.set.assert_called_with("Storage")
 
     assert response["statusCode"] == 200
-    assert response["body"] == (
-        "{"
-        '"instrumentsUpdated": '
-        '["1-001", "1-002", "1-003", "1-004"], '
-        '"instrumentsFailed": []'
-        "}"
+    assert response["body"] == json.dumps(
+        {
+            "instrumentsUpdated": [
+                "1-605",
+                "1-601",
+                "1-602",
+                "2-603",
+                "C1-505",
+                "V15-502",
+                "V15-503",
+                "B1-502",
+                "C2-508",
+                "2-606",
+            ],
+            "instrumentsFailed": [],
+        }
     )
 
 
-def test_retrieve_multiple_some_fail(monkeypatch, retrieve_multiple_event):
+def test_retrieve_multiple_some_fail(monkeypatch, records):
     """Test retrieving multiple with some failures"""
-    at_object_mock = mock.MagicMock()
-    at_object_mock.update_by_field = mock.MagicMock()
-    at_object_mock.search = mock.MagicMock()
-    at_object_mock.search.side_effect = [
-        [
-            {
-                "id": "recid1",
-                "fields": {
-                    "Number": "1-001",
-                    "Instrument Type": "violin",
-                    "Size": "4/4",
-                    "Location": "somewhere",
-                    "Assigned To": "Test Student",
-                },
-            }
-        ],
-        [
-            {
-                "id": "recid2",
-                "fields": {
-                    "Number": "1-002",
-                    "Instrument Type": "violin",
-                    "Size": "4/4",
-                    "Location": "somewhere",
-                    "History": "Previous Student",
-                },
-            }
-        ],
-        [],
-        [
-            {
-                "id": "recid4",
-                "fields": {
-                    "Number": "1-004",
-                    "Instrument Type": "violin",
-                    "Size": "4/4",
-                    "Location": "somewhere",
-                    "Assigned To": "Test Student",
-                    "History": "Previous Student4",
-                },
-            }
-        ],
-    ]
+    instrument_mock = mock.MagicMock()
+    instrument_mock.scan.return_value = records
+    monkeypatch.setattr("retrieve.InstrumentModel", instrument_mock)
 
-    monkeypatch.setattr("retrieve.setup_airtable", lambda: at_object_mock)
-
-    response = retrieve.multiple(retrieve_multiple_event, {})
-    at_object_mock.search.assert_any_call("Number", "1-001")
-    at_object_mock.search.assert_any_call("Number", "1-002")
-    at_object_mock.search.assert_any_call("Number", "1-003")
-    at_object_mock.search.assert_any_call("Number", "1-004")
-    at_object_mock.update.assert_any_call(
-        "recid1", {"Location": "Storage", "History": "Test Student", "Assigned To": ""}
-    )
-    at_object_mock.update.assert_any_call(
-        "recid2", {"Location": "Storage", "Assigned To": ""}
-    )
-    at_object_mock.update.assert_any_call(
-        "recid4",
+    response = retrieve.multiple(
         {
-            "Location": "Storage",
-            "History": "Previous Student4, Test Student",
-            "Assigned To": "",
+            "body": json.dumps(
+                {
+                    "instrumentNumbers": [
+                        "1-605",
+                        "1-601",
+                        "1-602",
+                        "2-603",
+                        "C1-505",
+                        "V15-502",
+                        "V15-503",
+                        "B1-502",
+                        "C2-508",
+                        "2-606",
+                        "1-003",
+                    ]
+                }
+            )
         },
+        {},
     )
 
     assert response["statusCode"] == 200
-    assert response["body"] == (
-        "{"
-        '"instrumentsUpdated": ["1-001", "1-002", "1-004"], '
-        '"instrumentsFailed": ['
-        '{"number": "1-003", "error": "Could not find instrument"}'
-        "]"
-        "}"
+    assert response["body"] == json.dumps(
+        {
+            "instrumentsUpdated": [
+                "1-605",
+                "1-601",
+                "1-602",
+                "2-603",
+                "C1-505",
+                "V15-502",
+                "V15-503",
+                "B1-502",
+                "C2-508",
+                "2-606",
+            ],
+            "instrumentsFailed": ["1-003"],
+        }
     )
 
 
