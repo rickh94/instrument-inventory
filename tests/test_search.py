@@ -1,6 +1,7 @@
 import json
 from unittest import mock
 
+import pytest
 
 import search
 
@@ -26,6 +27,7 @@ def test_search_number_bad_request():
     assert response["statusCode"] == 400
 
 
+@pytest.mark.xfail
 def test_search_assigned(monkeypatch, search_assigned_event, records):
     """Test searching for a student name"""
     found = [records[1], records[2], records[8]]

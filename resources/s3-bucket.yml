@@ -25,9 +25,34 @@ Resources:
         -
           Key: 'CostCenter'
           Value: 'Instrument Inventory'
+  PhotosPermanentBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.photosPermanentBucketName}
+      CorsConfiguration:
+        CorsRules:
+          -
+            AllowedOrigins:
+              - '*'
+            AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - PUT
+              - POST
+              - DELETE
+              - HEAD
+            MaxAge: 3000
+      Tags:
+        -
+          Key: 'CostCenter'
+          Value: 'Instrument Inventory'
 
 
 Outputs:
   PhotosBucketName:
     Value:
       Ref: PhotosBucket
+  PhotosPermanentBucketName:
+    Value:
+      Ref: PhotosPermanentBucket

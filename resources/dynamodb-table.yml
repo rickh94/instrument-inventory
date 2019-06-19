@@ -20,3 +20,20 @@ Resources:
         -
           Key: 'CostCenter'
           Value: 'Instrument Inventory'
+  InstrumentsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ${self:custom.instrumentsTableName}
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: ${self:custom.tableThroughput}
+        WriteCapacityUnits: ${self:custom.tableThroughput}
+      Tags:
+        -
+          Key: 'CostCenter'
+          Value: 'Instrument Inventory'

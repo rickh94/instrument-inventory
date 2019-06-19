@@ -14,6 +14,8 @@ ptpython = "*"
 requests = "*"
 airtable-python-wrapper = "*"
 pynamodb = "*"
+boto3 = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7"

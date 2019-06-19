@@ -10,6 +10,8 @@ custom:
   stage: ${opt:stage, self:provider.stage}
   environment: ${file(env.yml):${self:custom.stage}, file(env.yml):default}
   todosTableName: ${self:custom.stage}-instrument-inventory-todos
+  instrumentsTableName: ${self:custom.stage}-instrument-inventory-instruments
+  photosPermanentBucketName: ${self:custom.stage}-instrument-inventory-permanent-photos
   tableThroughputs:
     prod: 5
     default: 1
@@ -25,6 +27,8 @@ provider:
     AIRTABLE_BASE_KEY: ${self:custom.environment.base_key}
     AIRTABLE_API_KEY: ${self:custom.environment.api_key}
     TODOS_TABLE_NAME: ${self:custom.todosTableName}
+    PHOTOS_BUCKET_NAME: ${self:custom.photosPermanentBucketName}
+    INSTRUMENTS_TABLE_NAME: ${self:custom.instrumentsTableName}
 
   iamRoleStatements:
     - Effect: Allow
@@ -38,8 +42,90 @@ provider:
         - dynamodb:PutItem
       Resource:
         - "Fn::GetAtt": [TodosTable, Arn]
+        - "Fn::GetAtt": [InstrumentsTable, Arn]
+    - Effect: Allow
+      Action:
+        - s3:*
+      Resource:
+        - Fn::GetAtt: [PhotosPermanentBucket, Arn]
+        - Fn::Join:
+          - ''
+          -
+            - Fn::GetAtt: [PhotosPermanentBucket, Arn]
+            - '/*'
 
 functions:
+  create:
+    handler: create.main
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: instruments
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  get:
+    handler: get.main
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: instruments/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+
+  get-all:
+    handler: get.all_
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: instruments/all
+          method: get
+          cors: true
+          authorizer: aws_iam
+
+  update-photo:
+    handler: update.photo
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: instruments/{id}/photo
+          method: patch
+          cors: true
+          authorizer: aws_iam
+
+  update-full:
+    handler: update.full
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: instruments/{id}
+          method: patch
+          cors: true
+          authorizer: aws_iam
+      - http:
+          path: instruments/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+
+  delete:
+    handler: delete.main
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: instruments/{id}
+          method: delete
+          cors: true
+          authorizer: aws_iam
+
   retrieve-single:
     handler: retrieve.single
     tags:
@@ -73,16 +159,6 @@ functions:
           cors: true
           authorizer: aws_iam
 
-  create:
-    handler: create.main
-    tags:
-      CostCenter: 'Instrument Inventory'
-    events:
-      - http:
-          path: instruments
-          method: post
-          cors: true
-          authorizer: aws_iam
 
   search-number:
     handler: search.number
@@ -106,17 +182,6 @@ functions:
          cors: true
          authorizer: aws_iam
 
-  get:
-    handler: get.main
-    tags:
-      CostCenter: 'Instrument Inventory'
-    events:
-      - http:
-          path: instruments/{id}
-          method: get
-          cors: true
-          authorizer: aws_iam
-
   filter:
     handler: filter.main
     tags:
@@ -125,33 +190,6 @@ functions:
       - http:
           path: filter
           method: post
-          cors: true
-          authorizer: aws_iam
-
-  update-photo:
-    handler: update.photo
-    tags:
-      CostCenter: 'Instrument Inventory'
-    events:
-      - http:
-          path: instruments/{id}/photo
-          method: patch
-          cors: true
-          authorizer: aws_iam
-
-  update-full:
-    handler: update.full
-    tags:
-      CostCenter: 'Instrument Inventory'
-    events:
-      - http:
-          path: instruments/{id}
-          method: patch
-          cors: true
-          authorizer: aws_iam
-      - http:
-          path: instruments/{id}
-          method: put
           cors: true
           authorizer: aws_iam
 

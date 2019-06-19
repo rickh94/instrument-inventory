@@ -1,7 +1,9 @@
 import json
 
-from common import setup_airtable, validate_request
+from common import setup_airtable, validate_request, handle_photo, delete_photos
 from responses import failure, success
+from models import InstrumentModel
+import pynamodb.exceptions
 
 
 frontend_backend_field_names = {
@@ -33,33 +35,49 @@ def photo(event, _context):
     if err_response:
         return err_response
     try:
-        rec_id = event["pathParameters"]["id"]
+        id_ = event["pathParameters"]["id"]
     except KeyError:
         return failure("Record ID must be in url", 400)
     try:
-        at = setup_airtable()
-        at.update(rec_id, {"Photo": [{"url": data["photoUrl"]}]})
+        ins = InstrumentModel.get(id_)
+        if ins.photo:
+            delete_photos(ins.photo)
+        new_photo = handle_photo(data["photoUrl"])
+        ins.update(actions=[InstrumentModel.photo.set(new_photo)])
+        ins.save()
         return success({"message": "Photo successfully updated"})
+    except pynamodb.exceptions.DoesNotExist as err:
+        print(err)
+        return failure("Could not find matching item", 404)
     except Exception as err:
-        return failure(f"Something has gone wrong: {err}")
+        print(err)
+        return failure(f"Something has gone wrong")
 
 
 def full(event, _context):
     """Update a full record"""
     data = json.loads(event["body"])
     try:
-        rec_id = event["pathParameters"]["id"]
+        id_ = event["pathParameters"]["id"]
     except KeyError:
         return failure("Please supply id", 400)
-    fields = {}
-    for key, value in data.items():
-        if key in frontend_backend_field_names:
-            fields[to_airtable_name(key)] = value
-    print(fields)
+    actions = []
     try:
-        at = setup_airtable()
-        updated = at.update(rec_id, fields, typecast=True)
-        print(updated)
-        return success({"message": "Update Successful", "item": updated})
+        for key, value in data.items():
+            if key in ["condition", "quality"] and value is not None:
+                value = int(value)
+            field = getattr(InstrumentModel, key)
+            actions.append(field.set(value))
+    except AttributeError as err:
+        print(err)
+        return failure("Unknown field in request", 400)
+    try:
+        ins = InstrumentModel.get(id_)
+        ins.update(actions=actions)
+        ins.save()
+        return success({"message": "Update Successful", "item": ins.attribute_values})
+    except pynamodb.exceptions.DoesNotExist:
+        return failure("Could not find matching item", 404)
     except Exception as err:
-        return failure(f"Something has gone wrong: {err}")
+        print(err)
+        return failure(f"Something has gone wrong")

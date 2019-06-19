@@ -75,6 +75,18 @@ Resources:
                         - '/private/'
                         - '$'
                         - '{cognito-identity.amazonaws.com:sub}/*'
+              - Effect: 'Allow'
+                Action:
+                  - 's3:GetObject'
+                  - 's3:PubObject'
+                  - 's3:DeleteObject'
+                Resource:
+                  - Fn::Join:
+                      - ''
+                      -
+                        - Fn::GetAtt: [PhotosPermanentBucket, Arn]
+                        - '/public/'
+                        - '*'
 
 Outputs:
   IdentityPoolId:

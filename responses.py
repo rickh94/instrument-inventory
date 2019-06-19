@@ -18,3 +18,15 @@ def build_response(status_code, body):
         },
         "body": json.dumps(body),
     }
+
+
+def not_found():
+    return build_response(404, "Could not find matching item")
+
+
+def bad_request(message):
+    return build_response(400, message)
+
+
+def something_has_gone_wrong():
+    return build_response(500, "Something has gone wrong")

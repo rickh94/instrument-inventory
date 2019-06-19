@@ -1,7 +1,9 @@
 import json
 
-from common import setup_airtable, validate_request
+from common import validate_request, handle_photo
 from responses import failure, success
+from models import InstrumentModel
+import uuid
 
 
 def main(event, _context):
@@ -19,35 +21,37 @@ def main(event, _context):
     if err_response:
         return err_response
     try:
-        at = setup_airtable()
-    except Exception as err:
-        return failure(f"Could not connect to airtable: {err}")
-    try:
-        fields = {
-            "Number": data["instrumentNumber"].upper(),
-            "Instrument Type": data["instrumentType"],
-            "Size": data["size"],
-            "Location": data["location"],
-            "Assigned To": data.get("studentName", ""),
-            "Maintenance Notes": data.get("maintenanceNotes", ""),
-            "Condition Notes": data.get("conditionNotes", ""),
-            "Condition": data.get("condition", None),
-            "Quality": data.get("quality", None),
-            "Rosin": data.get("rosin", False),
-            "Bow": data.get("bow", False),
-            "Shoulder Rest/Endpin Rest": data.get("shoulderRestRockStop", False),
-            "Ready To Go": data.get("readyToGo", False),
-            "Gifted to student": data.get("gifted", False),
-            "Photo": [{"url": data.get("photo")}] if data.get("photo") else [],
-        }
-        rec = at.insert(fields)
+        photo_id = None
+        if data.get("photo"):
+            photo_id = handle_photo(data["photo"])
+
+        new_instrument = InstrumentModel(
+            str(uuid.uuid4()),
+            number=data["instrumentNumber"].upper(),
+            type=data["instrumentType"],
+            size=data["size"],
+            location=data["location"],
+            assignedTo=data.get("studentName", None),
+            maintenanceNotes=data.get("maintenanceNotes", None),
+            conditionNotes=data.get("conditionNotes", None),
+            condition=data.get("condition", None),
+            quality=data.get("quality", None),
+            rosin=data.get("rosin", False),
+            bow=data.get("bow", False),
+            shoulderRestEndpinRest=data.get("shoulderRestRockStop", False),
+            ready=data.get("readyToGo", False),
+            gifted=data.get("gifted", False),
+            photo=photo_id,
+        )
+        new_instrument.save()
         return success(
             {
-                "message": f"Instrument {rec['fields']['Number']} created",
-                "item": rec["fields"],
-                "id": rec["id"],
+                "message": f"Instrument {new_instrument.number} created",
+                "item": new_instrument.attribute_values,
+                "id": new_instrument.id,
             },
             201,
         )
     except Exception as err:
-        return failure(f"Something has gone wrong: {err}")
+        print(err)
+        return failure(f"something has gone wrong")

@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from unittest import mock
 
 import pytest
 
@@ -55,109 +56,153 @@ def get_event():
     return read_event("get-event")
 
 
+@pytest.fixture
+def fake_instrument():
+    class FakeInstrument:
+        def __init__(
+            self,
+            id_,
+            number,
+            size,
+            type,
+            location,
+            assignedTo=None,
+            maintenanceNotes=None,
+            conditionNotes=None,
+            condition=None,
+            quality=None,
+            rosin=False,
+            bow=False,
+            shoulderRestEndpinRest=False,
+            ready=False,
+            gifted=False,
+            photo=None,
+            airtableId=None,
+        ):
+            self.id = id_
+            self.number = number
+            self.size = size
+            self.type = type
+            self.location = location
+            self.assignedTo = assignedTo
+            self.maintenanceNotes = maintenanceNotes
+            self.conditionNotes = conditionNotes
+            self.condition = condition
+            self.quality = quality
+            self.rosin = rosin
+            self.bow = bow
+            self.shoulderRestEndpinRest = shoulderRestEndpinRest
+            self.ready = ready
+            self.gifted = gifted
+            self.photo = photo
+            self.airtableId = airtableId
+            self.save = mock.MagicMock()
+            self.update = mock.MagicMock()
+            self.delete = mock.MagicMock()
+
+        @property
+        def attribute_values(self):
+            return {
+                "id": self.id,
+                "number": self.number,
+                "size": self.size,
+                "type": self.type,
+                "location": self.location,
+                "assignedTo": self.assignedTo,
+                "maintenanceNotes": self.maintenanceNotes,
+                "conditionNotes": self.conditionNotes,
+                "quality": self.quality,
+                "rosin": self.rosin,
+                "bow": self.bow,
+                "shouldRestEndpinRest": self.shoulderRestEndpinRest,
+                "ready": self.ready,
+                "gifted": self.gifted,
+                "photo": self.photo,
+                "airtableId": self.airtableId,
+            }
+
+    return FakeInstrument
+
+
 # ----------------- DATA ------------------
 @pytest.fixture
-def records():
+def records(fake_instrument):
     return [
-        {
-            "id": "rec0",
-            "fields": {
-                "Number": "1-605",
-                "Assigned To": "Some Name",
-                "Location": "office",
-                "Size": "4/4",
-                "Instrument Type": "violin",
-            },
-        },
-        {
-            "id": "rec1",
-            "fields": {
-                "Number": "1-601",
-                "Assigned To": "Test Name",
-                "Location": "office",
-                "Size": "4/4",
-                "Instrument Type": "violin",
-            },
-        },
-        {
-            "id": "rec2",
-            "fields": {
-                "Number": "1-602",
-                "Assigned To": "Test Name2",
-                "Location": "Hedgepath Middle School",
-                "Size": "4/4",
-                "Instrument Type": "violin",
-            },
-        },
-        {
-            "id": "rec3",
-            "fields": {
-                "Number": "2-603",
-                "Assigned To": "Random Person",
-                "Location": "Trenton High School",
-                "Size": "1/2",
-                "Instrument Type": "violin",
-            },
-        },
-        {
-            "id": "rec4",
-            "fields": {
-                "Number": "C1-505",
-                "Assigned To": "A cellist",
-                "Location": "Grant Elementary School",
-                "Size": "4/4",
-                "Instrument Type": "cello",
-            },
-        },
-        {
-            "id": "rec5",
-            "fields": {
-                "Number": "V15-502",
-                "Assigned To": "A violist",
-                "Location": "Storage",
-                "Size": '15"',
-                "Instrument Type": "viola",
-            },
-        },
-        {
-            "id": "rec6",
-            "fields": {
-                "Number": "V15-503",
-                "Assigned To": "Another violist",
-                "Location": "Hedgepath Middle School",
-                "Size": '15"',
-                "Instrument Type": "viola",
-            },
-        },
-        {
-            "id": "rec7",
-            "fields": {
-                "Number": "B1-502",
-                "Assigned To": "Bass Player",
-                "Location": "Storage",
-                "Size": "4/4",
-                "Instrument Type": "bass",
-            },
-        },
-        {
-            "id": "rec8",
-            "fields": {
-                "Number": "C2-508",
-                "Assigned To": "Test Name",
-                "Location": "Storage",
-                "Size": "1/2",
-                "Instrument Type": "cello",
-            },
-        },
-        {
-            "id": "rec9",
-            "fields": {
-                "Number": "2-606",
-                "Size": "1/2",
-                "Location": "Storage",
-                "Instrument Type": "violin",
-            },
-        },
+        fake_instrument(
+            id_="id0",
+            number="1-605",
+            assignedTo="Some Name",
+            location="office",
+            size="4/4",
+            type="violin",
+        ),
+        fake_instrument(
+            id_="rec1",
+            number="1-601",
+            assignedTo="Test Name",
+            location="office",
+            size="4/4",
+            type="violin",
+        ),
+        fake_instrument(
+            id_="rec2",
+            number="1-602",
+            assignedTo="Test Name2",
+            location="Hedgepath Middle School",
+            size="4/4",
+            type="violin",
+        ),
+        fake_instrument(
+            id_="rec3",
+            number="2-603",
+            assignedTo="Random Person",
+            location="Trenton High School",
+            size="1/2",
+            type="violin",
+        ),
+        fake_instrument(
+            id_="rec4",
+            number="C1-505",
+            assignedTo="A cellist",
+            location="Grant Elementary School",
+            size="4/4",
+            type="cello",
+        ),
+        fake_instrument(
+            id_="rec5",
+            number="V15-502",
+            assignedTo="A violist",
+            location="Storage",
+            size='15"',
+            type="viola",
+        ),
+        fake_instrument(
+            id_="rec6",
+            number="V15-503",
+            assignedTo="Another violist",
+            location="Hedgepath Middle School",
+            size='15"',
+            type="viola",
+        ),
+        fake_instrument(
+            id_="rec7",
+            number="B1-502",
+            assignedTo="Bass Player",
+            location="Storage",
+            size="4/4",
+            type="bass",
+        ),
+        fake_instrument(
+            id_="rec8",
+            number="C2-508",
+            assignedTo="Test Name",
+            location="Storage",
+            size="1/2",
+            type="cello",
+        ),
+        fake_instrument(
+            id_="rec9", number="2-606", size="1/2", location="Storage", type="violin"
+        ),
     ]
 
 
@@ -179,3 +224,11 @@ def fake_airtable(pages, records):
             return records
 
     return FakeAirtable()
+
+
+@pytest.fixture
+def fake_uuid():
+    def _uuid():
+        return "fakeuuid"
+
+    return _uuid

@@ -8,14 +8,6 @@ from models import TodoModel
 import pynamodb.exceptions
 
 
-@pytest.fixture
-def fake_uuid():
-    def _uuid():
-        return "fakeuuid"
-
-    return _uuid
-
-
 def test_create_todo_full(monkeypatch, fake_uuid):
     """Test creating a to do item"""
     todo_mock = mock.MagicMock()

@@ -4,52 +4,81 @@ from unittest import mock
 import pytest
 
 import get
+from models import InstrumentModel
 
 
-@pytest.fixture
-def rec():
-    return {
-        "id": "reciMq9N5Ry5uNQgf",
-        "fields": {
-            "Number": "1-602",
-            "Maintenance Notes": "test notes",
-            "Photo": [
-                {
-                    "id": "att9fOcsfNqxUarbz",
-                    "url": "https://dl.airtable.com/.attachments/4799cebc7824dd76dad75fb58726fdfd/47f73802/uqKyeMaaAOQ",
-                    "filename": "uqKyeMaaAOQ",
-                    "size": 155408,
-                    "type": "text/html",
-                }
-            ],
-            "Instrument Type": "violin",
-            "Size": "4/4",
-            "Location": "Grant Elementary School",
-            "Ready To Go": True,
-            "Condition": 5,
-            "Assigned To": "Test Name",
-            "Quality": 3,
-            "Condition Notes": "test condition",
-            "Rosin": True,
-            "Bow": True,
-            "Shoulder Rest/Endpin Rest": True,
-            "Gifted to student": True,
-        },
-        "createdTime": "2019-05-24T02:34:47.000Z",
-    }
+def _result_id_set(records):
+    if isinstance(records, str):
+        records = json.loads(records)
+
+    def record_id(rec):
+        if isinstance(rec, dict):
+            return rec["id"]
+        return rec.id
+
+    return {record_id(rec) for rec in records}
 
 
-def test_get_successful(monkeypatch, get_event, rec):
+def test_get_successful(monkeypatch, get_event, fake_instrument):
     """Test getting a single instrument"""
-    at_mock = mock.MagicMock()
-    at_mock.get.return_value = rec
+    instrument_mock = mock.MagicMock()
+    fake_record = fake_instrument(
+        "fakeid",
+        number="123",
+        size="4/4",
+        type="violin",
+        location="office",
+        photo="test-photo.jpg",
+    )
+    instrument_mock.get.return_value = fake_record
 
-    monkeypatch.setattr("get.setup_airtable", lambda: at_mock)
+    def fake_photo_url(photo_name):
+        return {
+            "thumbnail": f"http://fake/thumbnail-{photo_name}",
+            "full": f"http://fake/{photo_name}",
+        }
+
+    monkeypatch.setattr("get.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("get.generate_photo_urls", fake_photo_url)
 
     response = get.main(get_event, {})
 
     assert response["statusCode"] == 200
-    assert response["body"] == json.dumps(rec)
+    expected_result = {
+        field: value for field, value in fake_record.attribute_values.items()
+    }
+    expected_result["photoUrls"] = {
+        "thumbnail": "http://fake/thumbnail-test-photo.jpg",
+        "full": "http://fake/test-photo.jpg",
+    }
+    assert response["body"] == json.dumps(expected_result)
+
+
+def test_get_no_photo_successful(monkeypatch, get_event, fake_instrument):
+    """Test getting a single instrument"""
+    instrument_mock = mock.MagicMock()
+    fake_record = fake_instrument(
+        "fakeid", number="123", size="4/4", type="violin", location="office"
+    )
+    instrument_mock.get.return_value = fake_record
+
+    def fake_photo_url(photo_name):
+        return {
+            "thumbnail": f"http://fake/thumbnail-{photo_name}",
+            "full": f"http://fake/{photo_name}",
+        }
+
+    monkeypatch.setattr("get.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("get.generate_photo_urls", fake_photo_url)
+
+    response = get.main(get_event, {})
+
+    assert response["statusCode"] == 200
+    expected_result = {
+        field: value for field, value in fake_record.attribute_values.items()
+    }
+    expected_result["photoUrls"] = None
+    assert response["body"] == json.dumps(expected_result)
 
 
 def test_get_missing_data():
@@ -59,14 +88,53 @@ def test_get_missing_data():
     assert response["statusCode"] == 404
 
 
-def test_airtable_error(monkeypatch, get_event):
-    """Test airtable error returns 500 server error"""
+def test_not_found(monkeypatch, get_event):
+    """Test 404 return on not found"""
 
-    def at_fail():
-        raise Exception
+    def db_not_found(*args):
+        raise InstrumentModel.DoesNotExist
 
-    monkeypatch.setattr("get.setup_airtable", at_fail)
+    monkeypatch.setattr("get.InstrumentModel.get", db_not_found)
 
     response = get.main(get_event, {})
+
+    assert response["statusCode"] == 404
+
+
+def test_dynamo_fail(monkeypatch, get_event):
+    """Test airtable error returns 500 server error"""
+
+    def db_fail():
+        raise Exception
+
+    monkeypatch.setattr("get.InstrumentModel", db_fail)
+
+    response = get.main(get_event, {})
+
+    assert response["statusCode"] == 500
+
+
+def test_get_all(monkeypatch, records):
+    """Test getting all instruments"""
+    db_mock = mock.MagicMock()
+    db_mock.scan.return_value = records
+    monkeypatch.setattr("get.InstrumentModel", db_mock)
+
+    response = get.all_({}, {})
+
+    db_mock.scan.assert_called()
+
+    assert _result_id_set(response["body"]) == _result_id_set(records)
+
+
+def test_dynamo_error_all(monkeypatch):
+    """Test getting all instruments airtable error"""
+
+    def db_fail():
+        raise Exception
+
+    monkeypatch.setattr("get.InstrumentModel.scan", db_fail)
+
+    response = get.all_({}, {})
 
     assert response["statusCode"] == 500
