@@ -1,6 +1,6 @@
 from lib.responses import failure, success
 from lib.models import InstrumentModel
-from lib.common import generate_photo_urls
+from lib.common import generate_photo_urls, serialize_item
 import pynamodb.exceptions
 
 
@@ -12,7 +12,7 @@ def main(event, _context):
         return failure(f"Please supply id", 404)
     try:
         ins = InstrumentModel.get(id_)
-        result = {field: value for field, value in ins.attribute_values.items()}
+        result = serialize_item(ins)
         result["photoUrls"] = generate_photo_urls(ins.photo) if ins.photo else None
         return success(result)
     except pynamodb.exceptions.DoesNotExist:
@@ -25,7 +25,7 @@ def main(event, _context):
 def all_(_event, _context):
     """Get all the instruments"""
     try:
-        instruments = [ins.attribute_values for ins in InstrumentModel.scan()]
+        instruments = [serialize_item(ins) for ins in InstrumentModel.scan()]
         return success(instruments)
     except Exception as err:
         print(err)

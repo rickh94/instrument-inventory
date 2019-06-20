@@ -1,6 +1,6 @@
 import json
 
-from lib.common import validate_request, handle_photo, delete_photos
+from lib.common import validate_request, handle_photo, delete_photos, serialize_item
 from lib.responses import failure, success
 from lib.models import InstrumentModel
 import pynamodb.exceptions
@@ -53,7 +53,7 @@ def full(event, _context):
         ins = InstrumentModel.get(id_)
         ins.update(actions=actions)
         ins.save()
-        return success({"message": "Update Successful", "item": ins.attribute_values})
+        return success({"message": "Update Successful", "item": serialize_item(ins)})
     except pynamodb.exceptions.DoesNotExist:
         return failure("Could not find matching item", 404)
     except Exception as err:

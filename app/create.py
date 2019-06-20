@@ -2,7 +2,7 @@ import json
 import uuid
 
 
-from lib.common import validate_request, handle_photo
+from lib.common import validate_request, handle_photo, serialize_item
 from lib.responses import failure, success
 from lib.models import InstrumentModel
 
@@ -48,7 +48,7 @@ def main(event, _context):
         return success(
             {
                 "message": f"Instrument {new_instrument.number} created",
-                "item": new_instrument.attribute_values,
+                "item": serialize_item(new_instrument),
                 "id": new_instrument.id,
             },
             201,

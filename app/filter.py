@@ -1,7 +1,8 @@
 import json
 
+from lib.common import serialize_item
 from lib.models import InstrumentModel
-from lib.responses import failure, success, something_has_gone_wrong, bad_request
+from lib.responses import success, something_has_gone_wrong, bad_request
 
 
 def main(event, _context):
@@ -31,7 +32,7 @@ def main(event, _context):
     try:
         found = InstrumentModel.scan(eval(filter_string))
 
-        results_data = [item.attribute_values for item in found]
+        results_data = [serialize_item(item) for item in found]
 
         return success(results_data)
     except Exception as err:

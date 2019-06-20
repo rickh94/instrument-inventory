@@ -1,6 +1,6 @@
 import json
 
-from lib.common import validate_request
+from lib.common import validate_request, serialize_item
 from lib.responses import success, not_found, something_has_gone_wrong
 from lib.models import InstrumentModel
 
@@ -15,7 +15,7 @@ def number(event, _context):
         found_items = InstrumentModel.scan(
             InstrumentModel.number == data["instrumentNumber"]
         )
-        result_data = [item.attribute_values for item in found_items]
+        result_data = [serialize_item(item) for item in found_items]
         if result_data:
             return success(result_data)
         else:
@@ -35,7 +35,7 @@ def assigned(event, _context):
         found_items = InstrumentModel.scan(
             InstrumentModel.assignedTo.contains(data["assignedTo"])
         )
-        result_data = [item.attribute_values for item in found_items]
+        result_data = [serialize_item(item) for item in found_items]
         if result_data:
             return success(result_data)
         else:

@@ -29,6 +29,7 @@ def test_get_successful(monkeypatch, get_event, fake_instrument):
         type="violin",
         location="office",
         photo="test-photo.jpg",
+        history={"Old Owner"},
     )
     instrument_mock.get.return_value = fake_record
 
@@ -47,6 +48,7 @@ def test_get_successful(monkeypatch, get_event, fake_instrument):
     expected_result = {
         field: value for field, value in fake_record.attribute_values.items()
     }
+    expected_result["history"] = ["Old Owner"]
     expected_result["photoUrls"] = {
         "thumbnail": "http://fake/thumbnail-test-photo.jpg",
         "full": "http://fake/test-photo.jpg",

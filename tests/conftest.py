@@ -78,6 +78,7 @@ def fake_instrument():
             gifted=False,
             photo=None,
             airtableId=None,
+            history=None,
         ):
             self.id = id_
             self.number = number
@@ -96,6 +97,7 @@ def fake_instrument():
             self.gifted = gifted
             self.photo = photo
             self.airtableId = airtableId
+            self.history = history
             self.save = mock.MagicMock()
             self.update = mock.MagicMock()
             self.delete = mock.MagicMock()
@@ -120,6 +122,7 @@ def fake_instrument():
                 "gifted": self.gifted,
                 "photo": self.photo,
                 "airtableId": self.airtableId,
+                "history": self.history,
             }
 
     return FakeInstrument
