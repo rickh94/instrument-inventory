@@ -1,7 +1,7 @@
 import json
 
-from common import setup_airtable
-from responses import failure, success
+from models import InstrumentModel
+from responses import failure, success, something_has_gone_wrong, bad_request
 
 
 def main(event, _context):
@@ -10,26 +10,30 @@ def main(event, _context):
     if not any(
         key in data for key in ["instrumentType", "notAssigned", "size", "location"]
     ):
-        return failure(
-            {"errors": "One of instrumentType, assigned, size, location is required"},
-            400,
+        return bad_request(
+            {"errors": "One of instrumentType, assigned, size, location is required"}
         )
     filter_list = []
     if data.get("instrumentType"):
-        filter_list.append("{Instrument Type}='" + data["instrumentType"] + "'")
+        filter_list.append('(InstrumentModel.type == data["instrumentType"])')
     if data.get("size"):
-        filter_list.append("{Size}='" + data["size"] + "'")
+        filter_list.append('(InstrumentModel.size == data["size"])')
     if data.get("location"):
-        filter_list.append("{Location}='" + data["location"] + "'")
+        filter_list.append('(InstrumentModel.location == data["location"])')
     if data.get("notAssigned"):
-        filter_list.append("{Assigned To}=''")
+        filter_list.append(
+            "(InstrumentModel.assignedTo.does_not_exist() | "
+            'InstrumentModel.assignedTo == "")'
+        )
 
-    filter_string = ",".join(filter_list)
+    filter_string = " & ".join(filter_list)
 
     try:
-        at = setup_airtable()
-        results = at.get_all(formula=f"AND({filter_string})")
+        found = InstrumentModel.scan(eval(filter_string))
 
-        return success(results)
+        results_data = [item.attribute_values for item in found]
+
+        return success(results_data)
     except Exception as err:
-        return failure(f"Something has gone wrong: {err}")
+        print(err)
+        return something_has_gone_wrong()
