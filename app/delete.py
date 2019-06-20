@@ -1,6 +1,6 @@
-from models import InstrumentModel
-from responses import something_has_gone_wrong, not_found, bad_request, success
-from common import delete_photos
+from lib.models import InstrumentModel
+from lib.responses import something_has_gone_wrong, not_found, bad_request, success
+from lib.common import delete_photos
 
 import pynamodb.exceptions
 

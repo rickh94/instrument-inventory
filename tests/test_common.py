@@ -1,6 +1,6 @@
 from unittest import mock
 
-import common
+from lib import common
 
 
 def test_generate_photo_urls(monkeypatch):

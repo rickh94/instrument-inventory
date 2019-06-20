@@ -1,9 +1,7 @@
 import json
 from unittest import mock
 
-import pytest
-
-import filter
+from app import filter
 
 
 def _result_id_set(records):
@@ -23,7 +21,7 @@ def test_filter_by_instrument(monkeypatch, records):
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = records[0:2]
 
-    monkeypatch.setattr("filter.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
     event = {"body": json.dumps({"instrumentType": "violin"})}
 
@@ -39,7 +37,7 @@ def test_filter_by_size(monkeypatch, records):
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = records[4:6]
 
-    monkeypatch.setattr("filter.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
     event = {"body": json.dumps({"size": "4/4"})}
 
@@ -55,7 +53,7 @@ def test_filter_by_location(monkeypatch, records):
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = records[6:8]
 
-    monkeypatch.setattr("filter.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
     event = {"body": json.dumps({"location": "office"})}
 
@@ -73,7 +71,7 @@ def test_filter_not_assigned(monkeypatch, records):
 
     event = {"body": json.dumps({"notAssigned": True})}
 
-    monkeypatch.setattr("filter.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
     response = filter.main(event, {})
 
@@ -88,7 +86,7 @@ def test_filter_multiple(monkeypatch, records):
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = [records[7]]
 
-    monkeypatch.setattr("filter.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
     event = {
         "body": json.dumps(

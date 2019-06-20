@@ -1,9 +1,10 @@
 import json
-
-from common import validate_request, handle_photo
-from responses import failure, success
-from models import InstrumentModel
 import uuid
+
+
+from lib.common import validate_request, handle_photo
+from lib.responses import failure, success
+from lib.models import InstrumentModel
 
 
 def main(event, _context):

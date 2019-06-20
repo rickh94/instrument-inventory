@@ -3,8 +3,8 @@ from unittest import mock
 
 import pytest
 
-import get
-from models import InstrumentModel
+from app import get
+from lib.models import InstrumentModel
 
 
 def _result_id_set(records):
@@ -38,8 +38,8 @@ def test_get_successful(monkeypatch, get_event, fake_instrument):
             "full": f"http://fake/{photo_name}",
         }
 
-    monkeypatch.setattr("get.InstrumentModel", instrument_mock)
-    monkeypatch.setattr("get.generate_photo_urls", fake_photo_url)
+    monkeypatch.setattr("app.get.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.get.generate_photo_urls", fake_photo_url)
 
     response = get.main(get_event, {})
 
@@ -68,8 +68,8 @@ def test_get_no_photo_successful(monkeypatch, get_event, fake_instrument):
             "full": f"http://fake/{photo_name}",
         }
 
-    monkeypatch.setattr("get.InstrumentModel", instrument_mock)
-    monkeypatch.setattr("get.generate_photo_urls", fake_photo_url)
+    monkeypatch.setattr("app.get.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.get.generate_photo_urls", fake_photo_url)
 
     response = get.main(get_event, {})
 
@@ -94,7 +94,7 @@ def test_not_found(monkeypatch, get_event):
     def db_not_found(*args):
         raise InstrumentModel.DoesNotExist
 
-    monkeypatch.setattr("get.InstrumentModel.get", db_not_found)
+    monkeypatch.setattr("app.get.InstrumentModel.get", db_not_found)
 
     response = get.main(get_event, {})
 
@@ -107,7 +107,7 @@ def test_dynamo_fail(monkeypatch, get_event):
     def db_fail():
         raise Exception
 
-    monkeypatch.setattr("get.InstrumentModel", db_fail)
+    monkeypatch.setattr("app.get.InstrumentModel", db_fail)
 
     response = get.main(get_event, {})
 
@@ -118,7 +118,7 @@ def test_get_all(monkeypatch, records):
     """Test getting all instruments"""
     db_mock = mock.MagicMock()
     db_mock.scan.return_value = records
-    monkeypatch.setattr("get.InstrumentModel", db_mock)
+    monkeypatch.setattr("app.get.InstrumentModel", db_mock)
 
     response = get.all_({}, {})
 
@@ -133,7 +133,7 @@ def test_dynamo_error_all(monkeypatch):
     def db_fail():
         raise Exception
 
-    monkeypatch.setattr("get.InstrumentModel.scan", db_fail)
+    monkeypatch.setattr("app.get.InstrumentModel.scan", db_fail)
 
     response = get.all_({}, {})
 

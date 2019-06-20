@@ -1,6 +1,6 @@
 from unittest import mock
 
-import sign_out
+from app import sign_out
 
 
 def test_sign_out_successful(monkeypatch, sign_out_event, fake_instrument):
@@ -10,7 +10,7 @@ def test_sign_out_successful(monkeypatch, sign_out_event, fake_instrument):
         "fakeid", number="1-201", size="4/4", type="violin", location="office"
     )
     instrument_mock.scan.return_value = [instrument_item]
-    monkeypatch.setattr("sign_out.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.sign_out.InstrumentModel", instrument_mock)
 
     response = sign_out.main(sign_out_event, {})
 
@@ -34,7 +34,7 @@ def test_sign_out_updates_history(monkeypatch, sign_out_event, fake_instrument):
         assignedTo="Previous Owner",
     )
     instrument_mock.scan.return_value = [instrument_item]
-    monkeypatch.setattr("sign_out.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.sign_out.InstrumentModel", instrument_mock)
 
     response = sign_out.main(sign_out_event, {})
 
@@ -53,7 +53,7 @@ def test_dynamo_raises_error(monkeypatch, sign_out_event):
     def db_mock(*args, **kwargs):
         raise Exception
 
-    monkeypatch.setattr("sign_out.InstrumentModel.scan", db_mock)
+    monkeypatch.setattr("app.sign_out.InstrumentModel.scan", db_mock)
 
     response = sign_out.main(sign_out_event, {})
 
@@ -65,7 +65,7 @@ def test_no_records_match(monkeypatch, sign_out_event):
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = []
 
-    monkeypatch.setattr("sign_out.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.sign_out.InstrumentModel", instrument_mock)
 
     response = sign_out.main(sign_out_event, {})
 

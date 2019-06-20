@@ -56,7 +56,7 @@ provider:
 
 functions:
   create:
-    handler: create.main
+    handler: app.create.main
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -67,7 +67,7 @@ functions:
           authorizer: aws_iam
 
   get:
-    handler: get.main
+    handler: app.get.main
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -78,7 +78,7 @@ functions:
           authorizer: aws_iam
 
   get-all:
-    handler: get.all_
+    handler: app.get.all_
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -89,7 +89,7 @@ functions:
           authorizer: aws_iam
 
   update-photo:
-    handler: update.photo
+    handler: app.update.photo
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -100,7 +100,7 @@ functions:
           authorizer: aws_iam
 
   update-full:
-    handler: update.full
+    handler: app.update.full
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -116,7 +116,7 @@ functions:
           authorizer: aws_iam
 
   delete:
-    handler: delete.main
+    handler: app.delete.main
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -127,7 +127,7 @@ functions:
           authorizer: aws_iam
 
   retrieve-single:
-    handler: retrieve.single
+    handler: app.retrieve.single
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -138,7 +138,7 @@ functions:
           authorizer: aws_iam
 
   retrieve-multiple:
-    handler: retrieve.multiple
+    handler: app.retrieve.multiple
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -149,7 +149,7 @@ functions:
           authorizer: aws_iam
 
   sign-out:
-    handler: sign_out.main
+    handler: app.sign_out.main
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -159,9 +159,8 @@ functions:
           cors: true
           authorizer: aws_iam
 
-
   search-number:
-    handler: search.number
+    handler: app.search.number
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -172,7 +171,7 @@ functions:
           authorizer: aws_iam
 
   search-assigned:
-    handler: search.assigned
+    handler: app.search.assigned
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -183,7 +182,7 @@ functions:
          authorizer: aws_iam
 
   filter:
-    handler: filter.main
+    handler: app.filter.main
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -194,7 +193,7 @@ functions:
           authorizer: aws_iam
 
   todos-create:
-    handler: todos.create
+    handler: app.todos.create
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -205,7 +204,7 @@ functions:
           authorizer: aws_iam
 
   todos-read-single:
-    handler: todos.read_single
+    handler: app.todos.read_single
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -216,7 +215,7 @@ functions:
           authorizer: aws_iam
 
   todos-read-active:
-    handler: todos.read_active
+    handler: app.todos.read_active
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -227,7 +226,7 @@ functions:
           authorizer: aws_iam
 
   todos-read-completed:
-    handler: todos.read_completed
+    handler: app.todos.read_completed
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -238,7 +237,7 @@ functions:
           authorizer: aws_iam
 
   todos-mark-completed:
-    handler: todos.mark_completed
+    handler: app.todos.mark_completed
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -249,7 +248,7 @@ functions:
           authorizer: aws_iam
 
   todos-unmark-completed:
-    handler: todos.unmark_completed
+    handler: app.todos.unmark_completed
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -260,7 +259,7 @@ functions:
           authorizer: aws_iam
 
   todos-update:
-    handler: todos.update
+    handler: app.todos.update
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -276,7 +275,7 @@ functions:
           authorizer: aws_iam
 
   todos-delete:
-    handler: todos.delete
+    handler: app.todos.delete
     tags:
       CostCenter: 'Instrument Inventory'
     events:

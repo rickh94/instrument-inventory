@@ -1,7 +1,7 @@
 import json
 from unittest import mock
 
-import create
+from app import create
 
 
 def test_basic_create_successful(monkeypatch, basic_create_event, fake_uuid):
@@ -13,7 +13,7 @@ def test_basic_create_successful(monkeypatch, basic_create_event, fake_uuid):
     created_item.id = "fakeuuid"
     instrument_mock.return_value = created_item
 
-    monkeypatch.setattr("create.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.create.InstrumentModel", instrument_mock)
     monkeypatch.setattr("uuid.uuid4", fake_uuid)
 
     response = create.main(basic_create_event, {})
@@ -53,9 +53,9 @@ def test_full_create_successful(monkeypatch, full_create_event, fake_uuid):
     handle_photo_mock = mock.MagicMock()
     handle_photo_mock.return_value = "fake_photo.jpg"
 
-    monkeypatch.setattr("create.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.create.InstrumentModel", instrument_mock)
     monkeypatch.setattr("uuid.uuid4", fake_uuid)
-    monkeypatch.setattr("create.handle_photo", handle_photo_mock)
+    monkeypatch.setattr("app.create.handle_photo", handle_photo_mock)
 
     response = create.main(full_create_event, {})
 
@@ -92,7 +92,7 @@ def test_dynamodb_raises_error(monkeypatch, basic_create_event):
     def db_mock():
         raise Exception
 
-    monkeypatch.setattr("create.InstrumentModel", db_mock)
+    monkeypatch.setattr("app.create.InstrumentModel", db_mock)
 
     response = create.main(basic_create_event, {})
 

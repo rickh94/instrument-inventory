@@ -1,10 +1,11 @@
 import json
 import uuid
 
-from common import validate_request
-from models import TodoModel
-from responses import failure, success
 import pynamodb.exceptions
+
+from lib.common import validate_request
+from lib.models import TodoModel
+from lib.responses import failure, success
 
 
 def create(event, _context):

@@ -1,8 +1,8 @@
 import json
 
-from common import validate_request, handle_photo, delete_photos
-from responses import failure, success
-from models import InstrumentModel
+from lib.common import validate_request, handle_photo, delete_photos
+from lib.responses import failure, success
+from lib.models import InstrumentModel
 import pynamodb.exceptions
 
 

@@ -1,6 +1,6 @@
-from responses import failure, success
-from models import InstrumentModel
-from common import generate_photo_urls
+from lib.responses import failure, success
+from lib.models import InstrumentModel
+from lib.common import generate_photo_urls
 import pynamodb.exceptions
 
 

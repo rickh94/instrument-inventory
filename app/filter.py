@@ -1,7 +1,7 @@
 import json
 
-from models import InstrumentModel
-from responses import failure, success, something_has_gone_wrong, bad_request
+from lib.models import InstrumentModel
+from lib.responses import failure, success, something_has_gone_wrong, bad_request
 
 
 def main(event, _context):

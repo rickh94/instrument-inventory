@@ -1,9 +1,8 @@
 import json
 from unittest import mock
 
-import pytest
 
-import search
+from app import search
 
 
 def test_search_number(monkeypatch, records):
@@ -11,7 +10,7 @@ def test_search_number(monkeypatch, records):
     instrument_mock = mock.MagicMock()
     instrument_item = records[0]
     instrument_mock.scan.return_value = [instrument_item]
-    monkeypatch.setattr("search.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.search.InstrumentModel", instrument_mock)
 
     response = search.number({"body": json.dumps({"instrumentNumber": "1-605"})}, {})
 
@@ -25,7 +24,7 @@ def test_search_number_not_found(monkeypatch, search_number_event):
     """Test searching for an instrument number"""
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = []
-    monkeypatch.setattr("search.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.search.InstrumentModel", instrument_mock)
 
     response = search.number(search_number_event, {})
 
@@ -46,7 +45,7 @@ def test_search_assigned(monkeypatch, search_assigned_event, records):
     found = [records[1], records[2], records[8]]
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = found
-    monkeypatch.setattr("search.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.search.InstrumentModel", instrument_mock)
 
     response = search.assigned(search_assigned_event, {})
 

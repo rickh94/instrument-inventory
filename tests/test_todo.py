@@ -3,8 +3,8 @@ from unittest import mock
 
 import pytest
 
-import todos
-from models import TodoModel
+from app import todos
+from lib.models import TodoModel
 import pynamodb.exceptions
 
 
@@ -18,7 +18,7 @@ def test_create_todo_full(monkeypatch, fake_uuid):
     created_item.completed = False
     todo_mock.return_value = created_item
 
-    monkeypatch.setattr("todos.TodoModel", todo_mock)
+    monkeypatch.setattr("app.todos.TodoModel", todo_mock)
     monkeypatch.setattr("uuid.uuid1", fake_uuid)
 
     response = todos.create(
@@ -50,7 +50,7 @@ def test_create_todo_partial(monkeypatch, fake_uuid):
     created_item.completed = False
     todo_mock.return_value = created_item
 
-    monkeypatch.setattr("todos.TodoModel", todo_mock)
+    monkeypatch.setattr("app.todos.TodoModel", todo_mock)
     monkeypatch.setattr("uuid.uuid1", fake_uuid)
 
     response = todos.create(
@@ -95,7 +95,7 @@ def test_read_single(monkeypatch, fake_todo):
     todo_mock = mock.MagicMock()
     todo_mock.get.return_value = fake_todo("test read")
 
-    monkeypatch.setattr("todos.TodoModel", todo_mock)
+    monkeypatch.setattr("app.todos.TodoModel", todo_mock)
 
     response = todos.read_single(
         {
@@ -124,7 +124,7 @@ def test_read_single_no_item(monkeypatch):
     def bad_get(*args):
         raise TodoModel.DoesNotExist
 
-    monkeypatch.setattr("todos.TodoModel.get", bad_get)
+    monkeypatch.setattr("app.todos.TodoModel.get", bad_get)
 
     response = todos.read_single(
         {
@@ -169,7 +169,7 @@ def test_read_active(monkeypatch):
         FakeTodoItem("USER-SUB-1234", "id3", content="test todo 3"),
     ]
 
-    monkeypatch.setattr("todos.TodoModel", fake_todo)
+    monkeypatch.setattr("app.todos.TodoModel", fake_todo)
 
     response = todos.read_active(
         {"requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}}}, {}
@@ -191,7 +191,7 @@ def test_read_active_fails(monkeypatch):
     def explode(*args):
         raise Exception
 
-    monkeypatch.setattr("todos.TodoModel.query", explode)
+    monkeypatch.setattr("app.todos.TodoModel.query", explode)
 
     response = todos.read_active(
         {"requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}}}, {}
@@ -244,7 +244,7 @@ def test_read_complete(monkeypatch, make_fake_todo_item):
         ),
     ]
 
-    monkeypatch.setattr("todos.TodoModel", fake_todo)
+    monkeypatch.setattr("app.todos.TodoModel", fake_todo)
 
     response = todos.read_completed(
         {"requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}}}, {}
@@ -266,7 +266,7 @@ def test_read_complete_fails(monkeypatch):
     def explode(*args):
         raise Exception
 
-    monkeypatch.setattr("todos.TodoModel.query", explode)
+    monkeypatch.setattr("app.todos.TodoModel.query", explode)
 
     response = todos.read_completed(
         {"requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}}}, {}
@@ -283,7 +283,7 @@ def test_mark_item_completed(monkeypatch, make_fake_todo_item):
     )
     fake_todo.get.return_value = todo_item
 
-    monkeypatch.setattr("todos.TodoModel", fake_todo)
+    monkeypatch.setattr("app.todos.TodoModel", fake_todo)
 
     response = todos.mark_completed(
         {
@@ -315,7 +315,7 @@ def test_mark_item_completed_does_not_exist(monkeypatch):
     def get_explode(*args):
         raise pynamodb.exceptions.DoesNotExist
 
-    monkeypatch.setattr("todos.TodoModel.get", get_explode)
+    monkeypatch.setattr("app.todos.TodoModel.get", get_explode)
 
     response = todos.mark_completed(
         {
@@ -336,7 +336,7 @@ def test_unmark_item_completed(monkeypatch, make_fake_todo_item):
     )
     fake_todo.get.return_value = todo_item
 
-    monkeypatch.setattr("todos.TodoModel", fake_todo)
+    monkeypatch.setattr("app.todos.TodoModel", fake_todo)
 
     response = todos.unmark_completed(
         {
@@ -373,7 +373,7 @@ def get_explode():
 def test_unmark_item_completed_does_not_exist(monkeypatch, get_explode):
     """Test id does not exist"""
 
-    monkeypatch.setattr("todos.TodoModel.get", get_explode)
+    monkeypatch.setattr("app.todos.TodoModel.get", get_explode)
 
     response = todos.unmark_completed(
         {
@@ -398,7 +398,7 @@ def test_update_todo_full(monkeypatch, make_fake_todo_item):
     )
     fake_todo.get.return_value = todo_item
 
-    monkeypatch.setattr("todos.TodoModel", fake_todo)
+    monkeypatch.setattr("app.todos.TodoModel", fake_todo)
 
     response = todos.update(
         {
@@ -433,7 +433,7 @@ def test_update_todo_partial(monkeypatch, make_fake_todo_item):
     )
     fake_todo.get.return_value = todo_item
 
-    monkeypatch.setattr("todos.TodoModel", fake_todo)
+    monkeypatch.setattr("app.todos.TodoModel", fake_todo)
 
     response = todos.update(
         {
@@ -463,7 +463,7 @@ def test_update_no_id_bad_request():
 
 def test_update_does_not_exist_not_found(monkeypatch, get_explode):
     """Test returns 404 error if to do item is not found"""
-    monkeypatch.setattr("todos.TodoModel.get", get_explode)
+    monkeypatch.setattr("app.todos.TodoModel.get", get_explode)
 
     response = todos.update(
         {
@@ -489,7 +489,7 @@ def test_delete_todo(monkeypatch, make_fake_todo_item):
     )
     fake_todo.get.return_value = todo_item
 
-    monkeypatch.setattr("todos.TodoModel", fake_todo)
+    monkeypatch.setattr("app.todos.TodoModel", fake_todo)
 
     response = todos.delete(
         {
@@ -514,7 +514,7 @@ def test_delete_todo_bad_request():
 
 def test_delete_todo_not_found(monkeypatch, get_explode):
     """Test delete to do not found returns 404"""
-    monkeypatch.setattr("todos.TodoModel.get", get_explode)
+    monkeypatch.setattr("app.todos.TodoModel.get", get_explode)
 
     response = todos.delete(
         {

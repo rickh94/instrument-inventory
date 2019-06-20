@@ -1,8 +1,8 @@
 import json
 
-from common import validate_request
-from responses import failure, success, something_has_gone_wrong
-from models import InstrumentModel
+from lib.common import validate_request
+from lib.responses import failure, success, something_has_gone_wrong
+from lib.models import InstrumentModel
 
 
 def main(event, _context):

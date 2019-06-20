@@ -1,7 +1,7 @@
 import json
 from unittest import mock
 
-import retrieve
+from app import retrieve
 
 
 def test_retrieve_successful(monkeypatch, retrieve_event, fake_instrument):
@@ -17,7 +17,7 @@ def test_retrieve_successful(monkeypatch, retrieve_event, fake_instrument):
     )
     instrument_mock.scan.return_value = [instrument_item]
 
-    monkeypatch.setattr("retrieve.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.retrieve.InstrumentModel", instrument_mock)
 
     response = retrieve.single(retrieve_event, {})
 
@@ -45,7 +45,7 @@ def test_retrieve_successful_without_assigned_to(
     )
     instrument_mock.scan.return_value = [instrument_item]
 
-    monkeypatch.setattr("retrieve.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.retrieve.InstrumentModel", instrument_mock)
 
     response = retrieve.single(retrieve_event, {})
 
@@ -65,7 +65,7 @@ def test_dynamo_raises_error(monkeypatch, retrieve_event):
     def db_mock(*args, **kwargs):
         raise Exception
 
-    monkeypatch.setattr("retrieve.InstrumentModel.scan", db_mock)
+    monkeypatch.setattr("app.retrieve.InstrumentModel.scan", db_mock)
 
     response = retrieve.single(retrieve_event, {})
 
@@ -77,7 +77,7 @@ def test_no_records_found(monkeypatch, retrieve_event):
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = []
 
-    monkeypatch.setattr("retrieve.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.retrieve.InstrumentModel", instrument_mock)
 
     response = retrieve.single(retrieve_event, {})
 
@@ -88,7 +88,7 @@ def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event, reco
     """Test basic retrieve multiple instruments"""
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = records
-    monkeypatch.setattr("retrieve.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.retrieve.InstrumentModel", instrument_mock)
 
     response = retrieve.multiple(
         {
@@ -157,7 +157,7 @@ def test_retrieve_multiple_some_fail(monkeypatch, records):
     """Test retrieving multiple with some failures"""
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = records
-    monkeypatch.setattr("retrieve.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.retrieve.InstrumentModel", instrument_mock)
 
     response = retrieve.multiple(
         {

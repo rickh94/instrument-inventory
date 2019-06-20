@@ -1,8 +1,8 @@
 import time
 import uuid
 
-from models import InstrumentModel
-from common import setup_airtable, handle_photo
+from lib.models import InstrumentModel
+from lib.common import setup_airtable, handle_photo
 
 at = setup_airtable()
 

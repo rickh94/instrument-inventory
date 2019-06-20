@@ -1,7 +1,7 @@
 from unittest import mock
 
-import delete
-from models import InstrumentModel
+from app import delete
+from lib.models import InstrumentModel
 
 
 def test_delete(monkeypatch, fake_instrument):
@@ -12,7 +12,7 @@ def test_delete(monkeypatch, fake_instrument):
     )
     instrument_mock.get.return_value = instrument_item
 
-    monkeypatch.setattr("delete.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.delete.InstrumentModel", instrument_mock)
 
     response = delete.main({"pathParameters": {"id": "fakeid"}}, {})
 
@@ -36,8 +36,8 @@ def test_delete_associated_photo(monkeypatch, fake_instrument):
     instrument_mock.get.return_value = instrument_item
     delete_photos_mock = mock.MagicMock()
 
-    monkeypatch.setattr("delete.InstrumentModel", instrument_mock)
-    monkeypatch.setattr("delete.delete_photos", delete_photos_mock)
+    monkeypatch.setattr("app.delete.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.delete.delete_photos", delete_photos_mock)
 
     response = delete.main({"pathParameters": {"id": "fakeid"}}, {})
 
@@ -61,7 +61,7 @@ def test_delete_not_found(monkeypatch):
     def explode(*args):
         raise InstrumentModel.DoesNotExist
 
-    monkeypatch.setattr("delete.InstrumentModel.get", explode)
+    monkeypatch.setattr("app.delete.InstrumentModel.get", explode)
 
     response = delete.main({"pathParameters": {"id": "fakeid"}}, {})
 

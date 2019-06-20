@@ -1,10 +1,8 @@
 import json
 from unittest import mock
 
-import pytest
-
-import update
-from models import InstrumentModel
+from app import update
+from lib.models import InstrumentModel
 
 
 def test_add_photo(monkeypatch, fake_instrument):
@@ -17,8 +15,8 @@ def test_add_photo(monkeypatch, fake_instrument):
     handle_photo_mock = mock.MagicMock()
     handle_photo_mock.return_value = "fake_photo.jpg"
 
-    monkeypatch.setattr("update.InstrumentModel", instrument_mock)
-    monkeypatch.setattr("update.handle_photo", handle_photo_mock)
+    monkeypatch.setattr("app.update.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.update.handle_photo", handle_photo_mock)
 
     response = update.photo(
         {
@@ -54,9 +52,9 @@ def test_add_photo_deletes_old_photo(monkeypatch, fake_instrument):
     handle_photo_mock = mock.MagicMock()
     handle_photo_mock.return_value = "fake_photo.jpg"
 
-    monkeypatch.setattr("update.InstrumentModel", instrument_mock)
-    monkeypatch.setattr("update.handle_photo", handle_photo_mock)
-    monkeypatch.setattr("update.delete_photos", delete_photo_mock)
+    monkeypatch.setattr("app.update.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.update.handle_photo", handle_photo_mock)
+    monkeypatch.setattr("app.update.delete_photos", delete_photo_mock)
 
     response = update.photo(
         {
@@ -83,7 +81,7 @@ def test_item_not_found(monkeypatch):
     def db_not_found(*args):
         raise InstrumentModel.DoesNotExist
 
-    monkeypatch.setattr("update.InstrumentModel.get", db_not_found)
+    monkeypatch.setattr("app.update.InstrumentModel.get", db_not_found)
 
     response = update.photo(
         {
@@ -121,7 +119,7 @@ def test_update_full_record(monkeypatch, fake_instrument):
         "fakeid", number="V14-502", size='14"', type="viola", location="Storage"
     )
     instrument_mock.get.return_value = instrument_item
-    monkeypatch.setattr("update.InstrumentModel", instrument_mock)
+    monkeypatch.setattr("app.update.InstrumentModel", instrument_mock)
 
     response = update.full(
         {
@@ -186,7 +184,7 @@ def test_all_item_not_found(monkeypatch):
     def db_not_found(*args):
         raise InstrumentModel.DoesNotExist
 
-    monkeypatch.setattr("update.InstrumentModel.get", db_not_found)
+    monkeypatch.setattr("app.update.InstrumentModel.get", db_not_found)
 
     response = update.full(
         {"body": json.dumps({"number": "1234"}), "pathParameters": {"id": "fakeid"}}, {}
