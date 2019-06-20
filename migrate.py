@@ -7,10 +7,6 @@ from common import setup_airtable, handle_photo
 at = setup_airtable()
 
 
-def get_items():
-    return at.get_all()
-
-
 def main():
     items = at.get_all()
     for item in items:
@@ -47,7 +43,8 @@ def main():
                 history=history,
             )
             new_item.save()
-        except KeyError:
+        except KeyError as err:
+            print(item["fields"].get("Number"), f"not migrated: {err}")
             continue
 
 

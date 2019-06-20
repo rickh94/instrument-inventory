@@ -1,7 +1,7 @@
 import json
 
-from common import setup_airtable, validate_request, move_instrument
-from responses import failure, success, not_found, something_has_gone_wrong
+from common import validate_request
+from responses import success, not_found, something_has_gone_wrong
 from models import InstrumentModel
 
 
