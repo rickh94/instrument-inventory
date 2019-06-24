@@ -40,8 +40,11 @@ def main(event, _context):
         item.save()
         item.refresh()
         return success(
-            f"Instrument {item.number} signed out to {item.assignedTo}"
-            f" at {item.location}"
+            {
+                "message": f"Instrument {item.number} signed out to {item.assignedTo}"
+                f" at {item.location}",
+                "id": item.id,
+            }
         )
     except Exception as err:
         print(err)

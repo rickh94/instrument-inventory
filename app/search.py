@@ -43,3 +43,7 @@ def assigned(event, _context):
     except Exception as err:
         print(err)
         return something_has_gone_wrong()
+
+
+def history(event, _context):
+    pass

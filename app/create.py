@@ -32,7 +32,7 @@ def main(event, _context):
             type=data["instrumentType"],
             size=data["size"],
             location=data["location"],
-            assignedTo=data.get("studentName", None),
+            assignedTo=data.get("assignedTo", None),
             maintenanceNotes=data.get("maintenanceNotes", None),
             conditionNotes=data.get("conditionNotes", None),
             condition=data.get("condition", None),
