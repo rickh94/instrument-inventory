@@ -60,3 +60,23 @@ def test_search_assigned_bad_request():
     response = search.assigned({"body": "{}"}, {})
 
     assert response["statusCode"] == 400
+
+
+def test_search_history(monkeypatch, records):
+    """Test searching for a name in an instrument's history"""
+    found = [records[1], records[2], records[7]]
+    instrument_mock = mock.MagicMock()
+    instrument_mock.scan.return_value = found
+    monkeypatch.setattr("app.search.InstrumentModel", instrument_mock)
+
+    response = search.history({"body": json.dumps({"history": "Test Name"})}, {})
+
+    assert response["statusCode"] == 200
+    assert response["body"] == json.dumps([item.attribute_values for item in found])
+
+
+def test_search_history_bad_request():
+    """Test missing data is bad request"""
+    response = search.history({"body": "{}"}, {})
+
+    assert response["statusCode"] == 400

@@ -181,6 +181,17 @@ functions:
          cors: true
          authorizer: aws_iam
 
+  search-history:
+    handler: app.search.history
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: search/history
+          method: post
+          cors: true
+          authorizer: aws_iam
+
   filter:
     handler: app.filter.main
     tags:

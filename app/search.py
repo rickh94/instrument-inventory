@@ -46,4 +46,20 @@ def assigned(event, _context):
 
 
 def history(event, _context):
-    pass
+    """Find an instrument by its history"""
+    data = json.loads(event["body"])
+    err_response = validate_request(data, {"history": "History"})
+    if err_response:
+        return err_response
+    try:
+        found_items = InstrumentModel.scan(
+            InstrumentModel.history.contains(data["history"])
+        )
+        result_data = [serialize_item(item) for item in found_items]
+        if result_data:
+            return success(result_data)
+        else:
+            return not_found()
+    except Exception as err:
+        print(err)
+        return something_has_gone_wrong()

@@ -68,7 +68,7 @@ def test_full_create_successful(monkeypatch, full_create_event, fake_uuid):
         type="violin",
         size="4/4",
         location="Grant Elementary School",
-        assignedTo="Test Name",
+        assignedTo="Test Student",
         maintenanceNotes="test notes",
         conditionNotes="test condition",
         ready=True,
