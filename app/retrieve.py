@@ -1,6 +1,6 @@
 import json
 
-from lib.common import validate_request
+from lib.common import validate_request, make_new_history
 from lib.responses import success, not_found, something_has_gone_wrong
 from lib.models import InstrumentModel
 
@@ -14,14 +14,17 @@ def single(event, _context):
     if err_response:
         return err_response
     try:
+        # noinspection PyTypeChecker
         found = list(
             InstrumentModel.scan(InstrumentModel.number == data["instrumentNumber"])
         )
         if not found:
             return not_found()
         item = found[0]
-        actions = generate_actions(item)
-        item.update(actions=actions)
+        item.location = "Storage"
+        if item.assignedTo:
+            item.history = make_new_history(item.history, item.assignedTo)
+        item.assignedTo = None
         item.save()
         return success({"message": "Instrument retrieved", "id": item.id})
     except Exception as err:
@@ -59,8 +62,10 @@ def multiple(event, _context):
         return something_has_gone_wrong()
     for ins in scan:
         try:
-            actions = generate_actions(ins)
-            ins.update(actions=actions)
+            ins.location = "Storage"
+            if ins.assignedTo:
+                ins.history = make_new_history(ins.history, ins.assignedTo)
+            ins.assignedTo = None
             ins.save()
             response_body["instrumentsUpdated"].append(ins.number)
         except Exception as err:

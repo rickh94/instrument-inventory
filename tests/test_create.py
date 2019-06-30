@@ -11,6 +11,7 @@ def test_basic_create_successful(monkeypatch, basic_create_event, fake_uuid):
     created_item.attribute_values = {"id": "fakeuuid"}
     created_item.number = "1-601"
     created_item.id = "fakeuuid"
+    created_item.history = None
     instrument_mock.return_value = created_item
 
     monkeypatch.setattr("app.create.InstrumentModel", instrument_mock)
@@ -49,6 +50,7 @@ def test_full_create_successful(monkeypatch, full_create_event, fake_uuid):
     created_item.attribute_values = {"id": "fakeuuid"}
     created_item.number = "1-602"
     created_item.id = "fakeuuid"
+    created_item.history = None
     instrument_mock.return_value = created_item
     handle_photo_mock = mock.MagicMock()
     handle_photo_mock.return_value = "fake_photo.jpg"

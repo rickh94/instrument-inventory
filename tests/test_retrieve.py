@@ -21,11 +21,10 @@ def test_retrieve_successful(monkeypatch, retrieve_event, fake_instrument):
 
     response = retrieve.single(retrieve_event, {})
 
-    instrument_item.update.assert_called()
+    assert instrument_item.assignedTo is None
+    assert instrument_item.location == "Storage"
+    assert instrument_item.history == json.dumps(["Test Student"])
     instrument_item.save.assert_called()
-    instrument_mock.assignedTo.set.assert_called_with(None)
-    instrument_mock.location.set.assert_called_with("Storage")
-    instrument_mock.history.add.assert_called_with({"Test Student"})
 
     assert response["statusCode"] == 200
     assert json.loads(response["body"])["id"] == "fakeid"
@@ -49,11 +48,10 @@ def test_retrieve_successful_without_assigned_to(
 
     response = retrieve.single(retrieve_event, {})
 
-    instrument_item.update.assert_called()
+    assert instrument_item.assignedTo is None
+    assert instrument_item.location == "Storage"
+    assert instrument_item.history is None
     instrument_item.save.assert_called()
-    instrument_mock.assignedTo.set.assert_called_with(None)
-    instrument_mock.location.set.assert_called_with("Storage")
-    instrument_mock.history.add.assert_not_called()
 
     assert response["statusCode"] == 200
     assert json.loads(response["body"])["id"] == "fakeid"
@@ -113,10 +111,9 @@ def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event, reco
     )
 
     for record in records:
-        record.update.assert_called()
+        assert record.assignedTo is None
+        assert record.location == "Storage"
         record.save.assert_called()
-        if record.assignedTo:
-            instrument_mock.history.add.assert_any_call({record.assignedTo})
 
     instrument_mock.number.is_in.assert_called_with(
         "1-605",
@@ -130,8 +127,6 @@ def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event, reco
         "C2-508",
         "2-606",
     )
-    instrument_mock.assignedTo.set.assert_called_with(None)
-    instrument_mock.location.set.assert_called_with("Storage")
 
     assert response["statusCode"] == 200
     assert response["body"] == json.dumps(

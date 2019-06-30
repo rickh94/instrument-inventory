@@ -29,7 +29,7 @@ def test_get_successful(monkeypatch, get_event, fake_instrument):
         type="violin",
         location="office",
         photo="test-photo.jpg",
-        history={"Old Owner"},
+        history=json.dumps(["Old Owner"]),
     )
     instrument_mock.get.return_value = fake_record
 

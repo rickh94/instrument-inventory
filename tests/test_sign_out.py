@@ -14,10 +14,13 @@ def test_sign_out_successful(monkeypatch, sign_out_event, fake_instrument):
 
     response = sign_out.main(sign_out_event, {})
 
-    instrument_item.update.assert_called()
+    instrument_mock.number.__eq__.assert_called_with("1-201")
+
+    assert instrument_item.assignedTo == "Test Student"
+    assert instrument_item.location == "Grant Elementary School"
+
     instrument_item.save.assert_called()
-    instrument_mock.assignedTo.set.assert_called_with("Test Student")
-    instrument_mock.location.set.assert_called_with("Grant Elementary School")
+    instrument_item.refresh.assert_called()
 
     assert response["statusCode"] == 200
 
@@ -38,11 +41,14 @@ def test_sign_out_updates_history(monkeypatch, sign_out_event, fake_instrument):
 
     response = sign_out.main(sign_out_event, {})
 
-    instrument_item.update.assert_called()
+    instrument_mock.number.__eq__.assert_called_with("1-201")
+
+    assert instrument_item.assignedTo == "Test Student"
+    assert instrument_item.location == "Grant Elementary School"
+    assert "Previous Owner" in instrument_item.history
+
     instrument_item.save.assert_called()
-    instrument_mock.assignedTo.set.assert_called_with("Test Student")
-    instrument_mock.location.set.assert_called_with("Grant Elementary School")
-    instrument_mock.history.add.assert_called_with({"Previous Owner"})
+    instrument_item.refresh.assert_called()
 
     assert response["statusCode"] == 200
 
@@ -68,5 +74,7 @@ def test_no_records_match(monkeypatch, sign_out_event):
     monkeypatch.setattr("app.sign_out.InstrumentModel", instrument_mock)
 
     response = sign_out.main(sign_out_event, {})
+
+    instrument_mock.number.__eq__.assert_called_with("1-201")
 
     assert response["statusCode"] == 404

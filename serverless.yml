@@ -9,8 +9,9 @@ custom:
     dockerizePip: true
   stage: ${opt:stage, self:provider.stage}
   environment: ${file(env.yml):${self:custom.stage}, file(env.yml):default}
-  todosTableName: ${self:custom.stage}-instrument-inventory-todos
-  instrumentsTableName: ${self:custom.stage}-instrument-inventory-instruments
+  tableNames:
+    todos: ${self:custom.stage}-instrument-inventory-todos
+    instruments: ${self:custom.stage}-instrument-inventory-instruments
   photosPermanentBucketName: ${self:custom.stage}-instrument-inventory-permanent-photos
   tableThroughputs:
     prod: 5
@@ -26,9 +27,9 @@ provider:
     TABLE_NAME: ${self:custom.environment.table_name}
     AIRTABLE_BASE_KEY: ${self:custom.environment.base_key}
     AIRTABLE_API_KEY: ${self:custom.environment.api_key}
-    TODOS_TABLE_NAME: ${self:custom.todosTableName}
+    TODOS_TABLE_NAME: ${self:custom.tableNames.todos}
     PHOTOS_BUCKET_NAME: ${self:custom.photosPermanentBucketName}
-    INSTRUMENTS_TABLE_NAME: ${self:custom.instrumentsTableName}
+    INSTRUMENTS_TABLE_NAME: ${self:custom.tableNames.instruments}
 
   iamRoleStatements:
     - Effect: Allow
@@ -188,6 +189,17 @@ functions:
     events:
       - http:
           path: search/history
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  search-assigned-history:
+    handler: app.search.history_and_assigned
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: search/assigned-history
           method: post
           cors: true
           authorizer: aws_iam

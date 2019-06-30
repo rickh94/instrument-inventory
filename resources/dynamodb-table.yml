@@ -2,7 +2,7 @@ Resources:
   TodosTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: ${self:custom.todosTableName}
+      TableName: ${self:custom.tableNames.todos}
       AttributeDefinitions:
         - AttributeName: userId
           AttributeType: S
@@ -23,7 +23,7 @@ Resources:
   InstrumentsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: ${self:custom.instrumentsTableName}
+      TableName: ${self:custom.tableNames.instruments}
       AttributeDefinitions:
         - AttributeName: id
           AttributeType: S

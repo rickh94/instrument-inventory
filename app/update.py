@@ -20,8 +20,7 @@ def photo(event, _context):
         ins = InstrumentModel.get(id_)
         if ins.photo:
             delete_photos(ins.photo)
-        new_photo = handle_photo(data["photoUrl"])
-        ins.update(actions=[InstrumentModel.photo.set(new_photo)])
+        ins.photo = handle_photo(data["photoUrl"])
         ins.save()
         return success({"message": "Photo successfully updated"})
     except pynamodb.exceptions.DoesNotExist as err:

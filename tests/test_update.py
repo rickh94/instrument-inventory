@@ -29,8 +29,8 @@ def test_add_photo(monkeypatch, fake_instrument):
     handle_photo_mock.assert_called_with("http://example.com/image.jpg")
 
     instrument_mock.get.assert_called_with("fakeid")
-    instrument_mock.photo.set.assert_called_with("fake_photo.jpg")
-    instrument_item.update.assert_called()
+    assert instrument_item.photo == "fake_photo.jpg"
+
     instrument_item.save.assert_called()
 
     assert response["statusCode"] == 200
@@ -68,8 +68,8 @@ def test_add_photo_deletes_old_photo(monkeypatch, fake_instrument):
     delete_photo_mock.assert_called_with("old_photo.jpg")
 
     instrument_mock.get.assert_called_with("fakeid")
-    instrument_mock.photo.set.assert_called_with("fake_photo.jpg")
-    instrument_item.update.assert_called()
+    assert instrument_item.photo == "fake_photo.jpg"
+
     instrument_item.save.assert_called()
 
     assert response["statusCode"] == 200

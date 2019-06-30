@@ -1,3 +1,4 @@
+import json
 import time
 import uuid
 
@@ -15,10 +16,9 @@ def main():
         photo_key = None
         if item["fields"].get("Photo"):
             photo_key = handle_photo(item["fields"]["Photo"][0]["url"])
-        print(photo_key)
         history = None
         if item["fields"].get("History"):
-            history = set(item["fields"]["History"].split(", "))
+            history = json.dumps(item["fields"]["History"].split(", "))
         try:
             new_item = InstrumentModel(
                 str(uuid.uuid4()),
