@@ -9,10 +9,10 @@ pytest = "*"
 pytest-cov = "*"
 pytest-freezegun = "*"
 ptpython = "*"
+airtable-python-wrapper = "*"
 
 [packages]
 requests = "*"
-airtable-python-wrapper = "*"
 pynamodb = "*"
 boto3 = "*"
 pillow = "*"

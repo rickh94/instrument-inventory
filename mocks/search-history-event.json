@@ -1,5 +1,5 @@
 {
-  "body": "{\"history\":\"Test Name\"}",
+  "body": "{\"term\":\"Test Name\"}",
   "requestContext": {
     "identity": {
       "cognitoIdentityId": "USER-SUB-1234"

@@ -1,9 +1,19 @@
 import json
+import os
 import time
 import uuid
 
+from airtable import Airtable
+
 from lib.models import InstrumentModel
-from lib.common import setup_airtable, handle_photo
+from lib.common import handle_photo
+
+
+def setup_airtable():
+    base_key = os.environ.get("AIRTABLE_BASE_KEY")
+    table_name = os.environ.get("TABLE_NAME")
+    return Airtable(base_key, table_name)
+
 
 at = setup_airtable()
 

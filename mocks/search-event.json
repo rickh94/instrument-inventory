@@ -1,5 +1,5 @@
 {
-  "body": "{\"instrumentNumber\":\"1-201\"}",
+  "body": "{\"term\":\"1-201\"}",
   "requestContext": {
     "identity": {
       "cognitoIdentityId": "USER-SUB-1234"

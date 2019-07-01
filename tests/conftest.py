@@ -216,21 +216,6 @@ def pages(records):
 
 
 @pytest.fixture
-def fake_airtable(pages, records):
-    class FakeAirtable:
-        @staticmethod
-        def get_iter():
-            for page in pages:
-                yield page
-
-        @staticmethod
-        def get_all(**kwargs):
-            return records
-
-    return FakeAirtable()
-
-
-@pytest.fixture
 def fake_uuid():
     def _uuid():
         return "fakeuuid"

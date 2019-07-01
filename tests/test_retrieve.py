@@ -58,7 +58,7 @@ def test_retrieve_successful_without_assigned_to(
 
 
 def test_dynamo_raises_error(monkeypatch, retrieve_event):
-    """Test airtable raising an error"""
+    """Test dynamodb raising an error"""
 
     def db_mock(*args, **kwargs):
         raise Exception

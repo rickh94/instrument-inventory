@@ -8,14 +8,12 @@ from lib.models import InstrumentModel
 def number(event, _context):
     """Find an instrument by number"""
     data = json.loads(event["body"])
-    err_response = validate_request(data, {"instrumentNumber": "Instrument Number"})
+    err_response = validate_request(data, {"term": "Search Term"})
     if err_response:
         return err_response
     try:
         # noinspection PyTypeChecker
-        found_items = InstrumentModel.scan(
-            InstrumentModel.number == data["instrumentNumber"]
-        )
+        found_items = InstrumentModel.scan(InstrumentModel.number == data["term"])
         result_data = [serialize_item(item) for item in found_items]
         if result_data:
             return success(result_data)
@@ -29,12 +27,12 @@ def number(event, _context):
 def assigned(event, _context):
     """Find an instrument by who it's assigned to"""
     data = json.loads(event["body"])
-    err_response = validate_request(data, {"assignedTo": "Assigned To"})
+    err_response = validate_request(data, {"term": "Search Term"})
     if err_response:
         return err_response
     try:
         found_items = InstrumentModel.scan(
-            InstrumentModel.assignedTo.contains(data["assignedTo"])
+            InstrumentModel.assignedTo.contains(data["term"])
         )
         result_data = [serialize_item(item) for item in found_items]
         if result_data:
@@ -49,12 +47,12 @@ def assigned(event, _context):
 def history(event, _context):
     """Find an instrument by its history"""
     data = json.loads(event["body"])
-    err_response = validate_request(data, {"history": "History"})
+    err_response = validate_request(data, {"term": "Term"})
     if err_response:
         return err_response
     try:
         found_items = InstrumentModel.scan(
-            InstrumentModel.history.contains(data["history"])
+            InstrumentModel.history.contains(data["term"])
         )
         result_data = [serialize_item(item) for item in found_items]
         if result_data:

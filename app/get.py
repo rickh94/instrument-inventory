@@ -5,7 +5,7 @@ import pynamodb.exceptions
 
 
 def main(event, _context):
-    """Get a record from airtable"""
+    """Get an instrument"""
     try:
         id_ = event["pathParameters"]["id"]
     except KeyError:

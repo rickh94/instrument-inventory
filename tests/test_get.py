@@ -104,7 +104,7 @@ def test_not_found(monkeypatch, get_event):
 
 
 def test_dynamo_fail(monkeypatch, get_event):
-    """Test airtable error returns 500 server error"""
+    """Test dynamodb error returns 500 server error"""
 
     def db_fail():
         raise Exception
@@ -130,7 +130,7 @@ def test_get_all(monkeypatch, records):
 
 
 def test_dynamo_error_all(monkeypatch):
-    """Test getting all instruments airtable error"""
+    """Test getting all instruments dyanmodb error"""
 
     def db_fail():
         raise Exception
