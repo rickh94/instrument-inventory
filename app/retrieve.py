@@ -1,8 +1,8 @@
 import json
 
-from lib.common import validate_request, make_new_history
-from lib.responses import success, not_found, something_has_gone_wrong
-from lib.models import InstrumentModel
+from app.lib.common import validate_request, make_new_history
+from app.lib.responses import success, not_found, something_has_gone_wrong
+from app.lib.models import InstrumentModel
 
 
 def single(event, _context):

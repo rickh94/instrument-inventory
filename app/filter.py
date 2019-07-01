@@ -1,8 +1,8 @@
 import json
 
-from lib.common import serialize_item
-from lib.models import InstrumentModel
-from lib.responses import success, something_has_gone_wrong, bad_request
+from app.lib.common import serialize_item
+from app.lib.models import InstrumentModel
+from app.lib.responses import success, something_has_gone_wrong, bad_request
 
 
 def main(event, _context):

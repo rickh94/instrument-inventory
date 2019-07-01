@@ -2,9 +2,9 @@ import json
 import uuid
 
 
-from lib.common import validate_request, handle_photo, serialize_item
-from lib.responses import failure, success
-from lib.models import InstrumentModel
+from app.lib.common import validate_request, handle_photo, serialize_item
+from app.lib.responses import failure, success
+from app.lib.models import InstrumentModel
 
 
 def main(event, _context):

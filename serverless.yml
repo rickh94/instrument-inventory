@@ -2,7 +2,6 @@ service: instrument-inventory
 
 plugins:
   - serverless-python-requirements
-  - serverless-offline
 
 custom:
   pythonRequirements:
@@ -20,23 +19,9 @@ custom:
 
 package:
   exclude:
-    - yarn.lock
-    - mocks/**
-    - env.yml
-    - node_modules/**
-    - resources/**
-    - tests/**
-    - Justfile
-    - migrate.py
-    - package.json
-    - Pipfile
-    - Pipfile.lock
-    - pyproject.toml
-    - serverless.yml
-    - .vscode/**
-    - .pre-commit-config.yaml
-    - .pytest_cache/**
-    - .idea/**
+    - ./**
+  include:
+    - app/**
 
 provider:
   name: aws

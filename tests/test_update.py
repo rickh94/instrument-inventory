@@ -2,7 +2,7 @@ import json
 from unittest import mock
 
 from app import update
-from lib.models import InstrumentModel
+from app.lib.models import InstrumentModel
 
 
 def test_add_photo(monkeypatch, fake_instrument):

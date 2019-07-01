@@ -1,10 +1,8 @@
 import json
 from unittest import mock
 
-import pytest
-
 from app import get
-from lib.models import InstrumentModel
+from app.lib.models import InstrumentModel
 
 
 def _result_id_set(records):

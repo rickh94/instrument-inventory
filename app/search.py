@@ -1,8 +1,8 @@
 import json
 
-from lib.common import validate_request, serialize_item
-from lib.responses import success, not_found, something_has_gone_wrong, bad_request
-from lib.models import InstrumentModel
+from app.lib.common import validate_request, serialize_item
+from app.lib.responses import success, not_found, something_has_gone_wrong, bad_request
+from app.lib.models import InstrumentModel
 
 
 def number(event, _context):

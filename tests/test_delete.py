@@ -1,7 +1,7 @@
 from unittest import mock
 
 from app import delete
-from lib.models import InstrumentModel
+from app.lib.models import InstrumentModel
 
 
 def test_delete(monkeypatch, fake_instrument):

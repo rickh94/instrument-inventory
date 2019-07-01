@@ -1,6 +1,6 @@
-from lib.responses import failure, success
-from lib.models import InstrumentModel
-from lib.common import generate_photo_urls, serialize_item
+from app.lib.responses import failure, success
+from app.lib.models import InstrumentModel
+from app.lib.common import generate_photo_urls, serialize_item
 import pynamodb.exceptions
 
 

@@ -3,9 +3,9 @@ import uuid
 
 import pynamodb.exceptions
 
-from lib.common import validate_request
-from lib.models import TodoModel
-from lib.responses import failure, success
+from app.lib.common import validate_request
+from app.lib.models import TodoModel
+from app.lib.responses import failure, success
 
 
 def create(event, _context):

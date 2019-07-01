@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 
 from app import todos
-from lib.models import TodoModel
+from app.lib.models import TodoModel
 import pynamodb.exceptions
 
 
