@@ -1,5 +1,3 @@
-import uuid
-
 from app.lib.common import handle_photo, serialize_item
 from app.lib.decorators import something_might_go_wrong, load_and_validate
 from app.lib.models import InstrumentModel

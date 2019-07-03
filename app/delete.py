@@ -1,17 +1,13 @@
 from app.lib.common import delete_photos
-from app.lib.decorators import something_might_go_wrong
+from app.lib.decorators import something_might_go_wrong, get_id_from_path
 from app.lib.models import InstrumentModel
 from app.lib.responses import bad_request, success
 
 
 @something_might_go_wrong
-def main(event, _context):
+@get_id_from_path
+def main(id_):
     """Delete an instrument"""
-    try:
-        id_ = event["pathParameters"]["id"]
-    except KeyError:
-        return bad_request("ID is required in path")
-
     item = InstrumentModel.get(id_)
     if getattr(item, "photo", None):
         delete_photos(item.photo)

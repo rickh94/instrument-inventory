@@ -1,6 +1,6 @@
 import json
 
-from app.lib.decorators import something_might_go_wrong, load_and_validate, get_ids
+from app.lib.decorators import something_might_go_wrong, load_and_validate, get_todo_ids
 from app.lib.models import TodoModel
 from app.lib.responses import success
 
@@ -30,7 +30,7 @@ def create(data, identity_id):
 
 
 @something_might_go_wrong
-@get_ids
+@get_todo_ids
 def read_single(user_id, todo_id, _):
     """Get a single to do item"""
     item = TodoModel.get(user_id, todo_id)
@@ -71,21 +71,21 @@ def _modify_completed(user_id, todo_id, set_to):
 
 
 @something_might_go_wrong
-@get_ids
+@get_todo_ids
 def mark_completed(user_id, todo_id, _):
     """Mark an item as completed"""
     return _modify_completed(user_id, todo_id, True)
 
 
 @something_might_go_wrong
-@get_ids
+@get_todo_ids
 def unmark_completed(user_id, todo_id, _):
     """Mark an to do item as not complete"""
     return _modify_completed(user_id, todo_id, False)
 
 
 @something_might_go_wrong
-@get_ids
+@get_todo_ids
 def update(user_id, todo_id, event):
     """Update the content or instrument of a to do item"""
     data = json.loads(event["body"])
@@ -100,7 +100,7 @@ def update(user_id, todo_id, event):
 
 
 @something_might_go_wrong
-@get_ids
+@get_todo_ids
 def delete(user_id, todo_id, _):
     """Delete a to do item"""
     item = TodoModel.get(user_id, todo_id)

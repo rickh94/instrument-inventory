@@ -85,7 +85,7 @@ def test_get_missing_data():
     """Test missing data returns 400 bad request"""
     response = get.main({"pathParameters": {}}, {})
 
-    assert response["statusCode"] == 404
+    assert response["statusCode"] == 400
 
 
 def test_not_found(monkeypatch, get_event):
