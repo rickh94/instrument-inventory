@@ -16,6 +16,7 @@ custom:
     prod: 5
     default: 1
   tableThroughput: ${self:custom.tableThroughputs.${self:custom.stage}, self:custom.tableThroughputs.default}
+  nothing: "nothing"
 
 package:
   exclude:
@@ -29,9 +30,9 @@ provider:
   stage: dev
   region: us-east-1
   environment:
-    TABLE_NAME: ${self:custom.environment.table_name}
-    AIRTABLE_BASE_KEY: ${self:custom.environment.base_key}
-    AIRTABLE_API_KEY: ${self:custom.environment.api_key}
+    TABLE_NAME: ${self:custom.environment.table_name, self:custom.nothing}
+    AIRTABLE_BASE_KEY: ${self:custom.environment.base_key, self:custom.nothing}
+    AIRTABLE_API_KEY: ${self:custom.environment.api_key, self:custom.nothing}
     TODOS_TABLE_NAME: ${self:custom.tableNames.todos}
     PHOTOS_BUCKET_NAME: ${self:custom.photosPermanentBucketName}
     INSTRUMENTS_TABLE_NAME: ${self:custom.tableNames.instruments}
