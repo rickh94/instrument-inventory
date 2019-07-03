@@ -213,11 +213,3 @@ def records(fake_instrument):
 @pytest.fixture
 def pages(records):
     return [records[0:4], records[4:8], records[8:10]]
-
-
-@pytest.fixture
-def fake_uuid():
-    def _uuid():
-        return "fakeuuid"
-
-    return _uuid

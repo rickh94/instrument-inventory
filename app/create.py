@@ -22,7 +22,6 @@ def main(data):
         photo_id = handle_photo(data["photo"])
 
     new_instrument = InstrumentModel(
-        str(uuid.uuid4()),
         number=data["instrumentNumber"].upper(),
         type=data["instrumentType"],
         size=data["size"],

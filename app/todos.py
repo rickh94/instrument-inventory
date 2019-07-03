@@ -1,5 +1,4 @@
 import json
-import uuid
 
 from app.lib.decorators import something_might_go_wrong, load_and_validate, get_ids
 from app.lib.models import TodoModel
@@ -12,7 +11,6 @@ def create(data, identity_id):
     """Create a new to do in the database"""
     new_todo = TodoModel(
         identity_id,
-        str(uuid.uuid1()),
         content=data["content"],
         relevantInstrument=data.get("relevantInstrument", None),
     )

@@ -12,7 +12,6 @@ ptpython = "*"
 airtable-python-wrapper = "*"
 
 [packages]
-requests = "*"
 pynamodb = "*"
 boto3 = "*"
 pillow = "*"

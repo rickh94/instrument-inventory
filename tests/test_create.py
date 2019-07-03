@@ -4,7 +4,7 @@ from unittest import mock
 from app import create
 
 
-def test_basic_create_successful(monkeypatch, basic_create_event, fake_uuid):
+def test_basic_create_successful(monkeypatch, basic_create_event):
     """Test a minimal create"""
     instrument_mock = mock.MagicMock()
     created_item = mock.MagicMock()
@@ -15,12 +15,10 @@ def test_basic_create_successful(monkeypatch, basic_create_event, fake_uuid):
     instrument_mock.return_value = created_item
 
     monkeypatch.setattr("app.create.InstrumentModel", instrument_mock)
-    monkeypatch.setattr("uuid.uuid4", fake_uuid)
 
     response = create.main(basic_create_event, {})
 
     instrument_mock.assert_called_with(
-        "fakeuuid",
         number="1-601",
         type="violin",
         size="4/4",
@@ -43,7 +41,7 @@ def test_basic_create_successful(monkeypatch, basic_create_event, fake_uuid):
     assert response["statusCode"] == 201
 
 
-def test_full_create_successful(monkeypatch, full_create_event, fake_uuid):
+def test_full_create_successful(monkeypatch, full_create_event):
     """Test full create full"""
     instrument_mock = mock.MagicMock()
     created_item = mock.MagicMock()
@@ -56,7 +54,6 @@ def test_full_create_successful(monkeypatch, full_create_event, fake_uuid):
     handle_photo_mock.return_value = "fake_photo.jpg"
 
     monkeypatch.setattr("app.create.InstrumentModel", instrument_mock)
-    monkeypatch.setattr("uuid.uuid4", fake_uuid)
     monkeypatch.setattr("app.create.handle_photo", handle_photo_mock)
 
     response = create.main(full_create_event, {})
@@ -65,7 +62,6 @@ def test_full_create_successful(monkeypatch, full_create_event, fake_uuid):
         "https://unsplash.com/photos/uqKyeMaaAOQ/download?force=true"
     )
     instrument_mock.assert_called_with(
-        "fakeuuid",
         number="1-602",
         type="violin",
         size="4/4",

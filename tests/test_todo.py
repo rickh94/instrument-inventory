@@ -8,18 +8,17 @@ from app.lib.models import TodoModel
 import pynamodb.exceptions
 
 
-def test_create_todo_full(monkeypatch, fake_uuid):
+def test_create_todo_full(monkeypatch):
     """Test creating a to do item"""
     todo_mock = mock.MagicMock()
     created_item = mock.MagicMock()
-    created_item.todoId = ("fakeuuid",)
+    created_item.todoId = "fakeuuid"
     created_item.content = "test content"
     created_item.relevantInstrument = "1-610"
     created_item.completed = False
     todo_mock.return_value = created_item
 
     monkeypatch.setattr("app.todos.TodoModel", todo_mock)
-    monkeypatch.setattr("uuid.uuid1", fake_uuid)
 
     response = todos.create(
         {
@@ -32,7 +31,7 @@ def test_create_todo_full(monkeypatch, fake_uuid):
     )
 
     todo_mock.assert_called_with(
-        "USER-SUB-1234", "fakeuuid", content="test content", relevantInstrument="1-610"
+        "USER-SUB-1234", content="test content", relevantInstrument="1-610"
     )
 
     created_item.save.assert_called()
@@ -40,18 +39,17 @@ def test_create_todo_full(monkeypatch, fake_uuid):
     assert response["statusCode"] == 201
 
 
-def test_create_todo_partial(monkeypatch, fake_uuid):
+def test_create_todo_partial(monkeypatch):
     """Test creating a partial to do item"""
     todo_mock = mock.MagicMock()
     created_item = mock.MagicMock()
-    created_item.todoId = ("fakeuuid",)
+    created_item.todoId = "fakeuuid"
     created_item.content = "test content"
     created_item.relevantInstrument = None
     created_item.completed = False
     todo_mock.return_value = created_item
 
     monkeypatch.setattr("app.todos.TodoModel", todo_mock)
-    monkeypatch.setattr("uuid.uuid1", fake_uuid)
 
     response = todos.create(
         {
@@ -62,7 +60,7 @@ def test_create_todo_partial(monkeypatch, fake_uuid):
     )
 
     todo_mock.assert_called_with(
-        "USER-SUB-1234", "fakeuuid", content="test content", relevantInstrument=None
+        "USER-SUB-1234", content="test content", relevantInstrument=None
     )
 
     created_item.save.assert_called()
