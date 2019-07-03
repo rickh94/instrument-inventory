@@ -1,58 +1,50 @@
-import json
 import uuid
 
-
-from app.lib.common import validate_request, handle_photo, serialize_item
-from app.lib.responses import failure, success
+from app.lib.common import handle_photo, serialize_item
+from app.lib.decorators import something_might_go_wrong, load_and_validate
 from app.lib.models import InstrumentModel
+from app.lib.responses import success
+
+required_fields = {
+    "instrumentNumber": "Instrument Number",
+    "instrumentType": "Instrument Type",
+    "location": "Location",
+    "size": "Size",
+}
 
 
-def main(event, _context):
+@something_might_go_wrong
+@load_and_validate(required_fields)
+def main(data):
     """Create a new instrument"""
-    data = json.loads(event["body"])
-    err_response = validate_request(
-        body=data,
-        required_fields={
-            "instrumentNumber": "Instrument Number",
-            "instrumentType": "Instrument Type",
-            "location": "Location",
-            "size": "Size",
-        },
-    )
-    if err_response:
-        return err_response
-    try:
-        photo_id = None
-        if data.get("photo"):
-            photo_id = handle_photo(data["photo"])
+    photo_id = None
+    if data.get("photo"):
+        photo_id = handle_photo(data["photo"])
 
-        new_instrument = InstrumentModel(
-            str(uuid.uuid4()),
-            number=data["instrumentNumber"].upper(),
-            type=data["instrumentType"],
-            size=data["size"],
-            location=data["location"],
-            assignedTo=data.get("assignedTo", None),
-            maintenanceNotes=data.get("maintenanceNotes", None),
-            conditionNotes=data.get("conditionNotes", None),
-            condition=data.get("condition", None),
-            quality=data.get("quality", None),
-            rosin=data.get("rosin", False),
-            bow=data.get("bow", False),
-            shoulderRestEndpinRest=data.get("shoulderRestRockStop", False),
-            ready=data.get("readyToGo", False),
-            gifted=data.get("gifted", False),
-            photo=photo_id,
-        )
-        new_instrument.save()
-        return success(
-            {
-                "message": f"Instrument {new_instrument.number} created",
-                "item": serialize_item(new_instrument),
-                "id": new_instrument.id,
-            },
-            201,
-        )
-    except Exception as err:
-        print(err)
-        return failure(f"something has gone wrong")
+    new_instrument = InstrumentModel(
+        str(uuid.uuid4()),
+        number=data["instrumentNumber"].upper(),
+        type=data["instrumentType"],
+        size=data["size"],
+        location=data["location"],
+        assignedTo=data.get("assignedTo", None),
+        maintenanceNotes=data.get("maintenanceNotes", None),
+        conditionNotes=data.get("conditionNotes", None),
+        condition=data.get("condition", None),
+        quality=data.get("quality", None),
+        rosin=data.get("rosin", False),
+        bow=data.get("bow", False),
+        shoulderRestEndpinRest=data.get("shoulderRestRockStop", False),
+        ready=data.get("readyToGo", False),
+        gifted=data.get("gifted", False),
+        photo=photo_id,
+    )
+    new_instrument.save()
+    return success(
+        {
+            "message": f"Instrument {new_instrument.number} created",
+            "item": serialize_item(new_instrument),
+            "id": new_instrument.id,
+        },
+        201,
+    )

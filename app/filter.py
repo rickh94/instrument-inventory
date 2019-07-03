@@ -1,10 +1,12 @@
 import json
 
 from app.lib.common import serialize_item
+from app.lib.decorators import something_might_go_wrong
 from app.lib.models import InstrumentModel
-from app.lib.responses import success, something_has_gone_wrong, bad_request
+from app.lib.responses import success, bad_request
 
 
+@something_might_go_wrong
 def main(event, _context):
     """Filter instruments by certain values"""
     data = json.loads(event["body"])
@@ -29,12 +31,8 @@ def main(event, _context):
 
     filter_string = " & ".join(filter_list)
 
-    try:
-        found = InstrumentModel.scan(eval(filter_string))
+    found = InstrumentModel.scan(eval(filter_string))
 
-        results_data = [serialize_item(item) for item in found]
+    results_data = [serialize_item(item) for item in found]
 
-        return success(results_data)
-    except Exception as err:
-        print(err)
-        return something_has_gone_wrong()
+    return success(results_data)

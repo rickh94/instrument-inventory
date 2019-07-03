@@ -1,32 +1,25 @@
-from app.lib.responses import failure, success
-from app.lib.models import InstrumentModel
-from app.lib.common import generate_photo_urls, serialize_item
 import pynamodb.exceptions
 
+from app.lib.common import generate_photo_urls, serialize_item
+from app.lib.decorators import something_might_go_wrong
+from app.lib.models import InstrumentModel
+from app.lib.responses import failure, success
 
+
+@something_might_go_wrong
 def main(event, _context):
     """Get an instrument"""
-    try:
-        id_ = event["pathParameters"]["id"]
-    except KeyError:
+    if "id" not in event["pathParameters"]:
         return failure(f"Please supply id", 404)
-    try:
-        ins = InstrumentModel.get(id_)
-        result = serialize_item(ins)
-        result["photoUrls"] = generate_photo_urls(ins.photo) if ins.photo else None
-        return success(result)
-    except pynamodb.exceptions.DoesNotExist:
-        return failure("Could not find matching item", 404)
-    except Exception as err:
-        print(err)
-        return failure("Something has gone wrong")
+    id_ = event["pathParameters"]["id"]
+    ins = InstrumentModel.get(id_)
+    result = serialize_item(ins)
+    result["photoUrls"] = generate_photo_urls(ins.photo) if ins.photo else None
+    return success(result)
 
 
+@something_might_go_wrong
 def all_(_event, _context):
     """Get all the instruments"""
-    try:
-        instruments = [serialize_item(ins) for ins in InstrumentModel.scan()]
-        return success(instruments)
-    except Exception as err:
-        print(err)
-        return failure(f"Something has gone wrong")
+    instruments = [serialize_item(ins) for ins in InstrumentModel.scan()]
+    return success(instruments)

@@ -1,43 +1,27 @@
-import json
-
-from app.lib.common import validate_request, handle_photo, delete_photos, serialize_item
+from app.lib.common import handle_photo, delete_photos, serialize_item
+from app.lib.decorators import something_might_go_wrong, load_and_validate
 from app.lib.responses import failure, success
 from app.lib.models import InstrumentModel
-import pynamodb.exceptions
 
 
-def photo(event, _context):
+@something_might_go_wrong
+@load_and_validate({"photoUrl": "Photo"}, with_path_id=True)
+def photo(data, path_id):
     """Change or add a photo"""
-    data = json.loads(event["body"])
-    err_response = validate_request(data, {"photoUrl": "Photo"})
-    if err_response:
-        return err_response
-    try:
-        id_ = event["pathParameters"]["id"]
-    except KeyError:
+    if not path_id:
         return failure("Record ID must be in url", 400)
-    try:
-        ins = InstrumentModel.get(id_)
-        if ins.photo:
-            delete_photos(ins.photo)
-        ins.photo = handle_photo(data["photoUrl"])
-        ins.save()
-        return success({"message": "Photo successfully updated"})
-    except pynamodb.exceptions.DoesNotExist as err:
-        print(err)
-        return failure("Could not find matching item", 404)
-    except Exception as err:
-        print(err)
-        return failure(f"Something has gone wrong")
+    ins = InstrumentModel.get(path_id)
+    if ins.photo:
+        delete_photos(ins.photo)
+    ins.photo = handle_photo(data["photoUrl"])
+    ins.save()
+    return success({"message": "Photo successfully updated"})
 
 
-def full(event, _context):
+@something_might_go_wrong
+@load_and_validate({}, with_path_id=True)
+def full(data, path_id):
     """Update a full record"""
-    data = json.loads(event["body"])
-    try:
-        id_ = event["pathParameters"]["id"]
-    except KeyError:
-        return failure("Please supply id", 400)
     actions = []
     try:
         for key, value in data.items():
@@ -48,13 +32,7 @@ def full(event, _context):
     except AttributeError as err:
         print(err)
         return failure("Unknown field in request", 400)
-    try:
-        ins = InstrumentModel.get(id_)
-        ins.update(actions=actions)
-        ins.save()
-        return success({"message": "Update Successful", "item": serialize_item(ins)})
-    except pynamodb.exceptions.DoesNotExist:
-        return failure("Could not find matching item", 404)
-    except Exception as err:
-        print(err)
-        return failure(f"Something has gone wrong")
+    ins = InstrumentModel.get(path_id)
+    ins.update(actions=actions)
+    ins.save()
+    return success({"message": "Update Successful", "item": serialize_item(ins)})

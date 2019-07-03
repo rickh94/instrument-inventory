@@ -294,8 +294,7 @@ def test_mark_item_completed(monkeypatch, make_fake_todo_item):
     )
 
     fake_todo.get.assert_called_with("USER-SUB-1234", "id1")
-    fake_todo.completed.set.assert_called_with(True)
-    todo_item.update.assert_called()
+    assert todo_item.completed is True
     todo_item.save.assert_called()
     todo_item.refresh.assert_called()
 
@@ -347,8 +346,8 @@ def test_unmark_item_completed(monkeypatch, make_fake_todo_item):
     )
 
     fake_todo.get.assert_called_with("USER-SUB-1234", "id1")
-    fake_todo.completed.set.assert_called_with(False)
-    todo_item.update.assert_called()
+
+    assert todo_item.completed is False
     todo_item.save.assert_called()
     todo_item.refresh.assert_called()
 
@@ -412,9 +411,9 @@ def test_update_todo_full(monkeypatch, make_fake_todo_item):
     )
 
     fake_todo.get.assert_called_with("USER-SUB-1234", "id1")
-    fake_todo.content.set.assert_called_with("some different content")
-    fake_todo.relevantInstrument.set.assert_called_with("1-611")
-    todo_item.update.assert_called()
+
+    assert todo_item.content == "some different content"
+    assert todo_item.relevantInstrument == "1-611"
     todo_item.save.assert_called()
     todo_item.refresh.assert_called()
 
@@ -445,9 +444,9 @@ def test_update_todo_partial(monkeypatch, make_fake_todo_item):
     )
 
     fake_todo.get.assert_called_with("USER-SUB-1234", "id1")
-    fake_todo.content.set.assert_not_called()
-    fake_todo.relevantInstrument.set.assert_called_with("1-611")
-    todo_item.update.assert_called()
+
+    assert todo_item.content == "test todo1"
+    assert todo_item.relevantInstrument == "1-611"
     todo_item.save.assert_called()
     todo_item.refresh.assert_called()
 

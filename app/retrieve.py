@@ -1,35 +1,26 @@
-import json
-
-from app.lib.common import validate_request, make_new_history
-from app.lib.responses import success, not_found, something_has_gone_wrong
+from app.lib.common import make_new_history
+from app.lib.decorators import something_might_go_wrong, load_and_validate
 from app.lib.models import InstrumentModel
+from app.lib.responses import success, not_found
 
 
-def single(event, _context):
+@something_might_go_wrong
+@load_and_validate({"instrumentNumber": "Instrument Number"})
+def single(data):
     """Mark an instrument as having been retrieved"""
-    data = json.loads(event["body"])
-    err_response = validate_request(
-        body=data, required_fields={"instrumentNumber": "Instrument Number"}
+    # noinspection PyTypeChecker
+    found = list(
+        InstrumentModel.scan(InstrumentModel.number == data["instrumentNumber"])
     )
-    if err_response:
-        return err_response
-    try:
-        # noinspection PyTypeChecker
-        found = list(
-            InstrumentModel.scan(InstrumentModel.number == data["instrumentNumber"])
-        )
-        if not found:
-            return not_found()
-        item = found[0]
-        item.location = "Storage"
-        if item.assignedTo:
-            item.history = make_new_history(item.history, item.assignedTo)
-        item.assignedTo = None
-        item.save()
-        return success({"message": "Instrument retrieved", "id": item.id})
-    except Exception as err:
-        print(err)
-        return something_has_gone_wrong()
+    if not found:
+        return not_found()
+    item = found[0]
+    item.location = "Storage"
+    if item.assignedTo:
+        item.history = make_new_history(item.history, item.assignedTo)
+    item.assignedTo = None
+    item.save()
+    return success({"message": "Instrument retrieved", "id": item.id})
 
 
 def generate_actions(ins):
@@ -44,22 +35,14 @@ def generate_actions(ins):
     return actions
 
 
-def multiple(event, _context):
+@something_might_go_wrong
+@load_and_validate({"instrumentNumbers": "Instrument Number List"})
+def multiple(data):
     """Mark multiple instruments as having been retrieved"""
-    data = json.loads(event["body"])
-    err_response = validate_request(
-        body=data, required_fields={"instrumentNumbers": "Instrument Number List"}
-    )
-    if err_response:
-        return err_response
     response_body = {"instrumentsUpdated": [], "instrumentsFailed": []}
-    try:
-        scan = InstrumentModel.scan(
-            InstrumentModel.number.is_in(*data["instrumentNumbers"])
-        )
-    except Exception as err:
-        print(err)
-        return something_has_gone_wrong()
+    scan = InstrumentModel.scan(
+        InstrumentModel.number.is_in(*data["instrumentNumbers"])
+    )
     for ins in scan:
         try:
             ins.location = "Storage"
