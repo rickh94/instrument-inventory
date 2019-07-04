@@ -1,7 +1,6 @@
 import json
 from unittest import mock
 
-
 from app import search
 
 
@@ -106,60 +105,3 @@ def test_search_history_and_assigned_bad_request():
     response = search.history({"body": "{}"}, {})
 
     assert response["statusCode"] == 400
-
-
-def test_search_outstanding_instruments(monkeypatch, records):
-    """Test searching for instruments that haven't been returned"""
-    found = records[2:8]
-    instrument_mock = mock.MagicMock()
-    instrument_mock.scan.return_value = found
-    monkeypatch.setattr("app.search.InstrumentModel", instrument_mock)
-
-    response = search.outstanding({}, {})
-
-    instrument_mock.assignedTo.exists.assert_called()
-    # instrument_mock.gifted.__eq__.assert_called_with(False)
-
-    assert response["statusCode"] == 200
-    assert response["body"] == json.dumps([item.attribute_values for item in found])
-
-
-def test_search_outstanding_dynamo_error(monkeypatch):
-    """Test search outstanding encounters dynamodb error"""
-
-    def explode():
-        raise Exception
-
-    monkeypatch.setattr("app.search.InstrumentModel.scan", explode)
-
-    response = search.outstanding({}, {})
-
-    assert response["statusCode"] == 500
-
-
-def test_search_gifted_instruments(monkeypatch, records):
-    """Test searching for instruments that haven't been returned"""
-    found = records[4:9]
-    instrument_mock = mock.MagicMock()
-    instrument_mock.scan.return_value = found
-    monkeypatch.setattr("app.search.InstrumentModel", instrument_mock)
-
-    response = search.gifted({}, {})
-
-    instrument_mock.gifted.__eq__.assert_called_with(True)
-
-    assert response["statusCode"] == 200
-    assert response["body"] == json.dumps([item.attribute_values for item in found])
-
-
-def test_search_gifted_dynamo_error(monkeypatch):
-    """Test search outstanding encounters dynamodb error"""
-
-    def explode(*args):
-        raise Exception
-
-    monkeypatch.setattr("app.search.InstrumentModel.scan", explode)
-
-    response = search.gifted({}, {})
-
-    assert response["statusCode"] == 500

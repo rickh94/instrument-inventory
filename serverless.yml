@@ -221,6 +221,28 @@ functions:
           cors: true
           authorizer: aws_iam
 
+  filter-signed-out:
+    handler: app.filter.signed_out
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: filter/signed-out
+          method: get
+          cors: true
+          authorizer: aws_iam
+
+  filter-gifted:
+    handler: app.filter.gifted
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: filter/gifted
+          method: get
+          cors: true
+          authorizer: aws_iam
+
   todos-create:
     handler: app.todos.create
     tags:

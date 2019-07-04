@@ -1,8 +1,9 @@
 import json
 
 from app.lib.common import serialize_item
-from app.lib.decorators import something_might_go_wrong
+from app.lib.decorators import something_might_go_wrong, no_args
 from app.lib.models import InstrumentModel
+from app.lib.response import data_or_404
 from app.lib.responses import success, bad_request
 
 
@@ -36,3 +37,23 @@ def main(event, _context):
     results_data = [serialize_item(item) for item in found]
 
     return success(results_data)
+
+
+@something_might_go_wrong
+@no_args
+def signed_out():
+    """Find instruments that haven't been signed back in yet"""
+    found_items = InstrumentModel.scan(
+        (InstrumentModel.assignedTo.exists()) & (InstrumentModel.gifted == False)
+    )
+    result_data = [serialize_item(item) for item in found_items]
+    return data_or_404(result_data)
+
+
+@something_might_go_wrong
+@no_args
+def gifted():
+    """Find instruments that have been given away to students"""
+    found_items = InstrumentModel.scan(InstrumentModel.gifted == True)
+    result_data = [serialize_item(item) for item in found_items]
+    return data_or_404(result_data)

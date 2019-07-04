@@ -1,6 +1,7 @@
 import json
 from unittest import mock
 
+import app.filter
 from app import filter
 
 
@@ -107,3 +108,60 @@ def test_filter_nothing_bad_request():
     response = filter.main({"body": json.dumps({})}, {})
 
     assert response["statusCode"] == 400
+
+
+def test_filter_signed_out_instruments(monkeypatch, records):
+    """Test searching for instruments that haven't been returned"""
+    found = records[2:8]
+    instrument_mock = mock.MagicMock()
+    instrument_mock.scan.return_value = found
+    monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
+
+    response = app.filter.signed_out({}, {})
+
+    instrument_mock.assignedTo.exists.assert_called()
+    # instrument_mock.gifted.__eq__.assert_called_with(False)
+
+    assert response["statusCode"] == 200
+    assert response["body"] == json.dumps([item.attribute_values for item in found])
+
+
+def test_filter_signed_out_dynamo_error(monkeypatch):
+    """Test search signed_out encounters dynamodb error"""
+
+    def explode():
+        raise Exception
+
+    monkeypatch.setattr("app.filter.InstrumentModel.scan", explode)
+
+    response = app.filter.signed_out({}, {})
+
+    assert response["statusCode"] == 500
+
+
+def test_filter_gifted_instruments(monkeypatch, records):
+    """Test searching for instruments that haven't been returned"""
+    found = records[4:9]
+    instrument_mock = mock.MagicMock()
+    instrument_mock.scan.return_value = found
+    monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
+
+    response = app.filter.gifted({}, {})
+
+    instrument_mock.gifted.__eq__.assert_called_with(True)
+
+    assert response["statusCode"] == 200
+    assert response["body"] == json.dumps([item.attribute_values for item in found])
+
+
+def test_filter_gifted_dynamo_error(monkeypatch):
+    """Test search signed_out encounters dynamodb error"""
+
+    def explode(*args):
+        raise Exception
+
+    monkeypatch.setattr("app.filter.InstrumentModel.scan", explode)
+
+    response = app.filter.gifted({}, {})
+
+    assert response["statusCode"] == 500
