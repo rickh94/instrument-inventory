@@ -1,7 +1,7 @@
 from app.lib.common import serialize_item
 from app.lib.decorators import something_might_go_wrong, load_and_validate
-from app.lib.response import data_or_404
 from app.lib.models import InstrumentModel
+from app.lib.responses import data_or_404
 
 
 @something_might_go_wrong

@@ -88,12 +88,8 @@ def test_get_missing_data():
     assert response["statusCode"] == 400
 
 
-def test_not_found(monkeypatch, get_event):
+def test_not_found(monkeypatch, get_event, db_not_found):
     """Test 404 return on not found"""
-
-    def db_not_found(*args):
-        raise InstrumentModel.DoesNotExist
-
     monkeypatch.setattr("app.get.InstrumentModel.get", db_not_found)
 
     response = get.main(get_event, {})
@@ -101,13 +97,9 @@ def test_not_found(monkeypatch, get_event):
     assert response["statusCode"] == 404
 
 
-def test_dynamo_fail(monkeypatch, get_event):
+def test_dynamo_fail(monkeypatch, get_event, explode):
     """Test dynamodb error returns 500 server error"""
-
-    def db_fail():
-        raise Exception
-
-    monkeypatch.setattr("app.get.InstrumentModel", db_fail)
+    monkeypatch.setattr("app.get.InstrumentModel", explode)
 
     response = get.main(get_event, {})
 
@@ -127,13 +119,9 @@ def test_get_all(monkeypatch, records):
     assert _result_id_set(response["body"]) == _result_id_set(records)
 
 
-def test_dynamo_error_all(monkeypatch):
-    """Test getting all instruments dyanmodb error"""
-
-    def db_fail():
-        raise Exception
-
-    monkeypatch.setattr("app.get.InstrumentModel.scan", db_fail)
+def test_dynamo_error_all(monkeypatch, explode):
+    """Test getting all instruments dynamodb error"""
+    monkeypatch.setattr("app.get.InstrumentModel.scan", explode)
 
     response = get.all_({}, {})
 

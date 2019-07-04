@@ -57,13 +57,9 @@ def test_retrieve_successful_without_assigned_to(
     assert json.loads(response["body"])["id"] == "fakeid"
 
 
-def test_dynamo_raises_error(monkeypatch, retrieve_event):
+def test_dynamo_raises_error(monkeypatch, retrieve_event, explode):
     """Test dynamodb raising an error"""
-
-    def db_mock(*args, **kwargs):
-        raise Exception
-
-    monkeypatch.setattr("app.retrieve.InstrumentModel.scan", db_mock)
+    monkeypatch.setattr("app.retrieve.InstrumentModel.scan", explode)
 
     response = retrieve.single(retrieve_event, {})
 
@@ -82,7 +78,7 @@ def test_no_records_found(monkeypatch, retrieve_event):
     assert response["statusCode"] == 404
 
 
-def test_retrieve_multiple_successful(monkeypatch, retrieve_multiple_event, records):
+def test_retrieve_multiple_successful(monkeypatch, records):
     """Test basic retrieve multiple instruments"""
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = records

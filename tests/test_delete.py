@@ -55,13 +55,9 @@ def test_delete_no_id():
     assert response["statusCode"] == 400
 
 
-def test_delete_not_found(monkeypatch):
+def test_delete_not_found(monkeypatch, db_not_found):
     """Test item is not found"""
-
-    def explode(*args):
-        raise InstrumentModel.DoesNotExist
-
-    monkeypatch.setattr("app.delete.InstrumentModel.get", explode)
+    monkeypatch.setattr("app.delete.InstrumentModel.get", db_not_found)
 
     response = delete.main({"pathParameters": {"id": "fakeid"}}, {})
 

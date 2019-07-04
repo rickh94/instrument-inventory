@@ -4,6 +4,8 @@ from unittest import mock
 
 import pytest
 
+from app.lib.models import InstrumentModel
+
 HERE = Path(__file__).parent
 ROOT = HERE / ".."
 MOCKS = ROOT / "mocks"
@@ -213,3 +215,19 @@ def records(fake_instrument):
 @pytest.fixture
 def pages(records):
     return [records[0:4], records[4:8], records[8:10]]
+
+
+@pytest.fixture
+def db_not_found():
+    def _error(*_):
+        raise InstrumentModel.DoesNotExist
+
+    return _error
+
+
+@pytest.fixture
+def explode():
+    def _error(*_):
+        raise Exception
+
+    return _error

@@ -126,12 +126,8 @@ def test_filter_signed_out_instruments(monkeypatch, records):
     assert response["body"] == json.dumps([item.attribute_values for item in found])
 
 
-def test_filter_signed_out_dynamo_error(monkeypatch):
+def test_filter_signed_out_dynamo_error(monkeypatch, explode):
     """Test search signed_out encounters dynamodb error"""
-
-    def explode():
-        raise Exception
-
     monkeypatch.setattr("app.filter.InstrumentModel.scan", explode)
 
     response = app.filter.signed_out({}, {})
@@ -154,12 +150,8 @@ def test_filter_gifted_instruments(monkeypatch, records):
     assert response["body"] == json.dumps([item.attribute_values for item in found])
 
 
-def test_filter_gifted_dynamo_error(monkeypatch):
+def test_filter_gifted_dynamo_error(monkeypatch, explode):
     """Test search signed_out encounters dynamodb error"""
-
-    def explode(*args):
-        raise Exception
-
     monkeypatch.setattr("app.filter.InstrumentModel.scan", explode)
 
     response = app.filter.gifted({}, {})

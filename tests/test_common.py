@@ -8,7 +8,7 @@ def test_generate_photo_urls(monkeypatch):
     fake_s3_client = mock.MagicMock()
     monkeypatch.setenv("PHOTOS_BUCKET_NAME", "fake_bucket")
 
-    def fake_generate_presigned_url(_method, Params=None, *args):
+    def fake_generate_presigned_url(_method, Params=None, *_):
         assert Params["Bucket"] == "fake_bucket"
         return f"http://fake/{Params['Key']}"
 

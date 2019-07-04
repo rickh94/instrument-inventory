@@ -3,8 +3,7 @@ import json
 from app.lib.common import serialize_item
 from app.lib.decorators import something_might_go_wrong, no_args
 from app.lib.models import InstrumentModel
-from app.lib.response import data_or_404
-from app.lib.responses import success, bad_request
+from app.lib.responses import success, bad_request, data_or_404
 
 
 @something_might_go_wrong

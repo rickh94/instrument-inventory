@@ -2,7 +2,6 @@ import json
 from unittest import mock
 
 from app import update
-from app.lib.models import InstrumentModel
 
 
 def test_add_photo(monkeypatch, fake_instrument):
@@ -75,12 +74,8 @@ def test_add_photo_deletes_old_photo(monkeypatch, fake_instrument):
     assert response["statusCode"] == 200
 
 
-def test_item_not_found(monkeypatch):
+def test_item_not_found(monkeypatch, db_not_found):
     """Test item not found error causes 404 not found"""
-
-    def db_not_found(*args):
-        raise InstrumentModel.DoesNotExist
-
     monkeypatch.setattr("app.update.InstrumentModel.get", db_not_found)
 
     response = update.photo(
@@ -178,11 +173,8 @@ def test_unknown_key():
     assert response["statusCode"] == 400
 
 
-def test_all_item_not_found(monkeypatch):
+def test_all_item_not_found(monkeypatch, db_not_found):
     """Test item not found error causes 404 not found"""
-
-    def db_not_found(*args):
-        raise InstrumentModel.DoesNotExist
 
     monkeypatch.setattr("app.update.InstrumentModel.get", db_not_found)
 

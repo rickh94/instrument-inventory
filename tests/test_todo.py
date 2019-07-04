@@ -1,11 +1,11 @@
 import json
 from unittest import mock
 
+import pynamodb.exceptions
 import pytest
 
 from app import todos
 from app.lib.models import TodoModel
-import pynamodb.exceptions
 
 
 def test_create_todo_full(monkeypatch):
@@ -119,7 +119,7 @@ def test_read_single(monkeypatch, fake_todo):
 def test_read_single_no_item(monkeypatch):
     """Test failure to get item"""
 
-    def bad_get(*args):
+    def bad_get(*_):
         raise TodoModel.DoesNotExist
 
     monkeypatch.setattr("app.todos.TodoModel.get", bad_get)
@@ -183,12 +183,8 @@ def test_read_active(monkeypatch):
     }
 
 
-def test_read_active_fails(monkeypatch):
+def test_read_active_fails(monkeypatch, explode):
     """Test reading active todos fails"""
-
-    def explode(*args):
-        raise Exception
-
     monkeypatch.setattr("app.todos.TodoModel.query", explode)
 
     response = todos.read_active(
@@ -258,12 +254,8 @@ def test_read_complete(monkeypatch, make_fake_todo_item):
     }
 
 
-def test_read_complete_fails(monkeypatch):
+def test_read_complete_fails(monkeypatch, explode):
     """Test reading complete todos fails"""
-
-    def explode(*args):
-        raise Exception
-
     monkeypatch.setattr("app.todos.TodoModel.query", explode)
 
     response = todos.read_completed(
@@ -306,13 +298,9 @@ def test_mark_item_completed_bad_request():
     assert response["statusCode"] == 400
 
 
-def test_mark_item_completed_does_not_exist(monkeypatch):
+def test_mark_item_completed_does_not_exist(monkeypatch, db_not_found):
     """Test id does not exist"""
-
-    def get_explode(*args):
-        raise pynamodb.exceptions.DoesNotExist
-
-    monkeypatch.setattr("app.todos.TodoModel.get", get_explode)
+    monkeypatch.setattr("app.todos.TodoModel.get", db_not_found)
 
     response = todos.mark_completed(
         {
@@ -359,18 +347,10 @@ def test_unmark_item_completed_bad_request():
     assert response["statusCode"] == 400
 
 
-@pytest.fixture
-def get_explode():
-    def _explode(*args):
-        raise pynamodb.exceptions.DoesNotExist
-
-    return _explode
-
-
-def test_unmark_item_completed_does_not_exist(monkeypatch, get_explode):
+def test_unmark_item_completed_does_not_exist(monkeypatch, db_not_found):
     """Test id does not exist"""
 
-    monkeypatch.setattr("app.todos.TodoModel.get", get_explode)
+    monkeypatch.setattr("app.todos.TodoModel.get", db_not_found)
 
     response = todos.unmark_completed(
         {
@@ -458,9 +438,9 @@ def test_update_no_id_bad_request():
     assert response["statusCode"] == 400
 
 
-def test_update_does_not_exist_not_found(monkeypatch, get_explode):
+def test_update_does_not_exist_not_found(monkeypatch, db_not_found):
     """Test returns 404 error if to do item is not found"""
-    monkeypatch.setattr("app.todos.TodoModel.get", get_explode)
+    monkeypatch.setattr("app.todos.TodoModel.get", db_not_found)
 
     response = todos.update(
         {
@@ -509,9 +489,9 @@ def test_delete_todo_bad_request():
     assert response["statusCode"] == 400
 
 
-def test_delete_todo_not_found(monkeypatch, get_explode):
+def test_delete_todo_not_found(monkeypatch, db_not_found):
     """Test delete to do not found returns 404"""
-    monkeypatch.setattr("app.todos.TodoModel.get", get_explode)
+    monkeypatch.setattr("app.todos.TodoModel.get", db_not_found)
 
     response = todos.delete(
         {

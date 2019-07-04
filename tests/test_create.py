@@ -84,20 +84,16 @@ def test_full_create_successful(monkeypatch, full_create_event):
     assert response["statusCode"] == 201
 
 
-def test_dynamodb_raises_error(monkeypatch, basic_create_event):
+def test_dynamodb_raises_error(monkeypatch, basic_create_event, explode):
     """Airtable raising an error returns server error"""
-
-    def db_mock():
-        raise Exception
-
-    monkeypatch.setattr("app.create.InstrumentModel", db_mock)
+    monkeypatch.setattr("app.create.InstrumentModel", explode)
 
     response = create.main(basic_create_event, {})
 
     assert response["statusCode"] == 500
 
 
-def test_incomplete_create(monkeypatch):
+def test_incomplete_create():
     """Error is returned if incomplete create"""
     incomplete_event = {"body": json.dumps({"instrumentNumber": "1-603"})}
 

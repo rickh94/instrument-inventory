@@ -56,7 +56,7 @@ def test_sign_out_updates_history(monkeypatch, sign_out_event, fake_instrument):
 def test_dynamo_raises_error(monkeypatch, sign_out_event):
     """Test airtable raising an error"""
 
-    def db_mock(*args, **kwargs):
+    def db_mock(*_a, **_k):
         raise Exception
 
     monkeypatch.setattr("app.sign_out.InstrumentModel.scan", db_mock)

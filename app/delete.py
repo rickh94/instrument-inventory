@@ -1,7 +1,7 @@
 from app.lib.common import delete_photos
 from app.lib.decorators import something_might_go_wrong, get_id_from_path
 from app.lib.models import InstrumentModel
-from app.lib.responses import bad_request, success
+from app.lib.responses import success
 
 
 @something_might_go_wrong
