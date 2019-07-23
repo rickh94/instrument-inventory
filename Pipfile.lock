@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "18e5266d96c54fcb219cccc40093d51ee96e83680b4c2cdc0dbf4ce950e7c9a7"
+            "sha256": "65b6c3e9d1511c9f341aa7d4afe6e15b8293de928a50e4314441bd6f097c88f5"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -79,6 +79,9 @@
             "version": "==6.1.0"
         },
         "pydantic": {
+            "extras": [
+                "ujson"
+            ],
             "hashes": [
                 "sha256:1b567378e80d08b0b431c6676483e2c05db730e6f0098ea24b5e6f04a9e42244",
                 "sha256:52fc77d29a16edc7964a44890552a9817f82263b4832195ee278b0604928b743",
@@ -119,6 +122,12 @@
                 "sha256:d16a0141ec1a18405cd4ce8b4613101da75da0e9a7aec5bdd4fa804d0e0eba73"
             ],
             "version": "==1.12.0"
+        },
+        "ujson": {
+            "hashes": [
+                "sha256:f66073e5506e91d204ab0c614a148d5aa938bdbf104751be66f8ad7a222f5f86"
+            ],
+            "version": "==1.35"
         },
         "urllib3": {
             "hashes": [

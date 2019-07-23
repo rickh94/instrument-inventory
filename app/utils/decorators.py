@@ -4,6 +4,7 @@ import json
 import pydantic
 import pynamodb.exceptions
 
+from app.utils.common import MissingValue
 from app.utils.responses import (
     something_has_gone_wrong,
     bad_request,
@@ -22,6 +23,9 @@ def something_might_go_wrong(func):
             return not_found()
         except pydantic.ValidationError as err:
             return validation_error(err.json())
+        except MissingValue as err:
+            print(err)
+            return validation_error(json.dumps(str(err)))
         except Exception as err:
             print(err)
             return something_has_gone_wrong()

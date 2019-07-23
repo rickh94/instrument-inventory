@@ -1,7 +1,9 @@
 from typing import List, Dict
 
-from pydantic import BaseModel, Schema, UrlStr
+from pydantic import BaseModel, Schema, UrlStr, validator, ValidationError, Json
 from enum import Enum
+
+from app.utils.common import MissingValue
 
 
 class Todo(BaseModel):
@@ -53,7 +55,7 @@ class InstrumentSizeEnum(str, Enum):
 
 class LocationEnum(str, Enum):
     grant = "Grant Elementary School"
-    hedgepath = "Hedgepath Elementary School"
+    hedgepath = "Hedgepath Middle School"
     wilson = "Wilson Elementary School"
     high = "Trenton High School"
     columbus = "Columbus Elementary School"
@@ -119,7 +121,7 @@ class InstrumentWithID(Instrument):
 
 class InstrumentInDB(InstrumentWithID):
     photo: str = Schema(None, title="Photo", description="Filename of the photo")
-    history_json: str = Schema(None, title="History")
+    history: Json[List[str]] = Schema(None, title="History")
 
 
 class InstrumentOut(InstrumentWithID):
@@ -127,5 +129,29 @@ class InstrumentOut(InstrumentWithID):
         None, title="Photo URLS", description="Download urls for instrument photos"
     )
     history: List[str] = Schema(
-        [], title="History", description="List of previous users"
+        None, title="History", description="List of previous users"
     )
+
+
+class InstrumentFilter(BaseModel):
+    type: InstrumentTypeEnum = Schema(None, title="Instrument Type")
+    size: InstrumentSizeEnum = Schema(None, title="Size")
+    location: LocationEnum = Schema(None, title="Location")
+    notAssigned: bool = Schema(False, title="Search only unassigned instruments")
+
+    def generate_filter_string(self):
+        filter_list = []
+        if self.type:
+            filter_list.append(f"(InstrumentModel.type == '{self.type}')")
+        if self.size:
+            filter_list.append(f"(InstrumentModel.size == '{self.size}')")
+        if self.location:
+            filter_list.append(f"(InstrumentModel.location == '{self.location}')")
+        if self.notAssigned:
+            filter_list.append(
+                "(InstrumentModel.assignedTo.does_not_exist() | "
+                'InstrumentModel.assignedTo == "")'
+            )
+        if not filter_list:
+            raise MissingValue("Must provide one of type, size, location, notAssigned")
+        return " & ".join(filter_list)

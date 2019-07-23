@@ -138,17 +138,17 @@ def records(fake_instrument):
             id_="id0",
             number="1-605",
             assignedTo="Some Name",
-            location="office",
+            location="Office",
             size="4/4",
-            type="violin",
+            type="Violin",
         ),
         fake_instrument(
             id_="rec1",
             number="1-601",
             assignedTo="Test Name",
-            location="office",
+            location="Office",
             size="4/4",
-            type="violin",
+            type="Violin",
         ),
         fake_instrument(
             id_="rec2",
@@ -156,7 +156,7 @@ def records(fake_instrument):
             assignedTo="Test Name2",
             location="Hedgepath Middle School",
             size="4/4",
-            type="violin",
+            type="Violin",
         ),
         fake_instrument(
             id_="rec3",
@@ -164,7 +164,7 @@ def records(fake_instrument):
             assignedTo="Random Person",
             location="Trenton High School",
             size="1/2",
-            type="violin",
+            type="Violin",
         ),
         fake_instrument(
             id_="rec4",
@@ -172,7 +172,7 @@ def records(fake_instrument):
             assignedTo="A cellist",
             location="Grant Elementary School",
             size="4/4",
-            type="cello",
+            type="Cello",
         ),
         fake_instrument(
             id_="rec5",
@@ -180,7 +180,7 @@ def records(fake_instrument):
             assignedTo="A violist",
             location="Storage",
             size='15"',
-            type="viola",
+            type="Viola",
         ),
         fake_instrument(
             id_="rec6",
@@ -188,7 +188,7 @@ def records(fake_instrument):
             assignedTo="Another violist",
             location="Hedgepath Middle School",
             size='15"',
-            type="viola",
+            type="Viola",
         ),
         fake_instrument(
             id_="rec7",
@@ -196,7 +196,7 @@ def records(fake_instrument):
             assignedTo="Bass Player",
             location="Storage",
             size="4/4",
-            type="bass",
+            type="Bass",
         ),
         fake_instrument(
             id_="rec8",
@@ -204,10 +204,10 @@ def records(fake_instrument):
             assignedTo="Test Name",
             location="Storage",
             size="1/2",
-            type="cello",
+            type="Cello",
         ),
         fake_instrument(
-            id_="rec9", number="2-606", size="1/2", location="Storage", type="violin"
+            id_="rec9", number="2-606", size="1/2", location="Storage", type="Violin"
         ),
     ]
 

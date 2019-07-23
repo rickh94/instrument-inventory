@@ -16,7 +16,6 @@ required_fields = {
 @load_model(api_models.InstrumentIn)
 def main(instrument: api_models.InstrumentIn):
     """Create a new instrument"""
-    print(instrument.assignedTo)
     photo_id = None
     if instrument.photo:
         photo_id = handle_photo(instrument.photo)

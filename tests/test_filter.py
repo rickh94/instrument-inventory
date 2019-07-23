@@ -24,9 +24,11 @@ def test_filter_by_instrument(monkeypatch, records):
 
     monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
-    event = {"body": json.dumps({"instrumentType": "violin"})}
+    event = {"body": json.dumps({"type": "Violin"})}
 
     response = filter.main(event, {})
+    print(response["body"])
+    assert response["statusCode"] == 200
 
     instrument_mock.scan.assert_called()
 
@@ -56,9 +58,11 @@ def test_filter_by_location(monkeypatch, records):
 
     monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
-    event = {"body": json.dumps({"location": "office"})}
+    event = {"body": json.dumps({"location": "Office"})}
 
     response = filter.main(event, {})
+    print(response["body"])
+    assert response["statusCode"] == 200
 
     instrument_mock.scan.assert_called()
 
@@ -75,6 +79,8 @@ def test_filter_not_assigned(monkeypatch, records):
     monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
     response = filter.main(event, {})
+    print(response["body"])
+    assert response["statusCode"] == 200
 
     instrument_mock.assignedTo.does_not_exist.assert_called()
     instrument_mock.scan.assert_called()
@@ -90,9 +96,7 @@ def test_filter_multiple(monkeypatch, records):
     monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
     event = {
-        "body": json.dumps(
-            {"location": "office", "instrumentType": "violin", "size": "4/4"}
-        )
+        "body": json.dumps({"location": "Office", "type": "Violin", "size": "4/4"})
     }
 
     response = filter.main(event, {})
@@ -103,11 +107,11 @@ def test_filter_multiple(monkeypatch, records):
 
 
 def test_filter_nothing_bad_request():
-    """Test sending nothing is a bad request"""
+    """Test sending nothing is a validation error"""
 
     response = filter.main({"body": json.dumps({})}, {})
 
-    assert response["statusCode"] == 400
+    assert response["statusCode"] == 422
 
 
 def test_filter_signed_out_instruments(monkeypatch, records):

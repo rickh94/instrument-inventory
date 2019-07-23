@@ -76,3 +76,7 @@ def make_new_history(history, assigned_to):
     history_list = json.loads(history) if history else []
     history_list.append(assigned_to)
     return json.dumps(history_list)
+
+
+class MissingValue(Exception):
+    pass

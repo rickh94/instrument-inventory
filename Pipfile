@@ -15,7 +15,7 @@ airtable-python-wrapper = "*"
 pynamodb = "*"
 boto3 = "*"
 pillow = "*"
-pydantic = "*"
+pydantic = {extras = ["ujson"],version = "*"}
 
 [requires]
 python_version = "3.7"
