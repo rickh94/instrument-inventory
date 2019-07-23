@@ -8,7 +8,13 @@ def test_basic_create_successful(monkeypatch, basic_create_event):
     """Test a minimal create"""
     instrument_mock = mock.MagicMock()
     created_item = mock.MagicMock()
-    created_item.attribute_values = {"id": "fakeuuid"}
+    created_item.attribute_values = {
+        "id": "fakeuuid",
+        "type": "Violin",
+        "size": "4/4",
+        "number": "1-601",
+        "location": "Office",
+    }
     created_item.number = "1-601"
     created_item.id = "fakeuuid"
     created_item.history = None
@@ -20,18 +26,14 @@ def test_basic_create_successful(monkeypatch, basic_create_event):
 
     instrument_mock.assert_called_with(
         number="1-601",
-        type="violin",
+        type="Violin",
         size="4/4",
-        location="office",
+        location="Office",
         assignedTo=None,
         maintenanceNotes=None,
         conditionNotes=None,
-        ready=False,
         condition=None,
         quality=None,
-        rosin=False,
-        bow=False,
-        shoulderRestEndpinRest=False,
         gifted=False,
         photo=None,
     )
@@ -45,7 +47,17 @@ def test_full_create_successful(monkeypatch, full_create_event):
     """Test full create full"""
     instrument_mock = mock.MagicMock()
     created_item = mock.MagicMock()
-    created_item.attribute_values = {"id": "fakeuuid"}
+    created_item.attribute_values = {
+        "id": "fakeuuid",
+        "number": "1-602",
+        "type": "Violin",
+        "size": "4/4",
+        "location": "Grant Elementary School",
+        "assignedTo": "Test Student",
+        "maintenanceNotes": "test notes",
+        "conditionNotes": "test condition",
+        "ready": True,
+    }
     created_item.number = "1-602"
     created_item.id = "fakeuuid"
     created_item.history = None
@@ -63,18 +75,14 @@ def test_full_create_successful(monkeypatch, full_create_event):
     )
     instrument_mock.assert_called_with(
         number="1-602",
-        type="violin",
+        type="Violin",
         size="4/4",
         location="Grant Elementary School",
         assignedTo="Test Student",
         maintenanceNotes="test notes",
         conditionNotes="test condition",
-        ready=True,
         condition=5,
         quality=3,
-        rosin=True,
-        bow=True,
-        shoulderRestEndpinRest=True,
         gifted=True,
         photo="fake_photo.jpg",
     )
@@ -99,4 +107,4 @@ def test_incomplete_create():
 
     response = create.main(incomplete_event, {})
 
-    assert response["statusCode"] == 400
+    assert response["statusCode"] == 422

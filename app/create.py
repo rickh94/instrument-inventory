@@ -1,5 +1,6 @@
+from app.lib import api_models
 from app.lib.common import handle_photo, serialize_item
-from app.lib.decorators import something_might_go_wrong, load_and_validate
+from app.lib.decorators import something_might_go_wrong, load_and_validate, load_model
 from app.lib.models import InstrumentModel
 from app.lib.responses import success
 
@@ -12,36 +13,28 @@ required_fields = {
 
 
 @something_might_go_wrong
-@load_and_validate(required_fields)
-def main(data):
+@load_model(api_models.InstrumentIn)
+def main(instrument: api_models.InstrumentIn):
     """Create a new instrument"""
+    print(instrument.assignedTo)
     photo_id = None
-    if data.get("photo"):
-        photo_id = handle_photo(data["photo"])
+    if instrument.photo:
+        photo_id = handle_photo(instrument.photo)
 
     new_instrument = InstrumentModel(
-        number=data["instrumentNumber"].upper(),
-        type=data["instrumentType"],
-        size=data["size"],
-        location=data["location"],
-        assignedTo=data.get("assignedTo", None),
-        maintenanceNotes=data.get("maintenanceNotes", None),
-        conditionNotes=data.get("conditionNotes", None),
-        condition=data.get("condition", None),
-        quality=data.get("quality", None),
-        rosin=data.get("rosin", False),
-        bow=data.get("bow", False),
-        shoulderRestEndpinRest=data.get("shoulderRestRockStop", False),
-        ready=data.get("readyToGo", False),
-        gifted=data.get("gifted", False),
-        photo=photo_id,
+        **instrument.dict(exclude={"photo"}), photo=photo_id
     )
     new_instrument.save()
+    new_instrument.refresh()
+    instrument_in_db = api_models.InstrumentInDB(**serialize_item(new_instrument))
+    instrument_out = api_models.InstrumentOut(
+        **instrument_in_db.dict(exclude={"photo"})
+    )
     return success(
         {
             "message": f"Instrument {new_instrument.number} created",
-            "item": serialize_item(new_instrument),
-            "id": new_instrument.id,
+            "item": instrument_out.dict(),
+            "id": instrument_out.id,
         },
         201,
     )
