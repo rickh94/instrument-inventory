@@ -4,7 +4,7 @@ from unittest import mock
 
 import pytest
 
-from app.lib.models import InstrumentModel
+from app.utils.models import InstrumentModel
 
 HERE = Path(__file__).parent
 ROOT = HERE / ".."

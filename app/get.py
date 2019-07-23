@@ -1,7 +1,7 @@
-from app.lib.common import generate_photo_urls, serialize_item
-from app.lib.decorators import something_might_go_wrong, get_id_from_path, no_args
-from app.lib.models import InstrumentModel
-from app.lib.responses import success
+from app.utils.common import generate_photo_urls, serialize_item
+from app.utils.decorators import something_might_go_wrong, get_id_from_path, no_args
+from app.utils.models import InstrumentModel
+from app.utils.responses import success
 
 
 @something_might_go_wrong

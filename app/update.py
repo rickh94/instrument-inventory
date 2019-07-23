@@ -1,7 +1,7 @@
-from app.lib.common import handle_photo, delete_photos, serialize_item
-from app.lib.decorators import something_might_go_wrong, load_and_validate
-from app.lib.models import InstrumentModel
-from app.lib.responses import failure, success
+from app.utils.common import handle_photo, delete_photos, serialize_item
+from app.utils.decorators import something_might_go_wrong, load_and_validate
+from app.utils.models import InstrumentModel
+from app.utils.responses import failure, success
 
 
 @something_might_go_wrong

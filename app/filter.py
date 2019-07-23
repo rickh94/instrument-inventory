@@ -1,9 +1,9 @@
 import json
 
-from app.lib.common import serialize_item
-from app.lib.decorators import something_might_go_wrong, no_args
-from app.lib.models import InstrumentModel
-from app.lib.responses import success, bad_request, data_or_404
+from app.utils.common import serialize_item
+from app.utils.decorators import something_might_go_wrong, no_args
+from app.utils.models import InstrumentModel
+from app.utils.responses import success, bad_request, data_or_404
 
 
 @something_might_go_wrong

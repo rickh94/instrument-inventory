@@ -1,8 +1,12 @@
 import json
 
-from app.lib.decorators import something_might_go_wrong, load_and_validate, get_todo_ids
-from app.lib.models import TodoModel
-from app.lib.responses import success
+from app.utils.decorators import (
+    something_might_go_wrong,
+    load_and_validate,
+    get_todo_ids,
+)
+from app.utils.models import TodoModel
+from app.utils.responses import success
 
 
 @something_might_go_wrong

@@ -5,8 +5,8 @@ import uuid
 
 from airtable import Airtable
 
-from app.lib.models import InstrumentModel
-from app.lib.common import handle_photo
+from app.utils.models import InstrumentModel
+from app.utils.common import handle_photo
 
 
 def setup_airtable():

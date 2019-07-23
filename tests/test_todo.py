@@ -5,7 +5,7 @@ import pynamodb.exceptions
 import pytest
 
 from app import todos
-from app.lib.models import TodoModel
+from app.utils.models import TodoModel
 
 
 def test_create_todo_full(monkeypatch):

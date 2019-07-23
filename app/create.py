@@ -1,8 +1,8 @@
-from app.lib import api_models
-from app.lib.common import handle_photo, serialize_item
-from app.lib.decorators import something_might_go_wrong, load_and_validate, load_model
-from app.lib.models import InstrumentModel
-from app.lib.responses import success
+from app.utils import api_models
+from app.utils.common import handle_photo, serialize_item
+from app.utils.decorators import something_might_go_wrong, load_and_validate, load_model
+from app.utils.models import InstrumentModel
+from app.utils.responses import success
 
 required_fields = {
     "instrumentNumber": "Instrument Number",

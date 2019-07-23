@@ -1,7 +1,7 @@
-from app.lib.common import make_new_history
-from app.lib.decorators import something_might_go_wrong, load_and_validate
-from app.lib.models import InstrumentModel
-from app.lib.responses import success, not_found
+from app.utils.common import make_new_history
+from app.utils.decorators import something_might_go_wrong, load_and_validate
+from app.utils.models import InstrumentModel
+from app.utils.responses import success, not_found
 
 
 @something_might_go_wrong
