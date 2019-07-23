@@ -13,6 +13,10 @@ from app.utils.responses import (
 )
 
 
+class MissingID(Exception):
+    pass
+
+
 def something_might_go_wrong(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
@@ -26,6 +30,9 @@ def something_might_go_wrong(func):
         except MissingValue as err:
             print(err)
             return validation_error(json.dumps(str(err)))
+        except MissingID as err:
+            print(err)
+            return bad_request("ID is required in path")
         except Exception as err:
             print(err)
             return something_has_gone_wrong()
@@ -82,7 +89,7 @@ def load_model(
                 try:
                     kwargs["path_id"] = event["pathParameters"]["id"]
                 except KeyError:
-                    kwargs["path_id"] = None
+                    raise MissingID("ID is required in path.")
             return func(item, **kwargs)
 
         return wrapper
