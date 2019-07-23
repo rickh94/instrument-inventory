@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Iterable
 
 from pydantic import BaseModel, Schema, UrlStr, validator, ValidationError, Json
 from enum import Enum
@@ -155,3 +155,11 @@ class InstrumentFilter(BaseModel):
         if not filter_list:
             raise MissingValue("Must provide one of type, size, location, notAssigned")
         return " & ".join(filter_list)
+
+
+def process_instrument_db_list(instruments: Iterable):
+    instruments_db = [
+        InstrumentInDB.parse_obj(ins.attribute_values) for ins in instruments
+    ]
+    instruments_out = [InstrumentOut.parse_obj(ins) for ins in instruments_db]
+    return [ins.dict() for ins in instruments_out]

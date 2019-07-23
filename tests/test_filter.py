@@ -127,7 +127,7 @@ def test_filter_signed_out_instruments(monkeypatch, records):
     # instrument_mock.gifted.__eq__.assert_called_with(False)
 
     assert response["statusCode"] == 200
-    assert response["body"] == json.dumps([item.attribute_values for item in found])
+    assert _result_id_set(response["body"]) == _result_id_set(found)
 
 
 def test_filter_signed_out_dynamo_error(monkeypatch, explode):
@@ -151,7 +151,7 @@ def test_filter_gifted_instruments(monkeypatch, records):
     instrument_mock.gifted.__eq__.assert_called_with(True)
 
     assert response["statusCode"] == 200
-    assert response["body"] == json.dumps([item.attribute_values for item in found])
+    assert _result_id_set(response["body"]) == _result_id_set(found)
 
 
 def test_filter_gifted_dynamo_error(monkeypatch, explode):
