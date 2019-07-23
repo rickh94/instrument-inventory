@@ -173,6 +173,14 @@ class RetrieveMultiple(BaseModel):
     )
 
 
+class Search(BaseModel):
+    term: str = Schema(
+        ...,
+        title="Search Term",
+        description="Instrument number or name to search assigned or history",
+    )
+
+
 def process_instrument_db_list(instruments: Iterable):
     instruments_db = [
         InstrumentInDB.parse_obj(ins.attribute_values) for ins in instruments

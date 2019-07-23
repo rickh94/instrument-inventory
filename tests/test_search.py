@@ -4,6 +4,18 @@ from unittest import mock
 from app import search
 
 
+def _result_id_set(records):
+    if isinstance(records, str):
+        records = json.loads(records)
+
+    def record_id(rec):
+        if isinstance(rec, dict):
+            return rec["id"]
+        return rec.id
+
+    return {record_id(rec) for rec in records}
+
+
 def test_search_number(monkeypatch, records):
     """Test searching for an instrument number"""
     instrument_mock = mock.MagicMock()
@@ -17,7 +29,7 @@ def test_search_number(monkeypatch, records):
     instrument_mock.number.__eq__.assert_called_with("1-605")
 
     assert response["statusCode"] == 200
-    assert response["body"] == json.dumps([instrument_item.attribute_values])
+    assert _result_id_set(response["body"]) == {instrument_item.id}
 
 
 def test_search_number_not_found(monkeypatch, search_number_event):
@@ -33,11 +45,11 @@ def test_search_number_not_found(monkeypatch, search_number_event):
     assert response["statusCode"] == 404
 
 
-def test_search_number_bad_request():
+def test_search_number_invalid():
     """Test request missing data returns bad request"""
     response = search.number({"body": "{}"}, {})
 
-    assert response["statusCode"] == 400
+    assert response["statusCode"] == 422
 
 
 def test_search_assigned(monkeypatch, search_assigned_event, records):
@@ -53,14 +65,14 @@ def test_search_assigned(monkeypatch, search_assigned_event, records):
     instrument_mock.assignedTo.contains.assert_called_with("Test Name")
 
     assert response["statusCode"] == 200
-    assert response["body"] == json.dumps([item.attribute_values for item in found])
+    assert _result_id_set(response["body"]) == _result_id_set(found)
 
 
 def test_search_assigned_bad_request():
     """Test searching for a name missing data returns bad request"""
     response = search.assigned({"body": "{}"}, {})
 
-    assert response["statusCode"] == 400
+    assert response["statusCode"] == 422
 
 
 def test_search_history(monkeypatch, records):
@@ -74,14 +86,14 @@ def test_search_history(monkeypatch, records):
     instrument_mock.history.contains.assert_called_with("Test Name")
 
     assert response["statusCode"] == 200
-    assert response["body"] == json.dumps([item.attribute_values for item in found])
+    assert _result_id_set(response["body"]) == _result_id_set(found)
 
 
-def test_search_history_bad_request():
-    """Test missing data is bad request"""
+def test_search_history_invalid():
+    """Test missing data is validation error"""
     response = search.history({"body": "{}"}, {})
 
-    assert response["statusCode"] == 400
+    assert response["statusCode"] == 422
 
 
 def test_search_history_and_assigned(monkeypatch, records):
@@ -97,11 +109,11 @@ def test_search_history_and_assigned(monkeypatch, records):
     instrument_mock.history.contains.assert_called_with("Test Name")
 
     assert response["statusCode"] == 200
-    assert response["body"] == json.dumps([item.attribute_values for item in found])
+    assert _result_id_set(response["body"]) == _result_id_set(found)
 
 
-def test_search_history_and_assigned_bad_request():
-    """Test missing data is bad request"""
+def test_search_history_and_assigned_invalid():
+    """Test missing data is validation error"""
     response = search.history({"body": "{}"}, {})
 
-    assert response["statusCode"] == 400
+    assert response["statusCode"] == 422
