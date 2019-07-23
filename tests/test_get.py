@@ -24,8 +24,8 @@ def test_get_successful(monkeypatch, get_event, fake_instrument):
         "fakeid",
         number="123",
         size="4/4",
-        type="violin",
-        location="office",
+        type="Violin",
+        location="Office",
         photo="test-photo.jpg",
         history=json.dumps(["Old Owner"]),
     )
@@ -33,32 +33,42 @@ def test_get_successful(monkeypatch, get_event, fake_instrument):
 
     def fake_photo_url(photo_name):
         return {
-            "thumbnail": f"http://fake/thumbnail-{photo_name}",
-            "full": f"http://fake/{photo_name}",
+            "thumbnail": f"http://fake.com/thumbnail-{photo_name}",
+            "full": f"http://fake.com/{photo_name}",
         }
 
     monkeypatch.setattr("app.get.InstrumentModel", instrument_mock)
     monkeypatch.setattr("app.get.generate_photo_urls", fake_photo_url)
 
     response = get.main(get_event, {})
+    print(response["body"])
 
     assert response["statusCode"] == 200
     expected_result = {
-        field: value for field, value in fake_record.attribute_values.items()
+        "id": "fakeid",
+        "number": "123",
+        "size": "4/4",
+        "location": "Office",
+        "photoUrls": {
+            "thumbnail": "http://fake.com/thumbnail-test-photo.jpg",
+            "full": "http://fake.com/test-photo.jpg",
+        },
+        "history": ["Old Owner"],
     }
-    expected_result["history"] = ["Old Owner"]
-    expected_result["photoUrls"] = {
-        "thumbnail": "http://fake/thumbnail-test-photo.jpg",
-        "full": "http://fake/test-photo.jpg",
-    }
-    assert response["body"] == json.dumps(expected_result)
+    item = json.loads(response["body"])
+    for k, v in expected_result.items():
+        if isinstance(item[k], dict):
+            assert item[k]["thumbnail"] == v["thumbnail"]
+            assert item[k]["full"] == v["full"]
+        else:
+            assert item[k] == v
 
 
 def test_get_no_photo_successful(monkeypatch, get_event, fake_instrument):
     """Test getting a single instrument"""
     instrument_mock = mock.MagicMock()
     fake_record = fake_instrument(
-        "fakeid", number="123", size="4/4", type="violin", location="office"
+        "fakeid", number="123", size="4/4", type="Violin", location="Office"
     )
     instrument_mock.get.return_value = fake_record
 
@@ -73,12 +83,19 @@ def test_get_no_photo_successful(monkeypatch, get_event, fake_instrument):
 
     response = get.main(get_event, {})
 
+    print(response["body"])
     assert response["statusCode"] == 200
     expected_result = {
-        field: value for field, value in fake_record.attribute_values.items()
+        "id": "fakeid",
+        "photoUrls": None,
+        "number": "123",
+        "size": "4/4",
+        "type": "Violin",
+        "location": "Office",
     }
-    expected_result["photoUrls"] = None
-    assert response["body"] == json.dumps(expected_result)
+    item = json.loads(response["body"])
+    for k, v in expected_result.items():
+        assert item[k] == v
 
 
 def test_get_missing_data():

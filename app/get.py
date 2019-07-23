@@ -1,3 +1,4 @@
+from app.utils import api_models
 from app.utils.common import generate_photo_urls, serialize_item
 from app.utils.decorators import something_might_go_wrong, get_id_from_path, no_args
 from app.utils.models import InstrumentModel
@@ -8,15 +9,15 @@ from app.utils.responses import success
 @get_id_from_path
 def main(id_):
     """Get a single instrument from the database."""
-    ins = InstrumentModel.get(id_)
-    result = serialize_item(ins)
-    result["photoUrls"] = generate_photo_urls(ins.photo) if ins.photo else None
-    return success(result)
+    ins = api_models.InstrumentInDB.parse_obj(InstrumentModel.get(id_).attribute_values)
+    photo_urls = generate_photo_urls(ins.photo) if ins.photo else None
+    ins_out = api_models.InstrumentOut(**ins.dict(), photoUrls=photo_urls)
+    return success(ins_out.dict())
 
 
 @something_might_go_wrong
 @no_args
 def all_():
     """Get all the instruments"""
-    instruments = [serialize_item(ins) for ins in InstrumentModel.scan()]
+    instruments = api_models.process_instrument_db_list(InstrumentModel.scan())
     return success(instruments)
