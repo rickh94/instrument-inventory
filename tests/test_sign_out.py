@@ -7,12 +7,14 @@ def test_sign_out_successful(monkeypatch, sign_out_event, fake_instrument):
     """Test signing out an instrument"""
     instrument_mock = mock.MagicMock()
     instrument_item = fake_instrument(
-        "fakeid", number="1-201", size="4/4", type="violin", location="office"
+        "fakeid", number="1-201", size="4/4", type="Violin", location="Office"
     )
     instrument_mock.scan.return_value = [instrument_item]
     monkeypatch.setattr("app.sign_out.InstrumentModel", instrument_mock)
 
     response = sign_out.main(sign_out_event, {})
+
+    assert response["statusCode"] == 200
 
     instrument_mock.number.__eq__.assert_called_with("1-201")
 
@@ -21,8 +23,6 @@ def test_sign_out_successful(monkeypatch, sign_out_event, fake_instrument):
 
     instrument_item.save.assert_called()
     instrument_item.refresh.assert_called()
-
-    assert response["statusCode"] == 200
 
 
 def test_sign_out_updates_history(monkeypatch, sign_out_event, fake_instrument):

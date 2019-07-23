@@ -1,8 +1,8 @@
 {
   "pathParameters": {
-    "id":"ad31b8b8-dffc-4068-a5bd-ac84e6a54e27"
+    "id":"15ae8e4c-47f1-4b36-8096-85f04eec0423"
   },
-  "body": "{ \"condition\": \"4\", \"maintenanceNotes\": \"test notes\"}",
+  "body": "{\"type\":\"Cello\",\"number\": \"C1-502\",\"size\":\"4/4\",\"location\":\"Office\",\"assignedTo\":\"Test Name\",\"condition\":4,\"quality\":\"2\",\"conditionNotes\":\"test condition notes\",\"maintenanceNotes\":\"test maintenance notes\",\"gifted\":true}",
   "requestContext": {
     "identity": {
       "cognitoIdentityId": "USER-SUB-1234"

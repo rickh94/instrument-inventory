@@ -1,32 +1,23 @@
+from app.utils import api_models
 from app.utils.common import make_new_history
-from app.utils.decorators import something_might_go_wrong, load_and_validate
+from app.utils.decorators import something_might_go_wrong, load_and_validate, load_model
 from app.utils.models import InstrumentModel
-from app.utils.responses import failure, success
-
-required_fields = {
-    "instrumentNumber": "Instrument Number",
-    "assignedTo": "Assigned To",
-    "location": "Location",
-}
+from app.utils.responses import failure, success, not_found
 
 
 @something_might_go_wrong
-@load_and_validate(required_fields)
-def main(data):
+@load_model(api_models.SignOut)
+def main(sign_out: api_models.SignOut):
     """Sign out an instrument"""
     # noinspection PyTypeChecker
-    found = list(
-        InstrumentModel.scan(InstrumentModel.number == data["instrumentNumber"])
-    )
+    found = list(InstrumentModel.scan(InstrumentModel.number == sign_out.number))
     if not found:
-        return failure(
-            {"errors": {"instrumentNumber": "Could not find matching instrument"}}, 404
-        )
+        return not_found()
     item = found[0]
     if item.assignedTo:
         item.history = make_new_history(item.history, item.assignedTo)
-    item.assignedTo = data["assignedTo"]
-    item.location = data["location"]
+    item.assignedTo = sign_out.assignedTo
+    item.location = sign_out.location
     item.save()
     item.refresh()
     return success(

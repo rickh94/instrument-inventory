@@ -116,24 +116,21 @@ def test_update_full_record(monkeypatch, fake_instrument):
     instrument_mock.get.return_value = instrument_item
     monkeypatch.setattr("app.update.InstrumentModel", instrument_mock)
 
+    # noinspection PyTypeChecker
     response = update.full(
         {
             "pathParameters": {"id": "fakeid"},
             "body": json.dumps(
                 {
-                    "type": "cello",
+                    "type": "Cello",
                     "number": "C1-502",
                     "size": "4/4",
-                    "location": "office",
+                    "location": "Office",
                     "assignedTo": "Test Name",
                     "condition": 4,
                     "quality": "2",
                     "conditionNotes": "test condition notes",
                     "maintenanceNotes": "test maintenance notes",
-                    "rosin": True,
-                    "bow": False,
-                    "ready": True,
-                    "shoulderRestEndpinRest": False,
                     "gifted": True,
                 }
             ),
@@ -141,36 +138,31 @@ def test_update_full_record(monkeypatch, fake_instrument):
         {},
     )
 
-    instrument_mock.get.assert_called_with("fakeid")
-    instrument_mock.type.set.assert_called_with("cello")
-    instrument_mock.number.set.assert_called_with("C1-502")
-    instrument_mock.size.set.assert_called_with("4/4")
-    instrument_mock.location.set.assert_called_with("office")
-    instrument_mock.assignedTo.set.assert_called_with("Test Name")
-    instrument_mock.condition.set.assert_called_with(4)
-    instrument_mock.quality.set.assert_called_with(2)
-    instrument_mock.conditionNotes.set.assert_called_with("test condition notes")
-    instrument_mock.maintenanceNotes.set.assert_called_with("test maintenance notes")
-    instrument_mock.rosin.set.assert_called_with(True)
-    instrument_mock.bow.set.assert_called_with(False)
-    instrument_mock.ready.set.assert_called_with(True)
-    instrument_mock.shoulderRestEndpinRest.set.assert_called_with(False)
-    instrument_mock.gifted.set.assert_called_with(True)
+    assert response["statusCode"] == 200
 
-    instrument_item.update.assert_called()
     instrument_item.save.assert_called()
 
-    assert response["statusCode"] == 200
+    assert instrument_item.type == "Cello"
+    assert instrument_item.number == "C1-502"
+    assert instrument_item.size == "4/4"
+    assert instrument_item.location == "Office"
+    assert instrument_item.assignedTo == "Test Name"
+    assert instrument_item.condition == 4
+    assert instrument_item.quality == 2
+    assert instrument_item.conditionNotes == "test condition notes"
+    assert instrument_item.maintenanceNotes == "test maintenance notes"
+    assert instrument_item.gifted is True
 
 
 def test_unknown_key():
     """Test unknown key in request returns 400 bad request"""
+    # noinspection PyTypeChecker
     response = update.full(
         {"pathParameters": {"id": "fakeid"}, "body": json.dumps({"unknown": "fail"})},
         {},
     )
 
-    assert response["statusCode"] == 400
+    assert response["statusCode"] == 422
 
 
 def test_all_item_not_found(monkeypatch, db_not_found):
@@ -178,8 +170,26 @@ def test_all_item_not_found(monkeypatch, db_not_found):
 
     monkeypatch.setattr("app.update.InstrumentModel.get", db_not_found)
 
+    # noinspection PyTypeChecker
     response = update.full(
-        {"body": json.dumps({"number": "1234"}), "pathParameters": {"id": "fakeid"}}, {}
+        {
+            "body": json.dumps(
+                {
+                    "type": "Cello",
+                    "number": "C1-502",
+                    "size": "4/4",
+                    "location": "Office",
+                    "assignedTo": "Test Name",
+                    "condition": 4,
+                    "quality": "2",
+                    "conditionNotes": "test condition notes",
+                    "maintenanceNotes": "test maintenance notes",
+                    "gifted": True,
+                }
+            ),
+            "pathParameters": {"id": "fakeid"},
+        },
+        {},
     )
 
     assert response["statusCode"] == 404
@@ -187,6 +197,25 @@ def test_all_item_not_found(monkeypatch, db_not_found):
 
 def test_update_full_no_id():
     """test that not having an id in the path returns a bad request error"""
-    response = update.full({"body": json.dumps({"instrumenttype": "violin"})}, {})
+    # noinspection PyTypeChecker
+    response = update.full(
+        {
+            "body": json.dumps(
+                {
+                    "type": "Cello",
+                    "number": "C1-502",
+                    "size": "4/4",
+                    "location": "Office",
+                    "assignedTo": "Test Name",
+                    "condition": 4,
+                    "quality": "2",
+                    "conditionNotes": "test condition notes",
+                    "maintenanceNotes": "test maintenance notes",
+                    "gifted": True,
+                }
+            )
+        },
+        {},
+    )
 
     assert response["statusCode"] == 400

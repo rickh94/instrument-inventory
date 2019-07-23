@@ -1,5 +1,5 @@
 {
-  "body": "{\"numbers\":[\"1-001\", \"1-002\",\"1-003\",\"1-004\"]}",
+  "body": "{\"numbers\":[\"C1-502\", \"1-602\",\"1-601\",\"1-004\"]}",
   "requestContext": {
     "identity": {
       "cognitoIdentityId": "USER-SUB-1234"

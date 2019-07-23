@@ -1,5 +1,5 @@
 {
-  "body": "{\"instrumentNumber\":\"1-201\", \"assignedTo\":\"Test Student\", \"location\":\"Grant Elementary School\"}",
+  "body": "{\"number\":\"1-201\", \"assignedTo\":\"Test Student\", \"location\":\"Grant Elementary School\"}",
 
   "requestContext": {
     "identity": {

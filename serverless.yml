@@ -113,11 +113,6 @@ functions:
     events:
       - http:
           path: instruments/{id}
-          method: patch
-          cors: true
-          authorizer: aws_iam
-      - http:
-          path: instruments/{id}
           method: put
           cors: true
           authorizer: aws_iam

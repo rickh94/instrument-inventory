@@ -8,90 +8,110 @@ from app import todos
 from app.utils.models import TodoModel
 
 
-def test_create_todo_full(monkeypatch):
+@pytest.fixture
+def make_fake_todo_item():
+    class FakeTodoItem:
+        def __init__(
+            self, userId, todoId, content, relevantInstrument="", completed=False
+        ):
+            self.userId = userId
+            self.todoId = todoId
+            self.content = content
+            self.completed = completed
+            self.relevantInstrument = relevantInstrument
+            self.update = mock.MagicMock()
+            self.refresh = mock.MagicMock()
+            self.save = mock.MagicMock()
+            self.delete = mock.MagicMock()
+
+        @property
+        def attribute_values(self):
+            return {
+                "userId": self.userId,
+                "todoId": self.todoId,
+                "content": self.content,
+                "completed": self.completed,
+            }
+
+    return FakeTodoItem
+
+
+def test_create_todo_full(monkeypatch, make_fake_todo_item):
     """Test creating a to do item"""
     todo_mock = mock.MagicMock()
-    created_item = mock.MagicMock()
-    created_item.todoId = "fakeuuid"
-    created_item.content = "test content"
-    created_item.relevantInstrument = "1-610"
-    created_item.completed = False
+    created_item = make_fake_todo_item(
+        "USER-SUB-1234",
+        "fakeuuid",
+        content="test content",
+        relevantInstrument="1-610",
+        completed=False,
+    )
+
     todo_mock.return_value = created_item
 
     monkeypatch.setattr("app.todos.TodoModel", todo_mock)
+    event = {
+        "body": json.dumps({"content": "test content", "relevantInstrument": "1-610"}),
+        "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
+    }
 
-    response = todos.create(
-        {
-            "body": json.dumps(
-                {"content": "test content", "relevantInstrument": "1-610"}
-            ),
-            "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
-        },
-        {},
-    )
+    # noinspection PyTypeChecker
+    response = todos.create(event, {})
+
+    assert response["statusCode"] == 201
 
     todo_mock.assert_called_with(
-        "USER-SUB-1234", content="test content", relevantInstrument="1-610"
+        "USER-SUB-1234",
+        content="test content",
+        relevantInstrument="1-610",
+        completed=False,
     )
 
     created_item.save.assert_called()
 
-    assert response["statusCode"] == 201
 
-
-def test_create_todo_partial(monkeypatch):
+def test_create_todo_partial(monkeypatch, make_fake_todo_item):
     """Test creating a partial to do item"""
     todo_mock = mock.MagicMock()
-    created_item = mock.MagicMock()
-    created_item.todoId = "fakeuuid"
-    created_item.content = "test content"
-    created_item.relevantInstrument = None
-    created_item.completed = False
+    created_item = make_fake_todo_item(
+        "USER-SUB-1234", "fakeuuid", content="test content"
+    )
     todo_mock.return_value = created_item
 
     monkeypatch.setattr("app.todos.TodoModel", todo_mock)
+    event = {
+        "body": json.dumps({"content": "test content"}),
+        "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
+    }
 
-    response = todos.create(
-        {
-            "body": json.dumps({"content": "test content"}),
-            "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
-        },
-        {},
-    )
+    # noinspection PyTypeChecker
+    response = todos.create(event, {})
+    assert response["statusCode"] == 201
 
     todo_mock.assert_called_with(
-        "USER-SUB-1234", content="test content", relevantInstrument=None
+        "USER-SUB-1234",
+        content="test content",
+        relevantInstrument=None,
+        completed=False,
     )
 
     created_item.save.assert_called()
 
-    assert response["statusCode"] == 201
 
-
-def test_create_todo_incomplete_bad_request():
-    """Test missing data returns bad request"""
+def test_create_todo_incomplete_invalid():
+    """Test missing data returns validation error"""
+    # noinspection PyTypeChecker
     response = todos.create({"body": json.dumps({})}, {})
 
-    assert response["statusCode"] == 400
+    assert response["statusCode"] == 422
 
 
-@pytest.fixture
-def fake_todo():
-    class FakeTodo:
-        def __init__(self, content, relevant_instrument=None, completed=False):
-            self.userId = "USER-SUB-1234"
-            self.todoId = "testuuid"
-            self.content = content
-            self.relevantInstrument = relevant_instrument
-            self.completed = completed
-
-    return FakeTodo
-
-
-def test_read_single(monkeypatch, fake_todo):
+def test_read_single(monkeypatch, make_fake_todo_item):
     """Test getting a single to do item"""
     todo_mock = mock.MagicMock()
-    todo_mock.get.return_value = fake_todo("test read")
+    todo_mock.get.return_value = make_fake_todo_item(
+        "USER-SUB-1234", "testuuid", content="test read"
+    )
 
     monkeypatch.setattr("app.todos.TodoModel", todo_mock)
 
@@ -106,14 +126,15 @@ def test_read_single(monkeypatch, fake_todo):
     todo_mock.get.assert_called_with("USER-SUB-1234", "testuuid")
 
     assert response["statusCode"] == 200
-    assert response["body"] == json.dumps(
-        {
-            "todoId": "testuuid",
-            "content": "test read",
-            "relevantInstrument": None,
-            "completed": False,
-        }
-    )
+    expected = {
+        "todoId": "testuuid",
+        "content": "test read",
+        "relevantInstrument": None,
+        "completed": False,
+    }
+    actual = json.loads(response["body"])
+    for k, v in expected.items():
+        assert actual[k] == v
 
 
 def test_read_single_no_item(monkeypatch):
@@ -143,28 +164,14 @@ def test_read_single_bad_request():
     assert response["statusCode"] == 400
 
 
-def test_read_active(monkeypatch):
+def test_read_active(monkeypatch, make_fake_todo_item):
     """Test getting all uncompleted to do items"""
-
-    class FakeTodoItem:
-        def __init__(self, userId, todoId, content):
-            self.userId = userId
-            self.todoId = todoId
-            self.content = content
-
-        @property
-        def attribute_values(self):
-            return {
-                "userId": self.userId,
-                "todoId": self.todoId,
-                "content": self.content,
-            }
 
     fake_todo = mock.MagicMock()
     fake_todo.query.return_value = [
-        FakeTodoItem("USER-SUB-1234", "id1", content="test todo 1"),
-        FakeTodoItem("USER-SUB-1234", "id2", content="test todo 2"),
-        FakeTodoItem("USER-SUB-1234", "id3", content="test todo 3"),
+        make_fake_todo_item("USER-SUB-1234", "id1", content="test todo 1"),
+        make_fake_todo_item("USER-SUB-1234", "id2", content="test todo 2"),
+        make_fake_todo_item("USER-SUB-1234", "id3", content="test todo 3"),
     ]
 
     monkeypatch.setattr("app.todos.TodoModel", fake_todo)
@@ -192,34 +199,6 @@ def test_read_active_fails(monkeypatch, explode):
     )
 
     assert response["statusCode"] == 500
-
-
-@pytest.fixture
-def make_fake_todo_item():
-    class FakeTodoItem:
-        def __init__(
-            self, userId, todoId, content, relevantInstrument="", completed=False
-        ):
-            self.userId = userId
-            self.todoId = todoId
-            self.content = content
-            self.completed = completed
-            self.relevantInstrument = relevantInstrument
-            self.update = mock.MagicMock()
-            self.refresh = mock.MagicMock()
-            self.save = mock.MagicMock()
-            self.delete = mock.MagicMock()
-
-        @property
-        def attribute_values(self):
-            return {
-                "userId": self.userId,
-                "todoId": self.todoId,
-                "content": self.content,
-                "completed": self.completed,
-            }
-
-    return FakeTodoItem
 
 
 def test_read_complete(monkeypatch, make_fake_todo_item):
@@ -387,6 +366,7 @@ def test_update_todo_full(monkeypatch, make_fake_todo_item):
         },
         {},
     )
+    print(response)
 
     fake_todo.get.assert_called_with("USER-SUB-1234", "id1")
 

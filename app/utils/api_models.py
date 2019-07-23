@@ -181,9 +181,30 @@ class Search(BaseModel):
     )
 
 
+class SignOut(BaseModel):
+    class Config:
+        use_enum_values = True
+
+    number: str = Schema(
+        ..., title="Instrument Number", description="Instrument Number to sign out"
+    )
+    assignedTo: str = Schema(
+        ..., title="Assigned To", description="Name of the Person to sign out to"
+    )
+    location: LocationEnum = Schema(
+        ..., title="Location", description="Primary location of instrument"
+    )
+
+
 def process_instrument_db_list(instruments: Iterable):
     instruments_db = [
         InstrumentInDB.parse_obj(ins.attribute_values) for ins in instruments
     ]
     instruments_out = [InstrumentOut.parse_obj(ins) for ins in instruments_db]
     return [ins.dict() for ins in instruments_out]
+
+
+def process_todo_db_list(todos: Iterable):
+    todos_db = [TodoInDB.parse_obj(todo.attribute_values) for todo in todos]
+    todos_out = [TodoOut.parse_obj(todo) for todo in todos_db]
+    return [todo.dict() for todo in todos_out]
