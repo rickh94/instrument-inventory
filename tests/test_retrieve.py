@@ -10,7 +10,7 @@ def test_retrieve_successful(monkeypatch, retrieve_event, fake_instrument):
     instrument_item = fake_instrument(
         "fakeid",
         number="1-201",
-        type="violin",
+        type="Violin",
         size="4/4",
         location="Grant Elementary School",
         assignedTo="Test Student",
@@ -20,13 +20,15 @@ def test_retrieve_successful(monkeypatch, retrieve_event, fake_instrument):
     monkeypatch.setattr("app.retrieve.InstrumentModel", instrument_mock)
 
     response = retrieve.single(retrieve_event, {})
+    print(response)
+
+    assert response["statusCode"] == 200
 
     assert instrument_item.assignedTo is None
     assert instrument_item.location == "Storage"
     assert instrument_item.history == json.dumps(["Test Student"])
     instrument_item.save.assert_called()
 
-    assert response["statusCode"] == 200
     assert json.loads(response["body"])["id"] == "fakeid"
 
 
@@ -88,7 +90,7 @@ def test_retrieve_multiple_successful(monkeypatch, records):
         {
             "body": json.dumps(
                 {
-                    "instrumentNumbers": [
+                    "numbers": [
                         "1-605",
                         "1-601",
                         "1-602",
@@ -154,7 +156,7 @@ def test_retrieve_multiple_some_fail(monkeypatch, records):
         {
             "body": json.dumps(
                 {
-                    "instrumentNumbers": [
+                    "numbers": [
                         "1-605",
                         "1-601",
                         "1-602",
@@ -194,14 +196,14 @@ def test_retrieve_multiple_some_fail(monkeypatch, records):
 
 
 def test_bad_request_single():
-    """Test missing data returns bad request"""
+    """Test missing data returns validation error"""
     response = retrieve.single({"body": "{}"}, {})
 
-    assert response["statusCode"] == 400
+    assert response["statusCode"] == 422
 
 
 def test_bad_request_multiple():
-    """Test missing data returns bad request"""
+    """Test missing data returns validation error"""
     response = retrieve.multiple({"body": "{}"}, {})
 
-    assert response["statusCode"] == 400
+    assert response["statusCode"] == 422

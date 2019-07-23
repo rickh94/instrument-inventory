@@ -157,6 +157,22 @@ class InstrumentFilter(BaseModel):
         return " & ".join(filter_list)
 
 
+class RetrieveSingle(BaseModel):
+    number: str = Schema(
+        ...,
+        title="Instrument Number",
+        description="The number of the instrument to retrieve",
+    )
+
+
+class RetrieveMultiple(BaseModel):
+    numbers: List[str] = Schema(
+        ...,
+        title="Instrument Numbers",
+        description="A list of instrument numbers to retrieve",
+    )
+
+
 def process_instrument_db_list(instruments: Iterable):
     instruments_db = [
         InstrumentInDB.parse_obj(ins.attribute_values) for ins in instruments

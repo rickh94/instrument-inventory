@@ -1,17 +1,16 @@
+from app.utils import api_models
 from app.utils.common import make_new_history
-from app.utils.decorators import something_might_go_wrong, load_and_validate
+from app.utils.decorators import something_might_go_wrong, load_and_validate, load_model
 from app.utils.models import InstrumentModel
 from app.utils.responses import success, not_found
 
 
 @something_might_go_wrong
-@load_and_validate({"instrumentNumber": "Instrument Number"})
-def single(data):
+@load_model(api_models.RetrieveSingle)
+def single(body: api_models.RetrieveSingle):
     """Mark an instrument as having been retrieved"""
     # noinspection PyTypeChecker
-    found = list(
-        InstrumentModel.scan(InstrumentModel.number == data["instrumentNumber"])
-    )
+    found = list(InstrumentModel.scan(InstrumentModel.number == body.number))
     if not found:
         return not_found()
     item = found[0]
@@ -36,13 +35,11 @@ def generate_actions(ins):
 
 
 @something_might_go_wrong
-@load_and_validate({"instrumentNumbers": "Instrument Number List"})
-def multiple(data):
+@load_model(api_models.RetrieveMultiple)
+def multiple(body: api_models.RetrieveMultiple):
     """Mark multiple instruments as having been retrieved"""
     response_body = {"instrumentsUpdated": [], "instrumentsFailed": []}
-    scan = InstrumentModel.scan(
-        InstrumentModel.number.is_in(*data["instrumentNumbers"])
-    )
+    scan = InstrumentModel.scan(InstrumentModel.number.is_in(*body.numbers))
     for ins in scan:
         try:
             ins.location = "Storage"
@@ -54,7 +51,7 @@ def multiple(data):
         except Exception as err:
             print(err)
             response_body["instrumentsFailed"].append(ins.number)
-    for instrument_number in data["instrumentNumbers"]:
+    for instrument_number in body.numbers:
         if (
             instrument_number not in response_body["instrumentsUpdated"]
             and instrument_number not in response_body["instrumentsFailed"]
