@@ -36,6 +36,7 @@ provider:
     TODOS_TABLE_NAME: ${self:custom.tableNames.todos}
     PHOTOS_BUCKET_NAME: ${self:custom.photosPermanentBucketName}
     INSTRUMENTS_TABLE_NAME: ${self:custom.tableNames.instruments}
+    VERSION: '19.7a1'
 
   iamRoleStatements:
     - Effect: Allow
@@ -330,6 +331,16 @@ functions:
           method: delete
           cors: true
           authorizer: aws_iam
+
+  schema:
+    handler: app.schema.main
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: schema
+          method: get
+          cors: true
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}

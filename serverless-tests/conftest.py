@@ -38,3 +38,19 @@ def run_sls_cmd(make_sls_cmd):
         return json.loads(result.stdout)
 
     return _run
+
+
+@pytest.fixture
+def generate_event(tmp_path):
+    def _generate(body: dict = None, name="event", path_parameters=None):
+        event_path: Path = tmp_path / f"{name}.json"
+        event_data = {
+            "body": json.dumps(body),
+            "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
+            "pathParameters": path_parameters,
+        }
+        with event_path.open("w") as event_file:
+            json.dump(event_data, event_file)
+        return str(event_path.absolute())
+
+    return _generate
