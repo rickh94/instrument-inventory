@@ -25,11 +25,8 @@ deploy-branch:
 test-all:
     pipenv run pytest -p no:warnings
 
-test-sls:
-    pipenv run pytest -p no:warnings serverless-tests/
-
-test-sls-remote:
+pytest-sls-remote:
     pipenv run pytest -p no:warnings --remote --stage addpydantic serverless-tests/
 
-test-sls-local:
-    pipenv run pytest -p no:warnings serverless-tests/
+pytest-sls-local:
+    pipenv run pytest -p no:warnings --stage addpydantic serverless-tests/
