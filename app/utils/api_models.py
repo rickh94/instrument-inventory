@@ -101,7 +101,7 @@ class Instrument(BaseModel):
     quality: int = Schema(None, title="Quality", gt=0, lt=6)
     gifted: bool = Schema(
         False,
-        title="Gifted",
+        title="Gifted To Student",
         description="Whether it has been given permanently to"
         " the student it is assigned to.",
     )
