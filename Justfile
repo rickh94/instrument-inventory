@@ -26,7 +26,7 @@ test-all:
     pipenv run pytest -p no:warnings
 
 pytest-sls-remote:
-    pipenv run pytest -p no:warnings --remote --stage addpydantic serverless-tests/
+    pipenv run pytest -p no:warnings --remote --stage dev serverless-tests/
 
 pytest-sls-local:
-    pipenv run pytest -p no:warnings --stage addpydantic serverless-tests/
+    pipenv run pytest -p no:warnings --stage dev serverless-tests/
