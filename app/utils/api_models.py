@@ -49,7 +49,8 @@ class InstrumentSizeEnum(str, Enum):
     fourteen_inch = '14"'
     fifteen_inch = '15"'
     fifteen_half_inch = '15.5"'
-    sixteen_inch = '16.5"'
+    sixteen_inch = '16"'
+    sixteen_half_inch = '16.5"'
     seventeen_inch = '17"'
 
 
@@ -64,6 +65,7 @@ class LocationEnum(str, Enum):
     trade = "Trade"
     maintenance = "Maintenance"
     transit = "Transit"
+    unknown = "Unknown"
 
 
 class InstrumentTypeEnum(str, Enum):
@@ -133,10 +135,26 @@ class InstrumentOut(InstrumentWithID):
     )
 
 
+locations = {m.name: m.value for m in LocationEnum}
+locations["none"] = None
+
+
+def make_optional_enum(OriginalEnum: Enum, name: str):
+    keys = {m.name: m.value for m in OriginalEnum}
+    keys["none"] = None
+    # noinspection PyArgumentList
+    return Enum(name, keys)
+
+
+TypeOptionalEnum = make_optional_enum(InstrumentTypeEnum, "TypeOptionalEnum")
+SizeOptionalEnum = make_optional_enum(InstrumentSizeEnum, "SizeOptionalEnum")
+LocationOptionalEnum = make_optional_enum(LocationEnum, "LocationOptionalEnum")
+
+
 class InstrumentFilter(BaseModel):
-    type: InstrumentTypeEnum = Schema(None, title="Instrument Type")
-    size: InstrumentSizeEnum = Schema(None, title="Size")
-    location: LocationEnum = Schema(None, title="Location")
+    type: TypeOptionalEnum = Schema(None, title="Instrument Type")
+    size: SizeOptionalEnum = Schema(None, title="Size")
+    location: LocationOptionalEnum = Schema(None, title="Location")
     notAssigned: bool = Schema(False, title="Search only unassigned instruments")
 
     def generate_filter_string(self):

@@ -3,8 +3,10 @@ import os
 import time
 import uuid
 
+import pydantic
 from airtable import Airtable
 
+from app.utils import api_models
 from app.utils.models import InstrumentModel
 from app.utils.common import handle_photo
 
@@ -30,25 +32,21 @@ def main():
         if item["fields"].get("History"):
             history = json.dumps(item["fields"]["History"].split(", "))
         try:
-            new_item = InstrumentModel(
-                str(uuid.uuid4()),
-                number=item["fields"]["Number"],
-                size=item["fields"]["Size"],
-                type=item["fields"]["Instrument Type"],
-                location=item["fields"].get("Location", "Unknown"),
+            new_instrument = api_models.Instrument(
+                id=str(uuid.uuid4),
+                number=item["fields"]["Number"].strip(),
+                size=item["fields"]["Size"].strip(),
+                type=item["fields"]["Instrument Type"].strip(),
+                location=item["fields"].get("Location", "Unknown").strip(),
                 assignedTo=item["fields"].get("Assigned To", None),
                 maintenanceNotes=item["fields"].get("Maintenance Notes", None),
                 conditionNotes=item["fields"].get("Condition Notes", None),
                 quality=item["fields"].get("Quality", None),
                 condition=item["fields"].get("Condition", None),
-                rosin=item["fields"].get("Rosin", False),
-                bow=item["fields"].get("Bow", False),
-                shoulderRestEndpinRest=item["fields"].get(
-                    "Shoulder Rest/Endpin Rest", False
-                ),
-                ready=item["fields"].get("Ready To Go", False),
                 gifted=item["fields"].get("Gifted to student", False),
-                airtableId=item["id"],
+            )
+            new_item = InstrumentModel(
+                **new_instrument.dict(exclude={"photo", "history"}),
                 photo=photo_key,
                 history=history,
             )
