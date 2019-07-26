@@ -10,7 +10,7 @@ from app.utils.responses import success, not_found
 def single(body: api_models.RetrieveSingle):
     """Mark an instrument as having been retrieved"""
     # noinspection PyTypeChecker
-    found = list(InstrumentModel.scan(InstrumentModel.number == body.number))
+    found = list(InstrumentModel.scan(InstrumentModel.number == body.number.upper()))
     if not found:
         return not_found()
     item = found[0]
@@ -19,7 +19,7 @@ def single(body: api_models.RetrieveSingle):
         item.history = make_new_history(item.history, item.assignedTo)
     item.assignedTo = None
     item.save()
-    return success({"message": "Instrument retrieved", "id": item.id})
+    return success({"message": f"{item.type} {item.number} retrieved", "id": item.id})
 
 
 def generate_actions(ins):
@@ -38,8 +38,9 @@ def generate_actions(ins):
 @load_model(api_models.RetrieveMultiple)
 def multiple(body: api_models.RetrieveMultiple):
     """Mark multiple instruments as having been retrieved"""
+    numbers = [number.upper() for number in body.numbers]
     response_body = {"instrumentsUpdated": [], "instrumentsFailed": []}
-    scan = InstrumentModel.scan(InstrumentModel.number.is_in(*body.numbers))
+    scan = InstrumentModel.scan(InstrumentModel.number.is_in(*numbers))
     for ins in scan:
         try:
             ins.location = "Storage"
