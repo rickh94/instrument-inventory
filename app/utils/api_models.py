@@ -99,8 +99,8 @@ class Instrument(BaseModel):
     )
     maintenanceNotes: str = Schema(None, title="Maintenance Notes", max_length=200)
     conditionNotes: str = Schema(None, title="Condition Notes", max_length=200)
-    condition: int = Schema(None, title="Condition", gt=0, lt=6)
-    quality: int = Schema(None, title="Quality", gt=0, lt=6)
+    condition: int = Schema(None, title="Condition", gte=0, lt=6)
+    quality: int = Schema(None, title="Quality", gte=0, lt=6)
     gifted: bool = Schema(
         False,
         title="Gifted To Student",
