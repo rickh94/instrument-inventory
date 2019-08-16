@@ -1,7 +1,7 @@
+from enum import Enum
 from typing import List, Dict, Iterable
 
-from pydantic import BaseModel, Schema, UrlStr, validator, ValidationError, Json
-from enum import Enum
+from pydantic import BaseModel, Schema, UrlStr, Json
 
 from app.utils.common import MissingValue
 
@@ -160,11 +160,11 @@ class InstrumentFilter(BaseModel):
     def generate_filter_string(self):
         filter_list = []
         if self.type:
-            filter_list.append(f"(InstrumentModel.type == '{self.type}')")
+            filter_list.append(f"(InstrumentModel.type == '{self.type.value}')")
         if self.size:
-            filter_list.append(f"(InstrumentModel.size == '{self.size}')")
+            filter_list.append(f"(InstrumentModel.size == '{self.size.value}')")
         if self.location:
-            filter_list.append(f"(InstrumentModel.location == '{self.location}')")
+            filter_list.append(f"(InstrumentModel.location == '{self.location.value}')")
         if self.notAssigned:
             filter_list.append(
                 "(InstrumentModel.assignedTo.does_not_exist() | "

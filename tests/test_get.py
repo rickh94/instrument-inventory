@@ -1,13 +1,12 @@
-import json
+import ujson
 from unittest import mock
 
 from app import get
-from app.utils.models import InstrumentModel
 
 
 def _result_id_set(records):
     if isinstance(records, str):
-        records = json.loads(records)
+        records = ujson.loads(records)
 
     def record_id(rec):
         if isinstance(rec, dict):
@@ -27,7 +26,7 @@ def test_get_successful(monkeypatch, get_event, fake_instrument):
         type="Violin",
         location="Office",
         photo="test-photo.jpg",
-        history=json.dumps(["Old Owner"]),
+        history=ujson.dumps(["Old Owner"]),
     )
     instrument_mock.get.return_value = fake_record
 
@@ -55,7 +54,7 @@ def test_get_successful(monkeypatch, get_event, fake_instrument):
         },
         "history": ["Old Owner"],
     }
-    item = json.loads(response["body"])
+    item = ujson.loads(response["body"])
     for k, v in expected_result.items():
         if isinstance(item[k], dict):
             assert item[k]["thumbnail"] == v["thumbnail"]
@@ -93,7 +92,7 @@ def test_get_no_photo_successful(monkeypatch, get_event, fake_instrument):
         "type": "Violin",
         "location": "Office",
     }
-    item = json.loads(response["body"])
+    item = ujson.loads(response["body"])
     for k, v in expected_result.items():
         assert item[k] == v
 

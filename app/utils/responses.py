@@ -1,4 +1,4 @@
-import json
+import ujson
 
 
 def success(body, status_code=200):
@@ -16,7 +16,7 @@ def build_response(status_code, body):
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": True,
         },
-        "body": json.dumps(body),
+        "body": ujson.dumps(body),
     }
 
 

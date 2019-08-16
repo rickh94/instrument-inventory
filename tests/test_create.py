@@ -1,4 +1,4 @@
-import json
+import ujson
 from unittest import mock
 
 from app import create
@@ -103,7 +103,7 @@ def test_dynamodb_raises_error(monkeypatch, basic_create_event, explode):
 
 def test_incomplete_create():
     """Error is returned if incomplete create"""
-    incomplete_event = {"body": json.dumps({"instrumentNumber": "1-603"})}
+    incomplete_event = {"body": ujson.dumps({"instrumentNumber": "1-603"})}
 
     response = create.main(incomplete_event, {})
 

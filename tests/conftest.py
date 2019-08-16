@@ -1,4 +1,4 @@
-import json
+import ujson
 from pathlib import Path
 from unittest import mock
 
@@ -14,7 +14,7 @@ MOCKS = ROOT / "mocks"
 # ------------- EVENTS ----------------
 def read_event(event_file_name):
     with Path(MOCKS / f"{event_file_name}.json").open("r") as event_file:
-        return json.load(event_file)
+        return ujson.load(event_file)
 
 
 @pytest.fixture

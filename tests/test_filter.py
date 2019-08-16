@@ -1,4 +1,4 @@
-import json
+import ujson
 from unittest import mock
 
 import app.filter
@@ -7,7 +7,7 @@ from app import filter
 
 def _result_id_set(records):
     if isinstance(records, str):
-        records = json.loads(records)
+        records = ujson.loads(records)
 
     def record_id(rec):
         if isinstance(rec, dict):
@@ -24,7 +24,7 @@ def test_filter_by_instrument(monkeypatch, records):
 
     monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
-    event = {"body": json.dumps({"type": "Violin"})}
+    event = {"body": ujson.dumps({"type": "Violin"})}
 
     response = filter.main(event, {})
     print(response["body"])
@@ -42,7 +42,7 @@ def test_filter_by_size(monkeypatch, records):
 
     monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
-    event = {"body": json.dumps({"size": "4/4"})}
+    event = {"body": ujson.dumps({"size": "4/4"})}
 
     response = filter.main(event, {})
 
@@ -58,7 +58,7 @@ def test_filter_by_location(monkeypatch, records):
 
     monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
-    event = {"body": json.dumps({"location": "Office"})}
+    event = {"body": ujson.dumps({"location": "Office"})}
 
     response = filter.main(event, {})
     print(response["body"])
@@ -74,7 +74,7 @@ def test_filter_not_assigned(monkeypatch, records):
     instrument_mock = mock.MagicMock()
     instrument_mock.scan.return_value = [records[9]]
 
-    event = {"body": json.dumps({"notAssigned": True})}
+    event = {"body": ujson.dumps({"notAssigned": True})}
 
     monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
@@ -96,7 +96,7 @@ def test_filter_multiple(monkeypatch, records):
     monkeypatch.setattr("app.filter.InstrumentModel", instrument_mock)
 
     event = {
-        "body": json.dumps({"location": "Office", "type": "Violin", "size": "4/4"})
+        "body": ujson.dumps({"location": "Office", "type": "Violin", "size": "4/4"})
     }
 
     response = filter.main(event, {})
@@ -109,7 +109,7 @@ def test_filter_multiple(monkeypatch, records):
 def test_filter_nothing_bad_request():
     """Test sending nothing is a validation error"""
 
-    response = filter.main({"body": json.dumps({})}, {})
+    response = filter.main({"body": ujson.dumps({})}, {})
 
     assert response["statusCode"] == 422
 

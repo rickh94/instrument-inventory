@@ -1,5 +1,5 @@
 import functools
-import json
+import ujson
 
 import pydantic
 import pynamodb.exceptions
@@ -29,7 +29,7 @@ def something_might_go_wrong(func):
             return validation_error(err.json())
         except MissingValue as err:
             print(err)
-            return validation_error(json.dumps(str(err)))
+            return validation_error(ujson.dumps(str(err)))
         except MissingID as err:
             print(err)
             return bad_request("ID is required in path")
@@ -46,7 +46,7 @@ def load_and_validate(
     def decorator(func):
         @functools.wraps(func)
         def wrapper(event, _context):
-            data = json.loads(event["body"])
+            data = ujson.loads(event["body"])
             for field_key, field_name in required_fields.items():
                 if not data.get(field_key):
                     return bad_request(
@@ -78,7 +78,7 @@ def load_model(
     def decorator(func):
         @functools.wraps(func)
         def wrapper(event, _context):
-            data = json.loads(event["body"])
+            data = ujson.loads(event["body"])
             item = model(**data)
             kwargs = {}
             if with_identity:

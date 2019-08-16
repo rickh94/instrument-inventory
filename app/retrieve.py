@@ -1,6 +1,6 @@
 from app.utils import api_models
 from app.utils.common import make_new_history
-from app.utils.decorators import something_might_go_wrong, load_and_validate, load_model
+from app.utils.decorators import something_might_go_wrong, load_model
 from app.utils.models import InstrumentModel
 from app.utils.responses import success, not_found
 

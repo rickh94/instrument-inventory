@@ -1,5 +1,6 @@
-import json
 from unittest import mock
+
+import ujson
 
 from app import retrieve
 
@@ -26,10 +27,10 @@ def test_retrieve_successful(monkeypatch, retrieve_event, fake_instrument):
 
     assert instrument_item.assignedTo is None
     assert instrument_item.location == "Storage"
-    assert instrument_item.history == json.dumps(["Test Student"])
+    assert instrument_item.history == ujson.dumps(["Test Student"])
     instrument_item.save.assert_called()
 
-    assert json.loads(response["body"])["id"] == "fakeid"
+    assert ujson.loads(response["body"])["id"] == "fakeid"
 
 
 def test_retrieve_successful_without_assigned_to(
@@ -56,7 +57,7 @@ def test_retrieve_successful_without_assigned_to(
     instrument_item.save.assert_called()
 
     assert response["statusCode"] == 200
-    assert json.loads(response["body"])["id"] == "fakeid"
+    assert ujson.loads(response["body"])["id"] == "fakeid"
 
 
 def test_dynamo_raises_error(monkeypatch, retrieve_event, explode):
@@ -88,7 +89,7 @@ def test_retrieve_multiple_successful(monkeypatch, records):
 
     response = retrieve.multiple(
         {
-            "body": json.dumps(
+            "body": ujson.dumps(
                 {
                     "numbers": [
                         "1-605",
@@ -127,7 +128,7 @@ def test_retrieve_multiple_successful(monkeypatch, records):
     )
 
     assert response["statusCode"] == 200
-    assert response["body"] == json.dumps(
+    assert response["body"] == ujson.dumps(
         {
             "instrumentsUpdated": [
                 "1-605",
@@ -154,7 +155,7 @@ def test_retrieve_multiple_some_fail(monkeypatch, records):
 
     response = retrieve.multiple(
         {
-            "body": json.dumps(
+            "body": ujson.dumps(
                 {
                     "numbers": [
                         "1-605",
@@ -176,7 +177,7 @@ def test_retrieve_multiple_some_fail(monkeypatch, records):
     )
 
     assert response["statusCode"] == 200
-    assert response["body"] == json.dumps(
+    assert response["body"] == ujson.dumps(
         {
             "instrumentsUpdated": [
                 "1-605",

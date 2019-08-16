@@ -1,4 +1,4 @@
-import json
+import ujson
 import os
 import urllib.request
 import uuid
@@ -67,15 +67,15 @@ def serialize_item(item):
     item_values = item.attribute_values
 
     if item.history:
-        item_values["history"] = json.loads(item.history)
+        item_values["history"] = ujson.loads(item.history)
 
     return item_values
 
 
 def make_new_history(history, assigned_to):
-    history_list = json.loads(history) if history else []
+    history_list = ujson.loads(history) if history else []
     history_list.append(assigned_to)
-    return json.dumps(history_list)
+    return ujson.dumps(history_list)
 
 
 class MissingValue(Exception):

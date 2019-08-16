@@ -1,12 +1,7 @@
-import json
+import ujson
 
 from app.utils import api_models
-from app.utils.decorators import (
-    something_might_go_wrong,
-    load_and_validate,
-    get_todo_ids,
-    load_model,
-)
+from app.utils.decorators import something_might_go_wrong, get_todo_ids, load_model
 from app.utils.models import TodoModel
 from app.utils.responses import success
 
@@ -76,7 +71,7 @@ def unmark_completed(user_id, todo_id, _):
 @get_todo_ids
 def update(user_id, todo_id, event):
     """Update the content or instrument of a to do item"""
-    data = json.loads(event["body"])
+    data = ujson.loads(event["body"])
     item = TodoModel.get(user_id, todo_id)
     if data.get("content"):
         item.content = data["content"]

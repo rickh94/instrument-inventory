@@ -1,5 +1,5 @@
 from app.utils import api_models
-from app.utils.common import generate_photo_urls, serialize_item
+from app.utils.common import generate_photo_urls
 from app.utils.decorators import something_might_go_wrong, get_id_from_path, no_args
 from app.utils.models import InstrumentModel
 from app.utils.responses import success

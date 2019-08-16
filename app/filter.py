@@ -1,7 +1,4 @@
-import json
-
 from app.utils import api_models
-from app.utils.common import serialize_item
 from app.utils.decorators import something_might_go_wrong, no_args, load_model
 from app.utils.models import InstrumentModel
 from app.utils.responses import success, bad_request, data_or_404

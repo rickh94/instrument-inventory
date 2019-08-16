@@ -1,8 +1,7 @@
-import json
 from unittest import mock
 
-import pynamodb.exceptions
 import pytest
+import ujson
 
 from app import todos
 from app.utils.models import TodoModel
@@ -51,7 +50,7 @@ def test_create_todo_full(monkeypatch, make_fake_todo_item):
 
     monkeypatch.setattr("app.todos.TodoModel", todo_mock)
     event = {
-        "body": json.dumps({"content": "test content", "relevantInstrument": "1-610"}),
+        "body": ujson.dumps({"content": "test content", "relevantInstrument": "1-610"}),
         "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
     }
 
@@ -80,7 +79,7 @@ def test_create_todo_partial(monkeypatch, make_fake_todo_item):
 
     monkeypatch.setattr("app.todos.TodoModel", todo_mock)
     event = {
-        "body": json.dumps({"content": "test content"}),
+        "body": ujson.dumps({"content": "test content"}),
         "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
     }
 
@@ -101,7 +100,7 @@ def test_create_todo_partial(monkeypatch, make_fake_todo_item):
 def test_create_todo_incomplete_invalid():
     """Test missing data returns validation error"""
     # noinspection PyTypeChecker
-    response = todos.create({"body": json.dumps({})}, {})
+    response = todos.create({"body": ujson.dumps({})}, {})
 
     assert response["statusCode"] == 422
 
@@ -132,7 +131,7 @@ def test_read_single(monkeypatch, make_fake_todo_item):
         "relevantInstrument": None,
         "completed": False,
     }
-    actual = json.loads(response["body"])
+    actual = ujson.loads(response["body"])
     for k, v in expected.items():
         assert actual[k] == v
 
@@ -183,7 +182,7 @@ def test_read_active(monkeypatch, make_fake_todo_item):
     fake_todo.query.assert_called_with("USER-SUB-1234", mock.ANY)
 
     assert response["statusCode"] == 200
-    assert {item["todoId"] for item in json.loads(response["body"])} == {
+    assert {item["todoId"] for item in ujson.loads(response["body"])} == {
         "id1",
         "id2",
         "id3",
@@ -226,7 +225,7 @@ def test_read_complete(monkeypatch, make_fake_todo_item):
     fake_todo.query.assert_called_with("USER-SUB-1234", mock.ANY)
 
     assert response["statusCode"] == 200
-    assert {item["todoId"] for item in json.loads(response["body"])} == {
+    assert {item["todoId"] for item in ujson.loads(response["body"])} == {
         "id1",
         "id2",
         "id3",
@@ -360,7 +359,7 @@ def test_update_todo_full(monkeypatch, make_fake_todo_item):
         {
             "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
             "pathParameters": {"id": "id1"},
-            "body": json.dumps(
+            "body": ujson.dumps(
                 {"content": "some different content", "relevantInstrument": "1-611"}
             ),
         },
@@ -396,7 +395,7 @@ def test_update_todo_partial(monkeypatch, make_fake_todo_item):
         {
             "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
             "pathParameters": {"id": "id1"},
-            "body": json.dumps({"relevantInstrument": "1-611"}),
+            "body": ujson.dumps({"relevantInstrument": "1-611"}),
         },
         {},
     )
@@ -413,7 +412,7 @@ def test_update_todo_partial(monkeypatch, make_fake_todo_item):
 
 def test_update_no_id_bad_request():
     """Test missing id returns not found"""
-    response = todos.update({"body": json.dumps({})}, {})
+    response = todos.update({"body": ujson.dumps({})}, {})
 
     assert response["statusCode"] == 400
 
@@ -426,7 +425,7 @@ def test_update_does_not_exist_not_found(monkeypatch, db_not_found):
         {
             "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
             "pathParameters": {"id": "id1"},
-            "body": json.dumps({}),
+            "body": ujson.dumps({}),
         },
         {},
     )
@@ -464,7 +463,7 @@ def test_delete_todo(monkeypatch, make_fake_todo_item):
 
 def test_delete_todo_bad_request():
     """Test no id returns bad request"""
-    response = todos.delete({"body": json.dumps({})}, {})
+    response = todos.delete({"body": ujson.dumps({})}, {})
 
     assert response["statusCode"] == 400
 
@@ -477,7 +476,7 @@ def test_delete_todo_not_found(monkeypatch, db_not_found):
         {
             "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
             "pathParameters": {"id": "id1"},
-            "body": json.dumps({}),
+            "body": ujson.dumps({}),
         },
         {},
     )

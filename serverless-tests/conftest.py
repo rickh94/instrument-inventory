@@ -1,5 +1,6 @@
-import json
 import subprocess
+from pathlib import Path
+import ujson
 
 import pytest
 
@@ -35,7 +36,7 @@ def run_sls_cmd(make_sls_cmd):
     def _run(function_name, event_path):
         cmd = make_sls_cmd(function_name, event_path)
         result = subprocess.run(cmd, stdout=subprocess.PIPE)
-        return json.loads(result.stdout)
+        return ujson.loads(result.stdout)
 
     return _run
 
@@ -45,12 +46,12 @@ def generate_event(tmp_path):
     def _generate(body: dict = None, name="event", path_parameters=None):
         event_path: Path = tmp_path / f"{name}.json"
         event_data = {
-            "body": json.dumps(body),
+            "body": ujson.dumps(body),
             "requestContext": {"identity": {"cognitoIdentityId": "USER-SUB-1234"}},
             "pathParameters": path_parameters,
         }
         with event_path.open("w") as event_file:
-            json.dump(event_data, event_file)
+            ujson.dump(event_data, event_file)
         return str(event_path.absolute())
 
     return _generate
