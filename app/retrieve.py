@@ -18,6 +18,7 @@ def single(body: api_models.RetrieveSingle):
     if item.assignedTo:
         item.history = make_new_history(item.history, item.assignedTo)
     item.assignedTo = None
+    item.gifted = False
     item.save()
     return success({"message": f"{item.type} {item.number} retrieved", "id": item.id})
 
@@ -47,6 +48,7 @@ def multiple(body: api_models.RetrieveMultiple):
             if ins.assignedTo:
                 ins.history = make_new_history(ins.history, ins.assignedTo)
             ins.assignedTo = None
+            ins.gifted = False
             ins.save()
             response_body["instrumentsUpdated"].append(ins.number)
         except Exception as err:

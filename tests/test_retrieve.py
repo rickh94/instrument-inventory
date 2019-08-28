@@ -33,6 +33,36 @@ def test_retrieve_successful(monkeypatch, retrieve_event, fake_instrument):
     assert ujson.loads(response["body"])["id"] == "fakeid"
 
 
+def test_retrieve_successful_gifted(monkeypatch, retrieve_event, fake_instrument):
+    """Test retrieving an instrument"""
+    instrument_mock = mock.MagicMock()
+    instrument_item = fake_instrument(
+        "fakeid",
+        number="1-201",
+        type="Violin",
+        size="4/4",
+        location="Grant Elementary School",
+        assignedTo="Test Student",
+        gifted=True,
+    )
+    instrument_mock.scan.return_value = [instrument_item]
+
+    monkeypatch.setattr("app.retrieve.InstrumentModel", instrument_mock)
+
+    response = retrieve.single(retrieve_event, {})
+    print(response)
+
+    assert response["statusCode"] == 200
+
+    assert instrument_item.assignedTo is None
+    assert instrument_item.location == "Storage"
+    assert instrument_item.gifted is False
+    assert instrument_item.history == ujson.dumps(["Test Student"])
+    instrument_item.save.assert_called()
+
+    assert ujson.loads(response["body"])["id"] == "fakeid"
+
+
 def test_retrieve_successful_without_assigned_to(
     monkeypatch, retrieve_event, fake_instrument
 ):
