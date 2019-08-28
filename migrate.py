@@ -29,15 +29,18 @@ def main():
         if item["fields"].get("Photo"):
             photo_key = handle_photo(item["fields"]["Photo"][0]["url"])
         history = None
+        type = item["fields"]["Instrument Type"].strip()
+        type = type[0].upper() + type[1:]
+        location = item["fields"].get("Location", "Unknown").strip()
+        location = location[0].upper() + location[1:]
         if item["fields"].get("History"):
             history = json.dumps(item["fields"]["History"].split(", "))
         try:
             new_instrument = api_models.Instrument(
-                id=str(uuid.uuid4),
                 number=item["fields"]["Number"].strip(),
                 size=item["fields"]["Size"].strip(),
-                type=item["fields"]["Instrument Type"].strip(),
-                location=item["fields"].get("Location", "Unknown").strip(),
+                type=type,
+                location=location,
                 assignedTo=item["fields"].get("Assigned To", None),
                 maintenanceNotes=item["fields"].get("Maintenance Notes", None),
                 conditionNotes=item["fields"].get("Condition Notes", None),

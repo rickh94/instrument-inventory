@@ -33,6 +33,8 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: ${self:custom.tableThroughput}
         WriteCapacityUnits: ${self:custom.tableThroughput}
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
       Tags:
         -
           Key: 'CostCenter'
