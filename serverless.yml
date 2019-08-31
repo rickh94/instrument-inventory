@@ -6,6 +6,17 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: true
+    useStaticCache: false
+    usePipenv: true
+    slim: true
+    slimPatterns:
+      - "**/node_modules*"
+      - "**/docs*"
+      - "**/examples*"
+      - "bin/*"
+      - "**/pydantic/*.py"
+      - "**/*.egg-info*"
+      - "**/*.pyi"
   stage: ${opt:stage, self:provider.stage}
   environment: ${file(env.yml):${self:custom.stage}, file(env.yml):default}
   tableNames:
