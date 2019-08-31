@@ -14,8 +14,7 @@ Resources:
     Type: AWS::Cognito::UserPoolClient
     Properties:
       ClientName: ${self:custom.stage}-instrument-client
-      UserPoolId:
-        Ref: CognitoUserPool
+      UserPoolId: "#{CognitoUserPool}"
       ExplicitAuthFlows:
         - ADMIN_NO_SRP_AUTH
       GenerateSecret: false
