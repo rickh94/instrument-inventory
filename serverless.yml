@@ -40,7 +40,7 @@ provider:
     TODOS_TABLE_NAME: ${self:custom.tableNames.todos}
     PHOTOS_BUCKET_NAME: ${self:custom.photosPermanentBucketName}
     INSTRUMENTS_TABLE_NAME: ${self:custom.tableNames.instruments}
-    VERSION: '19.7a1'
+    VERSION: '19.8.1'
 
   iamRoleStatements:
     - Effect: Allow
