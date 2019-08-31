@@ -5,13 +5,11 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: true
     useStaticCache: false
+    dockerizePip: true
     usePipenv: true
     slim: true
     slimPatterns:
-      - "**/node_modules*"
-      - "**/docs*"
       - "**/examples*"
       - "bin/*"
       - "**/pydantic/*.py"
