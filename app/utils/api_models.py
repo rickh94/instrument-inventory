@@ -55,6 +55,7 @@ class InstrumentSizeEnum(str, Enum):
 
 
 class LocationEnum(str, Enum):
+    union_baptist = "Union Baptist Church"
     grant = "Grant Elementary School"
     hedgepath = "Hedgepath Middle School"
     wilson = "Wilson Elementary School"
