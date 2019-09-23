@@ -10,6 +10,7 @@ pytest-cov = "*"
 pytest-freezegun = "*"
 ptpython = "*"
 airtable-python-wrapper = "*"
+names = "*"
 
 [packages]
 pynamodb = "*"
