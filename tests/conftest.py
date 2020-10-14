@@ -34,6 +34,11 @@ def sign_out_event():
 
 
 @pytest.fixture
+def sign_out_multiple_event():
+    return read_event("sign-out-multiple-event")
+
+
+@pytest.fixture
 def basic_create_event():
     return read_event("create-event")
 

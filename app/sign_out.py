@@ -11,8 +11,23 @@ def main(sign_out: api_models.SignOut):
     """Sign out an instrument"""
     # noinspection PyTypeChecker
     found = list(InstrumentModel.scan(InstrumentModel.number == sign_out.number))
-    if not found:
+    item = sign_out_instrument(sign_out)
+    if item:
+        return success(
+            {
+                "message": f"Instrument {item.number} signed out to {item.assignedTo}"
+                f" at {item.location}",
+                "id": item.id,
+            }
+        )
+    else:
         return not_found()
+
+
+def sign_out_instrument(sign_out):
+    found = list(InstrumentModel.scan(InstrumentModel.number == sign_out.number))
+    if not found:
+        return None
     item = found[0]
     if item.assignedTo:
         item.history = make_new_history(item.history, item.assignedTo)
@@ -20,10 +35,18 @@ def main(sign_out: api_models.SignOut):
     item.location = sign_out.location
     item.save()
     item.refresh()
-    return success(
-        {
-            "message": f"Instrument {item.number} signed out to {item.assignedTo}"
-            f" at {item.location}",
-            "id": item.id,
-        }
-    )
+    return item
+
+
+@something_might_go_wrong
+@load_model(api_models.SignOutMultiple)
+def multiple(assignments: api_models.SignOutMultiple):
+    successes = []
+    failures = []
+    for asg in assignments.instruments:
+        item = sign_out_instrument(asg)
+        if item:
+            successes.append(asg.number)
+        else:
+            failures.append(asg.number)
+    return success({"updated": successes, "failed": failures})

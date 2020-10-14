@@ -162,6 +162,17 @@ functions:
           cors: true
           authorizer: aws_iam
 
+  sign-out-multiple:
+    handler: app.sign_out.multiple
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: sign-out/multiple
+          method: post
+          cors: true
+          authorizer: aws_iam
+
   search-number:
     handler: app.search.number
     tags:

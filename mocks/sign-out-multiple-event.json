@@ -1,0 +1,8 @@
+{
+  "body": "{\"instruments\": [{\"number\":\"1-201\", \"assignedTo\":\"Test Student\", \"location\":\"Grant Elementary School\"}, {\"number\":\"1-204\", \"assignedTo\":\"Test Student2\", \"location\":\"SproutU\"}]}",
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}

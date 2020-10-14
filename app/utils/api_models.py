@@ -66,6 +66,8 @@ class LocationEnum(str, Enum):
     trade = "Trade"
     maintenance = "Maintenance"
     transit = "Transit"
+    spoutu = "SproutU"
+    cseix = "Christina Seix Academy"
     unknown = "Unknown"
 
 
@@ -167,10 +169,12 @@ class InstrumentFilter(BaseModel):
         if self.location:
             filter_list.append(f"(InstrumentModel.location == '{self.location.value}')")
         if self.notAssigned:
-            filter_list.append(
-                "(InstrumentModel.assignedTo.does_not_exist() | "
-                'InstrumentModel.assignedTo == "")'
-            )
+            pass
+        # if self.notAssigned:
+        #     filter_list.append(
+        #         # "(InstrumentModel.assignedTo.does_not_exist())"
+        #         # ' | InstrumentModel.assignedTo == "")'
+        #     )
         if not filter_list:
             raise MissingValue("Must provide one of type, size, location, notAssigned")
         return " & ".join(filter_list)
@@ -212,6 +216,17 @@ class SignOut(BaseModel):
     )
     location: LocationEnum = Schema(
         ..., title="Location", description="Primary location of instrument"
+    )
+
+
+class SignOutMultiple(BaseModel):
+    class Config:
+        use_enum_values = True
+
+    instruments: List[SignOut] = Schema(
+        ...,
+        title="Instrument assignments",
+        description="A list of instrument numbers, students, and locations",
     )
 
 

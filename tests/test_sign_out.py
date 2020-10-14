@@ -53,6 +53,29 @@ def test_sign_out_updates_history(monkeypatch, sign_out_event, fake_instrument):
     assert response["statusCode"] == 200
 
 
+def test_sign_out_multiple_successful(
+    monkeypatch, sign_out_multiple_event, fake_instrument
+):
+    """Test signing out multiple instruments"""
+    instrument_mock = mock.MagicMock()
+    ins1 = fake_instrument(
+        "fakeid",
+        number="1-201",
+        size="4/4",
+        type="violin",
+        location="office",
+        assignedTo="Previous Owner",
+    )
+    ins2 = fake_instrument(
+        "fakeid2",
+        number="1-204",
+        size="4/4",
+        type="violin",
+        location="office",
+        assignedTo="Previous Owner",
+    )
+
+
 def test_dynamo_raises_error(monkeypatch, sign_out_event):
     """Test airtable raising an error"""
 

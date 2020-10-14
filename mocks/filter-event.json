@@ -1,5 +1,5 @@
 {
-  "body": "{\"type\": \"Violin\", \"size\": \"4/4\", \"location\": \"Office\", \"notAssigned\": false }",
+  "body": "{\"type\": \"Violin\", \"size\": \"4/4\", \"location\": \"Office\", \"notAssigned\": true }",
   "requestContext": {
     "identity": {
       "cognitoIdentityId": "USER-SUB-1234"
