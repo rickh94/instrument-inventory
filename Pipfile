@@ -16,6 +16,7 @@ pynamodb = "*"
 boto3 = "*"
 pillow = "*"
 pydantic = {extras = ["ujson"],version = "*"}
+ujson = "*"
 
 [requires]
 python_version = "3.7"

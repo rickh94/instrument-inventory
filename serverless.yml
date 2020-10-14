@@ -3,7 +3,7 @@ service: instrument-inventory
 plugins:
   - serverless-pseudo-parameters
   - serverless-python-requirements
-
+  - serverless-cf-vars
 custom:
   pythonRequirements:
     dockerizePip: true
@@ -53,14 +53,14 @@ provider:
         - dynamodb:DeleteItem
         - dynamodb:PutItem
       Resource:
-        - "#{TodosTable.Arn}"
-        - "#{InstrumentsTable.Arn}"
+        - Fn::Sub: "#{TodosTable.Arn}"
+        - Fn::Sub: "#{InstrumentsTable.Arn}"
     - Effect: Allow
       Action:
         - s3:*
       Resource:
-        - "#{PhotosPermanentBucket.Arn}"
-        - "#{PhotosPermanentBucket.Arn}/*"
+        - Fn::Sub: "#{PhotosPermanentBucket.Arn}"
+        - Fn::Sub: "#{PhotosPermanentBucket.Arn}/*"
 
 functions:
   create:

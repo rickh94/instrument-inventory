@@ -74,6 +74,28 @@ def test_sign_out_multiple_successful(
         location="office",
         assignedTo="Previous Owner",
     )
+    def _fake_equal(_self, number):
+        return number
+
+    def _fake_scan(number):
+        if number == "1-201":
+            return [ins1]
+        if number == "1-204":
+            return [ins2]
+    instrument_mock.number.__eq__ = _fake_equal
+    instrument_mock.scan = _fake_scan
+    monkeypatch.setattr("app.sign_out.InstrumentModel", instrument_mock)
+
+    response = sign_out.multiple(sign_out_multiple_event, {})
+
+    assert response["statusCode"] == 200
+
+    assert ins1.assignedTo == "Test Student"
+    assert ins1.location == "Grant Elementary School"
+
+    assert ins2.assignedTo == "Test Student2"
+    assert ins2.location == "SproutU"
+
 
 
 def test_dynamo_raises_error(monkeypatch, sign_out_event):

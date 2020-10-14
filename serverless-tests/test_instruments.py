@@ -216,6 +216,25 @@ def test_sign_out(run_sls_cmd, generate_event, instrument1):
     assert result_data["statusCode"] == 200
 
 
+def test_sign_out_multiple(run_sls_cmd, generate_event, instrument1, instrument2):
+    event_body = {
+        "instruments": [
+            {"number": instrument1["number"], "assignedTo": "New Person1",
+                "location": "SproutU"},
+            {"number": instrument2["number"], "assignedTo": "New Person2",
+                "location": "Office"}
+        ]
+    }
+    event_path = generate_event(body=event_body)
+
+    result_data = run_sls_cmd("sign-out-multiple", event_path)
+    assert result_data["statusCode"] == 200
+
+    response_body = ujson.loads(result_data['body'])
+    assert "1-602" in response_body["updated"]
+    assert "1-603" in response_body["updated"]
+
+
 def test_search_number(run_sls_cmd, generate_event, instrument1):
     """Integration test for searching by number"""
     event_body = {"term": instrument1["number"]}

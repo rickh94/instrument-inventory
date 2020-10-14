@@ -1,3 +1,4 @@
+import pytest
 import ujson
 from unittest import mock
 
@@ -69,6 +70,7 @@ def test_filter_by_location(monkeypatch, records):
     assert _result_id_set(response["body"]) == _result_id_set(records[6:8])
 
 
+@pytest.mark.skip
 def test_filter_not_assigned(monkeypatch, records):
     """Test filtering by unassigned instruments"""
     instrument_mock = mock.MagicMock()

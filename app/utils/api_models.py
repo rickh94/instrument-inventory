@@ -1,22 +1,22 @@
 from enum import Enum
 from typing import List, Dict, Iterable
 
-from pydantic import BaseModel, Schema, UrlStr, Json
+from pydantic import BaseModel, Field, AnyUrl, Json
 
 from app.utils.common import MissingValue
 
 
 class Todo(BaseModel):
-    content: str = Schema(
+    content: str = Field(
         ..., title="Content", description="The task to do", max_length=30
     )
-    relevantInstrument: str = Schema(
+    relevantInstrument: str = Field(
         None,
         title="Relevant Instrument",
         description="An instrument related to the task",
         max_length=10,
     )
-    completed: bool = Schema(
+    completed: bool = Field(
         False, title="Completed", description="Whether or not the task is completed"
     )
 
@@ -27,7 +27,7 @@ class TodoInDB(Todo):
 
 
 class TodoOut(Todo):
-    todoId: str = Schema(
+    todoId: str = Field(
         ..., title="Todo ID", description="The unique id of the todo in the database."
     )
 
@@ -83,28 +83,28 @@ class Instrument(BaseModel):
     class Config:
         use_enum_values = True
 
-    number: str = Schema(
+    number: str = Field(
         ...,
         title="Instrument Number",
         description="The inventory number of the instrument",
     )
-    size: InstrumentSizeEnum = Schema(
+    size: InstrumentSizeEnum = Field(
         ...,
         title="Instrument Size",
         description="The fractional or inch size of the instrument",
     )
-    type: InstrumentTypeEnum = Schema(
+    type: InstrumentTypeEnum = Field(
         ..., title="Instrument Type", description="What kind of instrument"
     )
-    location: LocationEnum = Schema(..., title="Instrument Location")
-    assignedTo: str = Schema(
+    location: LocationEnum = Field(..., title="Instrument Location")
+    assignedTo: str = Field(
         None, title="Assigned To", description="Who it is signed out to"
     )
-    maintenanceNotes: str = Schema(None, title="Maintenance Notes", max_length=200)
-    conditionNotes: str = Schema(None, title="Condition Notes", max_length=200)
-    condition: int = Schema(None, title="Condition", gte=0, lt=6)
-    quality: int = Schema(None, title="Quality", gte=0, lt=6)
-    gifted: bool = Schema(
+    maintenanceNotes: str = Field(None, title="Maintenance Notes", max_length=200)
+    conditionNotes: str = Field(None, title="Condition Notes", max_length=200)
+    condition: int = Field(None, title="Condition", gte=0, lt=6)
+    quality: int = Field(None, title="Quality", gte=0, lt=6)
+    gifted: bool = Field(
         False,
         title="Gifted To Student",
         description="Whether it has been given permanently to"
@@ -113,27 +113,27 @@ class Instrument(BaseModel):
 
 
 class InstrumentIn(Instrument):
-    photo: UrlStr = Schema(
+    photo: AnyUrl = Field(
         None, title="Photo URL", description="URL to download photo from"
     )
 
 
 class InstrumentWithID(Instrument):
-    id: str = Schema(
+    id: str = Field(
         ..., title="ID", description="The id of the instrument in the database"
     )
 
 
 class InstrumentInDB(InstrumentWithID):
-    photo: str = Schema(None, title="Photo", description="Filename of the photo")
-    history: Json[List[str]] = Schema(None, title="History")
+    photo: str = Field(None, title="Photo", description="Filename of the photo")
+    history: Json[List[str]] = Field(None, title="History")
 
 
 class InstrumentOut(InstrumentWithID):
-    photoUrls: Dict[str, UrlStr] = Schema(
+    photoUrls: Dict[str, AnyUrl] = Field(
         None, title="Photo URLS", description="Download urls for instrument photos"
     )
-    history: List[str] = Schema(
+    history: List[str] = Field(
         None, title="History", description="List of previous users"
     )
 
@@ -155,10 +155,10 @@ LocationOptionalEnum = make_optional_enum(LocationEnum, "LocationOptionalEnum")
 
 
 class InstrumentFilter(BaseModel):
-    type: TypeOptionalEnum = Schema(None, title="Instrument Type")
-    size: SizeOptionalEnum = Schema(None, title="Size")
-    location: LocationOptionalEnum = Schema(None, title="Location")
-    notAssigned: bool = Schema(False, title="Search only unassigned instruments")
+    type: TypeOptionalEnum = Field(None, title="Instrument Type")
+    size: SizeOptionalEnum = Field(None, title="Size")
+    location: LocationOptionalEnum = Field(None, title="Location")
+    notAssigned: bool = Field(False, title="Search only unassigned instruments")
 
     def generate_filter_string(self):
         filter_list = []
@@ -181,7 +181,7 @@ class InstrumentFilter(BaseModel):
 
 
 class RetrieveSingle(BaseModel):
-    number: str = Schema(
+    number: str = Field(
         ...,
         title="Instrument Number",
         description="The number of the instrument to retrieve",
@@ -189,7 +189,7 @@ class RetrieveSingle(BaseModel):
 
 
 class RetrieveMultiple(BaseModel):
-    numbers: List[str] = Schema(
+    numbers: List[str] = Field(
         ...,
         title="Instrument Numbers",
         description="A list of instrument numbers to retrieve",
@@ -197,7 +197,7 @@ class RetrieveMultiple(BaseModel):
 
 
 class Search(BaseModel):
-    term: str = Schema(
+    term: str = Field(
         ...,
         title="Search Term",
         description="Instrument number or name to search assigned or history",
@@ -208,13 +208,13 @@ class SignOut(BaseModel):
     class Config:
         use_enum_values = True
 
-    number: str = Schema(
+    number: str = Field(
         ..., title="Instrument Number", description="Instrument Number to sign out"
     )
-    assignedTo: str = Schema(
+    assignedTo: str = Field(
         ..., title="Assigned To", description="Name of the Person to sign out to"
     )
-    location: LocationEnum = Schema(
+    location: LocationEnum = Field(
         ..., title="Location", description="Primary location of instrument"
     )
 
@@ -223,7 +223,7 @@ class SignOutMultiple(BaseModel):
     class Config:
         use_enum_values = True
 
-    instruments: List[SignOut] = Schema(
+    instruments: List[SignOut] = Field(
         ...,
         title="Instrument assignments",
         description="A list of instrument numbers, students, and locations",

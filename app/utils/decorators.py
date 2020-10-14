@@ -70,7 +70,7 @@ def load_and_validate(
 
 
 def load_model(
-    model: pydantic.main.MetaModel,
+    model,
     *,
     with_identity: bool = False,
     with_path_id: bool = False,

@@ -9,8 +9,6 @@ from app.utils.responses import success, not_found
 @load_model(api_models.SignOut)
 def main(sign_out: api_models.SignOut):
     """Sign out an instrument"""
-    # noinspection PyTypeChecker
-    found = list(InstrumentModel.scan(InstrumentModel.number == sign_out.number))
     item = sign_out_instrument(sign_out)
     if item:
         return success(
@@ -25,6 +23,7 @@ def main(sign_out: api_models.SignOut):
 
 
 def sign_out_instrument(sign_out):
+    # noinspection PyTypeChecker
     found = list(InstrumentModel.scan(InstrumentModel.number == sign_out.number))
     if not found:
         return None
@@ -44,8 +43,7 @@ def multiple(assignments: api_models.SignOutMultiple):
     successes = []
     failures = []
     for asg in assignments.instruments:
-        item = sign_out_instrument(asg)
-        if item:
+        if sign_out_instrument(asg):
             successes.append(asg.number)
         else:
             failures.append(asg.number)
