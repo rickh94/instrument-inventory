@@ -21,7 +21,9 @@ def main():
             api_models.RetrieveMultiple,
             api_models.Search,
             api_models.SignOut,
-        ]
+            api_models.SignOutMultiple,
+        ],
+        ref_prefix="#/components/schemas/"
     )["definitions"]
     schema_body = {
         "openapi": "3.0.2",

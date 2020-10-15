@@ -32,7 +32,7 @@ class TodoOut(Todo):
     )
 
 
-class InstrumentSizeEnum(str, Enum):
+class Size(str, Enum):
     sixteenth = "1/16"
     tenth = "1/10"
     eighth = "1/8"
@@ -54,7 +54,7 @@ class InstrumentSizeEnum(str, Enum):
     seventeen_inch = '17"'
 
 
-class LocationEnum(str, Enum):
+class Location(str, Enum):
     union_baptist = "Union Baptist Church"
     grant = "Grant Elementary School"
     hedgepath = "Hedgepath Middle School"
@@ -71,7 +71,7 @@ class LocationEnum(str, Enum):
     unknown = "Unknown"
 
 
-class InstrumentTypeEnum(str, Enum):
+class Type(str, Enum):
     violin = "Violin"
     viola = "Viola"
     violin_strung_as_viola = "Violin strung as viola"
@@ -88,15 +88,15 @@ class Instrument(BaseModel):
         title="Instrument Number",
         description="The inventory number of the instrument",
     )
-    size: InstrumentSizeEnum = Field(
+    size: Size = Field(
         ...,
         title="Instrument Size",
         description="The fractional or inch size of the instrument",
     )
-    type: InstrumentTypeEnum = Field(
+    type: Type = Field(
         ..., title="Instrument Type", description="What kind of instrument"
     )
-    location: LocationEnum = Field(..., title="Instrument Location")
+    location: Location = Field(..., title="Instrument Location")
     assignedTo: str = Field(
         None, title="Assigned To", description="Who it is signed out to"
     )
@@ -138,7 +138,7 @@ class InstrumentOut(InstrumentWithID):
     )
 
 
-locations = {m.name: m.value for m in LocationEnum}
+locations = {m.name: m.value for m in Location}
 locations["none"] = None
 
 
@@ -149,9 +149,9 @@ def make_optional_enum(OriginalEnum: Enum, name: str):
     return Enum(name, keys)
 
 
-TypeOptionalEnum = make_optional_enum(InstrumentTypeEnum, "TypeOptionalEnum")
-SizeOptionalEnum = make_optional_enum(InstrumentSizeEnum, "SizeOptionalEnum")
-LocationOptionalEnum = make_optional_enum(LocationEnum, "LocationOptionalEnum")
+TypeOptionalEnum = make_optional_enum(Type, "TypeOptionalEnum")
+SizeOptionalEnum = make_optional_enum(Size, "SizeOptionalEnum")
+LocationOptionalEnum = make_optional_enum(Location, "LocationOptionalEnum")
 
 
 class InstrumentFilter(BaseModel):
@@ -214,7 +214,7 @@ class SignOut(BaseModel):
     assignedTo: str = Field(
         ..., title="Assigned To", description="Name of the Person to sign out to"
     )
-    location: LocationEnum = Field(
+    location: Location = Field(
         ..., title="Location", description="Primary location of instrument"
     )
 
