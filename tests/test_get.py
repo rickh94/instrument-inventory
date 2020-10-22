@@ -131,8 +131,9 @@ def test_get_all(monkeypatch, records):
     response = get.all_({}, {})
 
     db_mock.scan.assert_called()
+    instruments = ujson.loads(response['body'])['instruments']
 
-    assert _result_id_set(response["body"]) == _result_id_set(records)
+    assert _result_id_set(instruments) == _result_id_set(records)
 
 
 def test_dynamo_error_all(monkeypatch, explode):

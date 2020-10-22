@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import List, Dict, Iterable
 
-from pydantic import BaseModel, Field, AnyUrl, Json
+from pydantic import BaseModel, Field, AnyUrl, Json, ValidationError
 
 from app.utils.common import MissingValue
 
@@ -237,6 +237,20 @@ def process_instrument_db_list(instruments: Iterable):
     instruments_out = [InstrumentOut.parse_obj(ins) for ins in instruments_db]
     return [ins.dict() for ins in instruments_out]
 
+
+def process_all_instruments_list(instruments: Iterable) -> (List[dict], List[List[str]]):
+    instruments_db = []
+    instruments_failed = []
+    for ins in instruments:
+        try:
+            instruments_db.append(InstrumentInDB.parse_obj(ins.attribute_values))
+        except ValidationError as err:
+            instruments_failed.append([ins.number, str(err)])
+    # instruments_db = [
+    #     InstrumentInDB.parse_obj(ins.attribute_values) for ins in instruments
+    # ]
+    instruments_out = [InstrumentOut.parse_obj(ins) for ins in instruments_db]
+    return [ins.dict() for ins in instruments_out], instruments_failed
 
 def process_todo_db_list(todos: Iterable):
     todos_db = [TodoInDB.parse_obj(todo.attribute_values) for todo in todos]

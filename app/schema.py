@@ -23,7 +23,7 @@ def main():
             api_models.SignOut,
             api_models.SignOutMultiple,
         ],
-        ref_prefix="#/components/schemas/"
+        ref_prefix="#/components/schemas/",
     )["definitions"]
     schema_body = {
         "openapi": "3.0.2",

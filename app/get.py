@@ -19,5 +19,9 @@ def main(id_):
 @no_args
 def all_():
     """Get all the instruments"""
-    instruments = api_models.process_instrument_db_list(InstrumentModel.scan())
-    return success(instruments)
+    instruments, instruments_failed = api_models.process_all_instruments_list(
+        InstrumentModel.scan()
+    )
+    return success(
+        {"instruments": instruments, "instrumentsFailed": instruments_failed}
+    )
