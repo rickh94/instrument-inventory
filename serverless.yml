@@ -353,6 +353,16 @@ functions:
           method: get
           cors: true
 
+  autocomplete-options:
+    handler: app.schema.ac_options
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: schema/ac-options
+          method: get
+          cors: true
+
 resources:
   - ${file(resources/api-gateway-errors.yml)}
   - ${file(resources/cognito-user-pool.yml)}
