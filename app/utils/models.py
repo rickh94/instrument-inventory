@@ -44,3 +44,4 @@ class InstrumentModel(Model):
     gifted = BooleanAttribute(default=False)
     photo = UnicodeAttribute(null=True)
     history = UnicodeAttribute(null=True)
+    archived = BooleanAttribute(default=False)

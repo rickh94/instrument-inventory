@@ -36,6 +36,7 @@ def test_basic_create_successful(monkeypatch, basic_create_event):
         quality=None,
         gifted=False,
         photo=None,
+        archived=False,
     )
 
     created_item.save.assert_called()
@@ -85,6 +86,7 @@ def test_full_create_successful(monkeypatch, full_create_event):
         quality=3,
         gifted=True,
         photo="fake_photo.jpg",
+        archived=False,
     )
 
     created_item.save.assert_called()

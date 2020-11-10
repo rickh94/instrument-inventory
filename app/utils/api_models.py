@@ -112,6 +112,12 @@ class Instrument(BaseModel):
         description="Whether it has been given permanently to"
         " the student it is assigned to.",
     )
+    archived: bool = Field(
+        False,
+        title="Archived",
+        description="An instrument that has been removed from inventory for some "
+        "reason.",
+    )
 
 
 class InstrumentIn(Instrument):
@@ -240,7 +246,9 @@ def process_instrument_db_list(instruments: Iterable):
     return [ins.dict() for ins in instruments_out]
 
 
-def process_all_instruments_list(instruments: Iterable) -> (List[dict], List[List[str]]):
+def process_all_instruments_list(
+    instruments: Iterable,
+) -> (List[dict], List[List[str]]):
     instruments_db = []
     instruments_failed = []
     for ins in instruments:
@@ -253,6 +261,7 @@ def process_all_instruments_list(instruments: Iterable) -> (List[dict], List[Lis
     # ]
     instruments_out = [InstrumentOut.parse_obj(ins) for ins in instruments_db]
     return [ins.dict() for ins in instruments_out], instruments_failed
+
 
 def process_todo_db_list(todos: Iterable):
     todos_db = [TodoInDB.parse_obj(todo.attribute_values) for todo in todos]

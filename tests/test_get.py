@@ -131,7 +131,7 @@ def test_get_all(monkeypatch, records):
     response = get.all_({}, {})
 
     db_mock.scan.assert_called()
-    instruments = ujson.loads(response['body'])['instruments']
+    instruments = ujson.loads(response["body"])["instruments"]
 
     assert _result_id_set(instruments) == _result_id_set(records)
 
