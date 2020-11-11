@@ -71,7 +71,7 @@ def test_retrieve_successful_without_assigned_to(
     instrument_item = fake_instrument(
         "fakeid",
         number="1-201",
-        type="violin",
+        type="Violin",
         size="4/4",
         location="Grant Elementary School",
     )
@@ -85,6 +85,7 @@ def test_retrieve_successful_without_assigned_to(
     assert instrument_item.location == "Storage"
     assert instrument_item.history is None
     instrument_item.save.assert_called()
+    print(response)
 
     assert response["statusCode"] == 200
     assert ujson.loads(response["body"])["id"] == "fakeid"

@@ -1,3 +1,5 @@
+org: rickhenry
+app: instrument-inventory-app
 service: instrument-inventory
 
 plugins:
@@ -36,6 +38,8 @@ provider:
   runtime: python3.7
   stage: dev
   region: us-east-1
+  apiGateway:
+    shouldStartNameWithService: true
   environment:
     TODOS_TABLE_NAME: ${self:custom.tableNames.todos}
     PHOTOS_BUCKET_NAME: ${self:custom.photosPermanentBucketName}
@@ -64,7 +68,7 @@ provider:
 
 functions:
   create:
-    handler: app.create.main
+    handler: app/create.main
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -75,7 +79,7 @@ functions:
           authorizer: aws_iam
 
   get:
-    handler: app.get.main
+    handler: app/get.main
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -86,7 +90,7 @@ functions:
           authorizer: aws_iam
 
   get-all:
-    handler: app.get.all_
+    handler: app/get.all_
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -97,7 +101,7 @@ functions:
           authorizer: aws_iam
 
   update-photo:
-    handler: app.update.photo
+    handler: app/update.photo
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -108,7 +112,7 @@ functions:
           authorizer: aws_iam
 
   update-full:
-    handler: app.update.full
+    handler: app/update.full
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -119,7 +123,7 @@ functions:
           authorizer: aws_iam
 
   delete:
-    handler: app.delete.main
+    handler: app/delete.main
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -130,7 +134,7 @@ functions:
           authorizer: aws_iam
 
   retrieve-single:
-    handler: app.retrieve.single
+    handler: app/retrieve.single
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -141,7 +145,7 @@ functions:
           authorizer: aws_iam
 
   retrieve-multiple:
-    handler: app.retrieve.multiple
+    handler: app/retrieve.multiple
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -152,7 +156,7 @@ functions:
           authorizer: aws_iam
 
   sign-out:
-    handler: app.sign_out.main
+    handler: app/sign_out.main
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -163,7 +167,7 @@ functions:
           authorizer: aws_iam
 
   sign-out-multiple:
-    handler: app.sign_out.multiple
+    handler: app/sign_out.multiple
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -174,7 +178,7 @@ functions:
           authorizer: aws_iam
 
   search-number:
-    handler: app.search.number
+    handler: app/search.number
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -185,7 +189,7 @@ functions:
           authorizer: aws_iam
 
   search-assigned:
-    handler: app.search.assigned
+    handler: app/search.assigned
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -196,7 +200,7 @@ functions:
          authorizer: aws_iam
 
   search-history:
-    handler: app.search.history
+    handler: app/search.history
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -207,7 +211,7 @@ functions:
           authorizer: aws_iam
 
   search-assigned-history:
-    handler: app.search.history_and_assigned
+    handler: app/search.history_and_assigned
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -218,7 +222,7 @@ functions:
           authorizer: aws_iam
 
   filter:
-    handler: app.filter.main
+    handler: app/filter.main
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -229,7 +233,7 @@ functions:
           authorizer: aws_iam
 
   filter-signed-out:
-    handler: app.filter.signed_out
+    handler: app/filter.signed_out
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -240,7 +244,7 @@ functions:
           authorizer: aws_iam
 
   filter-gifted:
-    handler: app.filter.gifted
+    handler: app/filter.gifted
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -251,7 +255,7 @@ functions:
           authorizer: aws_iam
 
   todos-create:
-    handler: app.todos.create
+    handler: app/todos.create
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -262,7 +266,7 @@ functions:
           authorizer: aws_iam
 
   todos-read-single:
-    handler: app.todos.read_single
+    handler: app/todos.read_single
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -273,7 +277,7 @@ functions:
           authorizer: aws_iam
 
   todos-read-active:
-    handler: app.todos.read_active
+    handler: app/todos.read_active
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -284,7 +288,7 @@ functions:
           authorizer: aws_iam
 
   todos-read-completed:
-    handler: app.todos.read_completed
+    handler: app/todos.read_completed
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -295,7 +299,7 @@ functions:
           authorizer: aws_iam
 
   todos-mark-completed:
-    handler: app.todos.mark_completed
+    handler: app/todos.mark_completed
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -306,7 +310,7 @@ functions:
           authorizer: aws_iam
 
   todos-unmark-completed:
-    handler: app.todos.unmark_completed
+    handler: app/todos.unmark_completed
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -317,7 +321,7 @@ functions:
           authorizer: aws_iam
 
   todos-update:
-    handler: app.todos.update
+    handler: app/todos.update
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -333,7 +337,7 @@ functions:
           authorizer: aws_iam
 
   todos-delete:
-    handler: app.todos.delete
+    handler: app/todos.delete
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -344,7 +348,7 @@ functions:
           authorizer: aws_iam
 
   schema:
-    handler: app.schema.main
+    handler: app/schema.main
     tags:
       CostCenter: 'Instrument Inventory'
     events:
@@ -354,7 +358,7 @@ functions:
           cors: true
 
   autocomplete-options:
-    handler: app.schema.ac_options
+    handler: app/schema.ac_options
     tags:
       CostCenter: 'Instrument Inventory'
     events:
