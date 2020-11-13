@@ -11,11 +11,13 @@ def main(sign_out: api_models.SignOut):
     """Sign out an instrument"""
     item = sign_out_instrument(sign_out)
     if item:
+        ins = api_models.InstrumentInDB.parse_obj(item.attribute_values)
         return success(
             {
                 "message": f"Instrument {item.number} signed out to {item.assignedTo}"
-                f" at {item.location}",
+                           f" at {item.location}",
                 "id": item.id,
+                "item": ins.dict(exclude={"photo"})
             }
         )
     else:

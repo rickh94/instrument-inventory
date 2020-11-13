@@ -32,8 +32,8 @@ def test_sign_out_updates_history(monkeypatch, sign_out_event, fake_instrument):
         "fakeid",
         number="1-201",
         size="4/4",
-        type="violin",
-        location="office",
+        type="Violin",
+        location="Office",
         assignedTo="Previous Owner",
     )
     instrument_mock.scan.return_value = [instrument_item]
