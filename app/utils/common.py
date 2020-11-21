@@ -80,3 +80,7 @@ def make_new_history(history, assigned_to):
 
 class MissingValue(Exception):
     pass
+
+
+def str_uuid():
+    return str(uuid.uuid4())

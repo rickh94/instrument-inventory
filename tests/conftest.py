@@ -64,6 +64,11 @@ def get_event():
 
 
 @pytest.fixture
+def bow_create_event():
+    return read_event("bow-create")
+
+
+@pytest.fixture
 def fake_instrument():
     class FakeInstrument:
         def __init__(

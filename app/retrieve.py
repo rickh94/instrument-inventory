@@ -24,8 +24,13 @@ def single(body: api_models.RetrieveSingle):
     ins = api_models.InstrumentInDB.parse_obj(item.attribute_values)
     # ins_out = api_models.InstrumentOut(**ins.dict(exclude={"photo"}))
     # print(ins)
-    return success({"message": f"{item.type} {item.number} retrieved", "id": item.id,
-        "item": ins.dict(exclude={"photo"})})
+    return success(
+        {
+            "message": f"{item.type} {item.number} retrieved",
+            "id": item.id,
+            "item": ins.dict(exclude={"photo"}),
+        }
+    )
 
 
 def generate_actions(ins):

@@ -70,10 +70,7 @@ def load_and_validate(
 
 
 def load_model(
-    model,
-    *,
-    with_identity: bool = False,
-    with_path_id: bool = False,
+    model, *, with_identity: bool = False, with_path_id: bool = False,
 ):
     def decorator(func):
         @functools.wraps(func)

@@ -1,15 +1,12 @@
 import os
-import uuid
 
-from pynamodb.models import Model
 from pynamodb.attributes import UnicodeAttribute, BooleanAttribute, NumberAttribute
+from pynamodb.models import Model
+
+from app.utils.common import str_uuid
 
 TODOS_TABLE_NAME = os.getenv("TODOS_TABLE_NAME", "fake_table")
 INSTRUMENTS_TABLE_NAME = os.getenv("INSTRUMENTS_TABLE_NAME", "fake_instruments_table")
-
-
-def str_uuid():
-    return str(uuid.uuid4())
 
 
 class TodoModel(Model):

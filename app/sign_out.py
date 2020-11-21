@@ -15,9 +15,9 @@ def main(sign_out: api_models.SignOut):
         return success(
             {
                 "message": f"Instrument {item.number} signed out to {item.assignedTo}"
-                           f" at {item.location}",
+                f" at {item.location}",
                 "id": item.id,
-                "item": ins.dict(exclude={"photo"})
+                "item": ins.dict(exclude={"photo"}),
             }
         )
     else:

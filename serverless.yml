@@ -21,6 +21,9 @@ custom:
   tableNames:
     todos: ${self:custom.stage}-instrument-inventory-todos
     instruments: ${self:custom.stage}-instrument-inventory-instruments
+    bows: ${self:custom.stage}-instrument-inventory-bows
+    strings: ${self:custom.stage}-instrument-inventory-strings
+    other: ${self:custom.stage}-instrument-inventory-other
   photosPermanentBucketName: ${self:custom.stage}-instrument-inventory-permanent-photos
   tableThroughputs:
     prod: 5
@@ -44,6 +47,9 @@ provider:
     TODOS_TABLE_NAME: ${self:custom.tableNames.todos}
     PHOTOS_BUCKET_NAME: ${self:custom.photosPermanentBucketName}
     INSTRUMENTS_TABLE_NAME: ${self:custom.tableNames.instruments}
+    BOWS_TABLE_NAME: ${self:custom.tableNames.bows}
+    STRINGS_TABLE_NAME: ${self:custom.tableNames.strings}
+    OTHER_TABLE_NAME: ${self:custom.tableNames.other}
     VERSION: '19.8.1'
 
   iamRoleStatements:
@@ -365,6 +371,16 @@ functions:
       - http:
           path: schema/ac-options
           method: get
+          cors: true
+
+  create-bow:
+    handler: app/bows/create.main
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: bows/create
+          method: post
           cors: true
 
 resources:
