@@ -65,6 +65,9 @@ provider:
       Resource:
         - Fn::Sub: "#{TodosTable.Arn}"
         - Fn::Sub: "#{InstrumentsTable.Arn}"
+        - Fn::Sub: "#{BowsTable.Arn}"
+        - Fn::Sub: "#{StringsTable.Arn}"
+        - Fn::Sub: "#{OtherTable.Arn}"
     - Effect: Allow
       Action:
         - s3:*
@@ -379,9 +382,21 @@ functions:
       CostCenter: 'Instrument Inventory'
     events:
       - http:
-          path: bows/create
+          path: bows
           method: post
           cors: true
+
+  get-bows:
+    handler: app/bows/get.main
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: bows
+          method: get
+          cors: true
+
+
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}

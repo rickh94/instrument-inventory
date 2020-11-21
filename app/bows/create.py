@@ -1,19 +1,18 @@
 from app.bows import api_models
 from app.bows.models import BowModel
-from app.utils.common import serialize_item
 from app.utils.decorators import something_might_go_wrong, load_model
-from app.utils.responses import failure, success
+from app.utils.responses import success, bad_request
 
 
 @something_might_go_wrong
 @load_model(api_models.Bow)
 def main(bow: api_models.Bow):
     """Create a new type of bow."""
-    found_matching = list(BowModel.scan(
-        (BowModel.type == bow.type) & (BowModel.size == bow.size)
-    ))
+    found_matching = list(
+        BowModel.scan((BowModel.type == bow.type) & (BowModel.size == bow.size))
+    )
     if found_matching:
-        return failure("This type of bow already exists", 400)
+        return bad_request("This type of bow already exists")
     new_bow = BowModel(**bow.dict())
     new_bow.save()
     new_bow.refresh()

@@ -25,6 +25,12 @@ deploy-branch:
 test-all:
     pipenv run pytest -p no:warnings
 
+delete-bows-table:
+    aws dynamodb delete-table --table-name dev-instrument-inventory-bows
+
+create-bows-table:
+    aws dynamodb create-table --table-name dev-instrument-inventory-bows --attribute-definitions AttributeName=id,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=3,WriteCapacityUnits=3
+
 pytest-sls-remote:
     pipenv run pytest -p no:warnings --remote --stage dev serverless-tests/
 
