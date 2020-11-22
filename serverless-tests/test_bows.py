@@ -37,6 +37,7 @@ def test_create_bow_with_count(run_sls_cmd, generate_event):
 
 
 def test_bow_create_missing_data(run_sls_cmd, generate_event):
+    """Test that creating a bow with missing info fails"""
     event_body = {"type": "Violin"}
     event_path = generate_event(event_body)
 
@@ -46,6 +47,7 @@ def test_bow_create_missing_data(run_sls_cmd, generate_event):
 
 
 def test_create_already_exists(run_sls_cmd, generate_event):
+    """Test that creating a bow that already exists fails"""
     event_body = {
         "type": "Cello",
         "size": "1/4",
@@ -58,3 +60,51 @@ def test_create_already_exists(run_sls_cmd, generate_event):
 
     assert res1["statusCode"] == 201
     assert res2["statusCode"] == 400
+
+
+def test_get_all_bows(run_sls_cmd, generate_event):
+    """Test getting all bows from the database"""
+    event_path = generate_event()
+
+    result_data = run_sls_cmd("get-bows", event_path)
+
+    assert result_data["statusCode"] == 200
+
+
+def test_use_bows(run_sls_cmd, generate_event):
+    """Test using bows (subtracting)"""
+    create_bow1 = generate_event({
+        "type": "Violin",
+        "size": "3/4",
+        "count": 5
+    }, 'bow1')
+    create_bow2 = generate_event({
+        "type": "Viola",
+        "size": '12"',
+        "count": 2
+    }, 'bow2')
+
+    bow1_res = run_sls_cmd("create-bow", create_bow1)
+    print(bow1_res)
+    bow2_res = run_sls_cmd("create-bow", create_bow2)
+    print(bow2_res)
+
+    assert bow1_res['statusCode'] == 201
+    assert bow2_res['statusCode'] == 201
+
+    bow1_id = ujson.loads(bow1_res['body'])['item']['id']
+    bow2_id = ujson.loads(bow2_res['body'])['item']['id']
+
+    event_path = generate_event({
+        "bow_updates": [
+            {"id": bow1_id, "use": 2},
+            {"id": bow2_id, "use": 1}
+        ]
+    })
+
+    response = run_sls_cmd("use-bows", event_path)
+
+    assert response['statusCode'] == 200
+    body = ujson.loads(response['body'])
+    assert len(body['updated']) == 2
+    assert len(body['failed']) == 0

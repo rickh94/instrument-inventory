@@ -1,8 +1,11 @@
 from unittest import mock
 
 import pytest
+import ujson
 
 import app.bows.create
+import app.bows.get
+import app.bows.update
 
 
 @pytest.fixture
@@ -71,3 +74,41 @@ def test_get_successful(monkeypatch, fake_bows):
     response = app.bows.get.main({}, {})
 
     assert response["statusCode"] == 200
+
+
+def test_use_bows(monkeypatch, fake_bows):
+    """Test using bows"""
+    db_mock = mock.MagicMock()
+
+    def mock_query(id_):
+        for item in fake_bows:
+            if item.id == id_:
+                item.save = mock.MagicMock()
+                return [item]
+    db_mock.query = mock_query
+
+    monkeypatch.setattr("app.bows.update.BowModel", db_mock)
+
+    data = {
+        "bow_updates": [
+            {"id": "id0", "use": 1},
+            {"id": "id1", "use": 2},
+            {"id": "id2", "use": 1},
+        ]
+    }
+
+    response = app.bows.update.use_bows({"body": ujson.dumps(data)}, {})
+
+    assert response["statusCode"] == 200
+    body = ujson.loads(response['body'])
+    assert len(body["updated"]) == 3
+    assert len(body["failed"]) == 0
+
+    assert fake_bows[0].count == 2
+    fake_bows[0].save.assert_called()
+
+    assert fake_bows[1].count == 2
+    fake_bows[1].save.assert_called()
+
+    assert fake_bows[2].count == 1
+    fake_bows[1].save.assert_called()

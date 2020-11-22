@@ -12,7 +12,7 @@ def main(bow: api_models.Bow):
         BowModel.scan((BowModel.type == bow.type) & (BowModel.size == bow.size))
     )
     if found_matching:
-        return bad_request("This type of bow already exists")
+        return bad_request(f"{bow.size} {bow.type} bows already exist")
     new_bow = BowModel(**bow.dict())
     new_bow.save()
     new_bow.refresh()

@@ -375,6 +375,7 @@ functions:
           path: schema/ac-options
           method: get
           cors: true
+          authorizer: aws_iam
 
   create-bow:
     handler: app/bows/create.main
@@ -385,6 +386,7 @@ functions:
           path: bows
           method: post
           cors: true
+          authorizer: aws_iam
 
   get-bows:
     handler: app/bows/get.main
@@ -395,8 +397,29 @@ functions:
           path: bows
           method: get
           cors: true
+          authorizer: aws_iam
 
+  use-bows:
+    handler: app/bows/update.use_bows
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: bows/use
+          method: post
+          cors: true
+          authorizer: aws_iam
 
+  add-bows:
+    handler: app/bows/update.add_bows
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: bows/add
+          method: post
+          cors: true
+          authorizer: aws_iam
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}

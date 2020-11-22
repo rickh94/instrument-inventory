@@ -1,13 +1,5 @@
-# class BowModel(Model):
-#     """A Type of Bow"""
-#
-#     class Meta:
-#         table_name = BOWS_TABLE_NAME
-#
-#     id = UnicodeAttribute(hash_key=True, default=str_uuid)
-#     size = UnicodeAttribute()
-#     type = UnicodeAttribute()
-#     count = NumberAttribute(default=0)
+from typing import List
+
 from pydantic import Field
 from pydantic.main import BaseModel
 
@@ -27,3 +19,21 @@ class Bow(BaseModel):
 
 class BowWithID(Bow):
     id: str = Field(..., title="ID", description="Unique id for the type of bow")
+
+
+class AddBow(BaseModel):
+    id: str = Field(..., title="Bow ID", description="Unique id for the bow to add to")
+    add: int = Field(..., title="Number to add")
+
+
+class UseBow(BaseModel):
+    id: str = Field(..., title="Bow ID", description="Unique id of the bow to use")
+    use: int = Field(..., title="Number to use")
+
+
+class AddBows(BaseModel):
+    bow_updates: List[AddBow] = Field(..., title="List of bow updates")
+
+
+class UseBows(BaseModel):
+    bow_updates: List[UseBow] = Field(..., title="List of bow updates")
