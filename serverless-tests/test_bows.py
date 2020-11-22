@@ -97,12 +97,50 @@ def test_use_bows(run_sls_cmd, generate_event):
 
     event_path = generate_event({
         "bow_updates": [
-            {"id": bow1_id, "use": 2},
-            {"id": bow2_id, "use": 1}
+            {"id": bow1_id, "amount": 2},
+            {"id": bow2_id, "amount": 1}
         ]
     })
 
     response = run_sls_cmd("use-bows", event_path)
+
+    assert response['statusCode'] == 200
+    body = ujson.loads(response['body'])
+    assert len(body['updated']) == 2
+    assert len(body['failed']) == 0
+
+def test_add_bows(run_sls_cmd, generate_event):
+    """Test adding bows (subtracting)"""
+    create_bow1 = generate_event({
+        "type": "Cello",
+        "size": "3/4",
+        "count": 3
+    }, 'bow1')
+    create_bow2 = generate_event({
+        "type": "Bass",
+        "size": '1/4',
+        "count": 7
+    }, 'bow2')
+
+    bow1_res = run_sls_cmd("create-bow", create_bow1)
+    print(bow1_res)
+    bow2_res = run_sls_cmd("create-bow", create_bow2)
+    print(bow2_res)
+
+    assert bow1_res['statusCode'] == 201
+    assert bow2_res['statusCode'] == 201
+
+    bow1_id = ujson.loads(bow1_res['body'])['item']['id']
+    bow2_id = ujson.loads(bow2_res['body'])['item']['id']
+
+    event_path = generate_event({
+        "bow_updates": [
+            {"id": bow1_id, "amount": 4},
+            {"id": bow2_id, "amount": 10}
+        ]
+    })
+
+    response = run_sls_cmd("add-bows", event_path)
 
     assert response['statusCode'] == 200
     body = ujson.loads(response['body'])

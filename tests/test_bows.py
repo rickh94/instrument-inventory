@@ -91,9 +91,9 @@ def test_use_bows(monkeypatch, fake_bows):
 
     data = {
         "bow_updates": [
-            {"id": "id0", "use": 1},
-            {"id": "id1", "use": 2},
-            {"id": "id2", "use": 1},
+            {"id": "id0", "amount": 1},
+            {"id": "id1", "amount": 2},
+            {"id": "id2", "amount": 1},
         ]
     }
 
@@ -111,4 +111,43 @@ def test_use_bows(monkeypatch, fake_bows):
     fake_bows[1].save.assert_called()
 
     assert fake_bows[2].count == 1
+    fake_bows[1].save.assert_called()
+
+
+
+def test_add_bows(monkeypatch, fake_bows):
+    """Test adding bows"""
+    db_mock = mock.MagicMock()
+
+    def mock_query(id_):
+        for item in fake_bows:
+            if item.id == id_:
+                item.save = mock.MagicMock()
+                return [item]
+    db_mock.query = mock_query
+
+    monkeypatch.setattr("app.bows.update.BowModel", db_mock)
+
+    data = {
+        "bow_updates": [
+            {"id": "id0", "amount": 8},
+            {"id": "id1", "amount": 3},
+            {"id": "id2", "amount": 1},
+        ]
+    }
+
+    response = app.bows.update.add_bows({"body": ujson.dumps(data)}, {})
+
+    assert response["statusCode"] == 200
+    body = ujson.loads(response['body'])
+    assert len(body["updated"]) == 3
+    assert len(body["failed"]) == 0
+
+    assert fake_bows[0].count == 11
+    fake_bows[0].save.assert_called()
+
+    assert fake_bows[1].count == 7
+    fake_bows[1].save.assert_called()
+
+    assert fake_bows[2].count == 3
     fake_bows[1].save.assert_called()

@@ -23,12 +23,12 @@ class BowWithID(Bow):
 
 class AddBow(BaseModel):
     id: str = Field(..., title="Bow ID", description="Unique id for the bow to add to")
-    add: int = Field(..., title="Number to add")
+    amount: int = Field(..., title="Number to add")
 
 
 class UseBow(BaseModel):
     id: str = Field(..., title="Bow ID", description="Unique id of the bow to use")
-    use: int = Field(..., title="Number to use")
+    amount: int = Field(..., title="Number to use")
 
 
 class AddBows(BaseModel):
