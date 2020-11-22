@@ -64,6 +64,11 @@ def get_event():
 
 
 @pytest.fixture
+def get_all_event():
+    return read_event("get-all-event")
+
+
+@pytest.fixture
 def bow_create_event():
     return read_event("bow-create")
 

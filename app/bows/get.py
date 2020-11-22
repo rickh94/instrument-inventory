@@ -9,4 +9,4 @@ from app.utils.responses import success
 def main():
     """Get all the bows"""
     bows = [BowWithID.parse_obj(bow.attribute_values) for bow in BowModel.scan()]
-    return success({"bows": bows})
+    return success({"bows": [bow.dict() for bow in bows]})
