@@ -6,7 +6,7 @@ import uuid
 import boto3
 from PIL import Image
 
-from app.utils.responses import bad_request
+from app.utils.responses import bad_request, success
 
 
 def validate_request(body: dict, required_fields: dict):
@@ -84,3 +84,22 @@ class MissingValue(Exception):
 
 def str_uuid():
     return str(uuid.uuid4())
+
+
+def update_items(item_updates, update_func, db_model, api_model):
+    results = {"updated": [], "failed": [], "updatedItems": []}
+    for item in item_updates:
+        found = list(db_model.query(item.id))
+        if not found:
+            results["failed"].append(item.id)
+        found_item = found[0]
+        found_item.count = update_func(found_item.count, item.amount)
+        if found_item.count < 0:
+            found_item.count = 0
+        found_item.save()
+        found_item.refresh()
+        results["updated"].append(found_item.id)
+        results["updatedItems"].append(
+            api_model.parse_obj(found_item.attribute_values).dict()
+        )
+    return success(results)

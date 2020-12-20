@@ -1,5 +1,8 @@
 {
-  "dependencies": {},
+  "dependencies": {
+    "serverless-dynamodb-local": "^0.2.39",
+    "serverless-offline": "^6.8.0"
+  },
   "devDependencies": {
     "serverless-cf-vars": "^0.3.3",
     "serverless-pseudo-parameters": "^2.5.0",

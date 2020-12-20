@@ -6,6 +6,7 @@ from pynamodb.models import Model
 from app.utils.common import str_uuid
 
 STRINGS_TABLE_NAME = os.getenv("STRINGS_TABLE_NAME", "fake_strings_table")
+HOST = os.getenv("DYNAMODB_HOST")
 
 
 class StringModel(Model):
@@ -13,6 +14,7 @@ class StringModel(Model):
 
     class Meta:
         table_name = STRINGS_TABLE_NAME
+        host = HOST
 
     id = UnicodeAttribute(hash_key=True, default=str_uuid)
     size = UnicodeAttribute()

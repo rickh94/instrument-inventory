@@ -20,7 +20,7 @@ def main(bow: api_models.Bow):
     return success(
         {
             "item": created_bow.dict(),
-            "message": f"{created_bow.size} {created_bow.type} created",
+            "message": f"{created_bow.size} {created_bow.type} bow created",
         },
         201,
     )

@@ -26,6 +26,9 @@ def fake_bow():
                 "count": self.count,
             }
 
+        def refresh(self):
+            pass
+
     return FakeBow
 
 
@@ -85,6 +88,7 @@ def test_use_bows(monkeypatch, fake_bows):
             if item.id == id_:
                 item.save = mock.MagicMock()
                 return [item]
+
     db_mock.query = mock_query
 
     monkeypatch.setattr("app.bows.update.BowModel", db_mock)
@@ -100,7 +104,7 @@ def test_use_bows(monkeypatch, fake_bows):
     response = app.bows.update.use_bows({"body": ujson.dumps(data)}, {})
 
     assert response["statusCode"] == 200
-    body = ujson.loads(response['body'])
+    body = ujson.loads(response["body"])
     assert len(body["updated"]) == 3
     assert len(body["failed"]) == 0
 
@@ -114,7 +118,6 @@ def test_use_bows(monkeypatch, fake_bows):
     fake_bows[1].save.assert_called()
 
 
-
 def test_add_bows(monkeypatch, fake_bows):
     """Test adding bows"""
     db_mock = mock.MagicMock()
@@ -124,6 +127,7 @@ def test_add_bows(monkeypatch, fake_bows):
             if item.id == id_:
                 item.save = mock.MagicMock()
                 return [item]
+
     db_mock.query = mock_query
 
     monkeypatch.setattr("app.bows.update.BowModel", db_mock)
@@ -139,7 +143,7 @@ def test_add_bows(monkeypatch, fake_bows):
     response = app.bows.update.add_bows({"body": ujson.dumps(data)}, {})
 
     assert response["statusCode"] == 200
-    body = ujson.loads(response['body'])
+    body = ujson.loads(response["body"])
     assert len(body["updated"]) == 3
     assert len(body["failed"]) == 0
 

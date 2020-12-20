@@ -6,6 +6,8 @@ plugins:
   - serverless-pseudo-parameters
   - serverless-python-requirements
   - serverless-cf-vars
+  - serverless-dynamodb-local
+  - serverless-offline
 custom:
   pythonRequirements:
     dockerizePip: true
@@ -29,6 +31,9 @@ custom:
     prod: 5
     default: 3
   tableThroughput: ${self:custom.tableThroughputs.${self:custom.stage}, self:custom.tableThroughputs.default}
+  dynamodb:
+    stages:
+      - dev
 
 package:
   exclude:
@@ -365,6 +370,7 @@ functions:
           path: schema
           method: get
           cors: true
+          authorizer: aws_iam
 
   autocomplete-options:
     handler: app/schema.ac_options
@@ -417,6 +423,51 @@ functions:
     events:
       - http:
           path: bows/add
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+
+  create-string:
+    handler: app/strings/create.main
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: strings
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  get-strings:
+    handler: app/strings/get.main
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: strings
+          method: get
+          cors: true
+          authorizer: aws_iam
+
+  use-strings:
+    handler: app/strings/update.use_strings
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: strings/use
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  add-strings:
+    handler: app/strings/update.add_strings
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: strings/add
           method: post
           cors: true
           authorizer: aws_iam

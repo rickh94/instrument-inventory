@@ -57,6 +57,7 @@ class Size(str, Enum):
 class Location(str, Enum):
     union_baptist = "Union Baptist Church"
     westminster = "Westminster Presbyterian Church"
+    vcs = "Village Charter School"
     online = "Online Program Participant"
     grant = "Grant Elementary School"
     hedgepath = "Hedgepath Middle School"

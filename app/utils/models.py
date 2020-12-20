@@ -6,6 +6,7 @@ from pynamodb.models import Model
 from app.utils.common import str_uuid
 
 TODOS_TABLE_NAME = os.getenv("TODOS_TABLE_NAME", "fake_table")
+HOST = os.getenv("DYNAMODB_HOST")
 INSTRUMENTS_TABLE_NAME = os.getenv("INSTRUMENTS_TABLE_NAME", "fake_instruments_table")
 
 
@@ -14,6 +15,7 @@ class TodoModel(Model):
 
     class Meta:
         table_name = TODOS_TABLE_NAME
+        host = HOST
 
     userId = UnicodeAttribute(hash_key=True)
     todoId = UnicodeAttribute(range_key=True, default=str_uuid)
@@ -27,6 +29,7 @@ class InstrumentModel(Model):
 
     class Meta:
         table_name = INSTRUMENTS_TABLE_NAME
+        host = HOST
 
     id = UnicodeAttribute(hash_key=True, default=str_uuid)
     number = UnicodeAttribute()

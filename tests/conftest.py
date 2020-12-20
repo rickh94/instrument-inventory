@@ -1,8 +1,8 @@
-import ujson
 from pathlib import Path
 from unittest import mock
 
 import pytest
+import ujson
 
 from app.utils.models import InstrumentModel
 
@@ -71,6 +71,11 @@ def get_all_event():
 @pytest.fixture
 def bow_create_event():
     return read_event("bow-create")
+
+
+@pytest.fixture
+def string_create_event():
+    return read_event("string-create")
 
 
 @pytest.fixture
