@@ -17,7 +17,6 @@ def instrument1(run_sls_cmd, generate_event):
         "quality": "3",
         "gifted": True,
         "size": "4/4",
-        "photo": "https://unsplash.com/photos/uqKyeMaaAOQ/download?force=true",
     }
     event_path = generate_event(event_body, "instrument1")
     result_data = run_sls_cmd("create", event_path)
@@ -92,7 +91,6 @@ def test_create_instrument_complete(run_sls_cmd, generate_event):
         "quality": "3",
         "gifted": True,
         "size": "4/4",
-        "photo": "https://unsplash.com/photos/uqKyeMaaAOQ/download?force=true",
     }
     event_path = generate_event(event_body)
 
@@ -130,18 +128,6 @@ def test_get_all(run_sls_cmd, generate_event):
 
     assert result_data["statusCode"] == 200
 
-
-def test_update_photo(run_sls_cmd, generate_event, instrument1):
-    """Integration test for updating an instrument photo"""
-    path_parameters = {"id": instrument1["id"]}
-    event_body = {
-        "photoUrl": "https://unsplash.com/photos/wPaBwop_rSo/download?force=true"
-    }
-    event_path = generate_event(body=event_body, path_parameters=path_parameters)
-
-    result_data = run_sls_cmd("update-photo", event_path)
-
-    assert result_data["statusCode"] == 200
 
 
 def test_update_full(run_sls_cmd, generate_event, instrument1):
@@ -270,36 +256,3 @@ def test_search_assigned_history(run_sls_cmd, generate_event, instrument1):
 
     assert result_data["statusCode"] == 200
 
-
-def test_filter_complete(run_sls_cmd, generate_event, instrument1):
-    """Integration test for filtering"""
-    event_body = {
-        "type": "Violin",
-        "size": "4/4",
-        "location": "Office",
-        "notAssigned": False,
-    }
-    event_path = generate_event(body=event_body)
-
-    result_data = run_sls_cmd("filter", event_path)
-
-    assert result_data["statusCode"] == 200
-
-
-def test_filter_signed_out(run_sls_cmd, generate_event, instrument2):
-    """Integration test for filtering signed out instruments"""
-    event_path = generate_event()
-
-    result_data = run_sls_cmd("filter-signed-out", event_path)
-    print(result_data)
-
-    assert result_data["statusCode"] == 200
-
-
-def test_filter_gifted(run_sls_cmd, generate_event, instrument1):
-    """Integration test for filtering gifted instruments"""
-    event_path = generate_event()
-
-    result_data = run_sls_cmd("filter-gifted", event_path)
-
-    assert result_data["statusCode"] == 200

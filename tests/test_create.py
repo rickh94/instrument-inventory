@@ -35,7 +35,6 @@ def test_basic_create_successful(monkeypatch, basic_create_event):
         condition=None,
         quality=None,
         gifted=False,
-        photo=None,
         archived=False,
     )
 
@@ -63,17 +62,11 @@ def test_full_create_successful(monkeypatch, full_create_event):
     created_item.id = "fakeuuid"
     created_item.history = None
     instrument_mock.return_value = created_item
-    handle_photo_mock = mock.MagicMock()
-    handle_photo_mock.return_value = "fake_photo.jpg"
 
     monkeypatch.setattr("app.create.InstrumentModel", instrument_mock)
-    monkeypatch.setattr("app.create.handle_photo", handle_photo_mock)
 
     response = create.main(full_create_event, {})
 
-    handle_photo_mock.assert_called_with(
-        "https://unsplash.com/photos/uqKyeMaaAOQ/download?force=true"
-    )
     instrument_mock.assert_called_with(
         number="1-602",
         type="Violin",
@@ -85,7 +78,6 @@ def test_full_create_successful(monkeypatch, full_create_event):
         condition=5,
         quality=3,
         gifted=True,
-        photo="fake_photo.jpg",
         archived=False,
     )
 

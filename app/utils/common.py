@@ -4,7 +4,6 @@ import urllib.request
 import uuid
 
 import boto3
-from PIL import Image
 
 from app.utils.responses import bad_request, success
 
@@ -17,30 +16,30 @@ def validate_request(body: dict, required_fields: dict):
     return None
 
 
-def handle_photo(url):
-    s3 = boto3.client("s3")
-    res = urllib.request.urlopen(url)
-    photo_id = str(uuid.uuid4())
-    content = res.read()
-    with open(f"/tmp/{photo_id}", "wb") as thefile:
-        thefile.write(content)
-
-    im = Image.open(f"/tmp/{photo_id}")
-    im.thumbnail((128, 128))
-    im.save(f"/tmp/thumbnail-{photo_id}.{im.format.lower()}")
-
-    s3.put_object(
-        Body=content,
-        Bucket=os.environ.get("PHOTOS_BUCKET_NAME"),
-        Key=f"{photo_id}.{im.format.lower()}",
-    )
-    s3.upload_file(
-        f"/tmp/thumbnail-{photo_id}.{im.format.lower()}",
-        Key=f"thumbnail-{photo_id}.{im.format.lower()}",
-        Bucket=os.environ.get("PHOTOS_BUCKET_NAME"),
-    )
-
-    return f"{photo_id}.{im.format.lower()}"
+# def handle_photo(url):
+#     s3 = boto3.client("s3")
+#     res = urllib.request.urlopen(url)
+#     photo_id = str(uuid.uuid4())
+#     content = res.read()
+#     with open(f"/tmp/{photo_id}", "wb") as thefile:
+#         thefile.write(content)
+#
+#     im = Image.open(f"/tmp/{photo_id}")
+#     im.thumbnail((128, 128))
+#     im.save(f"/tmp/thumbnail-{photo_id}.{im.format.lower()}")
+#
+#     s3.put_object(
+#         Body=content,
+#         Bucket=os.environ.get("PHOTOS_BUCKET_NAME"),
+#         Key=f"{photo_id}.{im.format.lower()}",
+#     )
+#     s3.upload_file(
+#         f"/tmp/thumbnail-{photo_id}.{im.format.lower()}",
+#         Key=f"thumbnail-{photo_id}.{im.format.lower()}",
+#         Bucket=os.environ.get("PHOTOS_BUCKET_NAME"),
+#     )
+#
+#     return f"{photo_id}.{im.format.lower()}"
 
 
 def generate_photo_urls(photo_name):

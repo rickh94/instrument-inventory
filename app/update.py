@@ -1,22 +1,23 @@
 from app.utils import api_models
-from app.utils.common import handle_photo, delete_photos, serialize_item
+
+# from app.utils.common import delete_photos, serialize_item
 from app.utils.decorators import something_might_go_wrong, load_and_validate, load_model
 from app.utils.models import InstrumentModel
 from app.utils.responses import failure, success
 
 
-@something_might_go_wrong
-@load_and_validate({"photoUrl": "Photo"}, with_path_id=True)
-def photo(data, path_id):
-    """Change or add a photo"""
-    if not path_id:
-        return failure("Record ID must be in url", 400)
-    ins = InstrumentModel.get(path_id)
-    if ins.photo:
-        delete_photos(ins.photo)
-    ins.photo = handle_photo(data["photoUrl"])
-    ins.save()
-    return success({"message": "Photo successfully updated"})
+# @something_might_go_wrong
+# @load_and_validate({"photoUrl": "Photo"}, with_path_id=True)
+# def photo(data, path_id):
+#     """Change or add a photo"""
+#     if not path_id:
+#         return failure("Record ID must be in url", 400)
+#     ins = InstrumentModel.get(path_id)
+#     if ins.photo:
+#         delete_photos(ins.photo)
+#     ins.photo = handle_photo(data["photoUrl"])
+#     ins.save()
+#     return success({"message": "Photo successfully updated"})
 
 
 @something_might_go_wrong

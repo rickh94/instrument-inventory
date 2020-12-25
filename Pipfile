@@ -14,7 +14,6 @@ airtable-python-wrapper = "*"
 [packages]
 pynamodb = "*"
 boto3 = "*"
-pillow = "*"
 pydantic = {extras = ["ujson"],version = "*"}
 ujson = "*"
 
