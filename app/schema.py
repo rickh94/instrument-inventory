@@ -5,6 +5,7 @@ from pydantic.schema import schema
 from app.utils import api_models
 from app.utils.decorators import something_might_go_wrong, no_args
 from app.utils.responses import success
+from app.strings import api_models as string_models
 
 
 @something_might_go_wrong
@@ -40,10 +41,12 @@ def ac_options():
     locations = [option.value for option in api_models.Location]
     sizes = [option.value for option in api_models.Size]
     types = [option.value for option in api_models.Type]
+    strings = [option.value for option in string_models.StringOption]
     return success(
         {
             "locations": locations,
             "sizes": sizes,
             "types": types,
+            "strings": strings,
         }
     )
