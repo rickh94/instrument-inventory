@@ -129,7 +129,6 @@ def test_get_all(run_sls_cmd, generate_event):
     assert result_data["statusCode"] == 200
 
 
-
 def test_update_full(run_sls_cmd, generate_event, instrument1):
     """Integration test for updating an instrument"""
     path_parameters = {"id": instrument1["id"]}
@@ -255,4 +254,3 @@ def test_search_assigned_history(run_sls_cmd, generate_event, instrument1):
     result_data = run_sls_cmd("search-assigned-history", event_path)
 
     assert result_data["statusCode"] == 200
-
