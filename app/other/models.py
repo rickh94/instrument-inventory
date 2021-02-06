@@ -13,9 +13,11 @@ class OtherModel(Model):
 
     class Meta:
         table_name = OTHER_TABLE_NAME
+        host = os.getenv("DYNAMODB_HOST")
 
     id = UnicodeAttribute(hash_key=True, default=str_uuid)
-    item = UnicodeAttribute()
+    name = UnicodeAttribute()
     count = NumberAttribute(default=0)
     num_out = NumberAttribute(default=0)
     signed_out_to = UnicodeSetAttribute(null=True)
+    notes = UnicodeAttribute(null=True)

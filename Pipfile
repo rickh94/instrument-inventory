@@ -10,6 +10,7 @@ pytest-cov = "*"
 pytest-freezegun = "*"
 ptpython = "*"
 airtable-python-wrapper = "*"
+black = "*"
 
 [packages]
 pynamodb = "*"
@@ -19,3 +20,6 @@ ujson = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

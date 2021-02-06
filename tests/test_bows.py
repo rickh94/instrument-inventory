@@ -154,4 +154,4 @@ def test_add_bows(monkeypatch, fake_bows):
     fake_bows[1].save.assert_called()
 
     assert fake_bows[2].count == 3
-    fake_bows[1].save.assert_called()
+    fake_bows[2].save.assert_called()

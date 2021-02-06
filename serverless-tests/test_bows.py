@@ -98,14 +98,12 @@ def test_use_bows(run_sls_cmd, generate_event):
 
 
 def test_add_bows(run_sls_cmd, generate_event):
-    """Test adding bows (subtracting)"""
+    """Test adding bows"""
     create_bow1 = generate_event({"type": "Cello", "size": "3/4", "count": 3}, "bow1")
     create_bow2 = generate_event({"type": "Bass", "size": "1/4", "count": 7}, "bow2")
 
     bow1_res = run_sls_cmd("create-bow", create_bow1)
-    print(bow1_res)
     bow2_res = run_sls_cmd("create-bow", create_bow2)
-    print(bow2_res)
 
     assert bow1_res["statusCode"] == 201
     assert bow2_res["statusCode"] == 201

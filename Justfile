@@ -28,13 +28,18 @@ test-all:
 delete-tables:
     aws dynamodb delete-table --table-name dev-instrument-inventory-bows
     aws dynamodb delete-table --table-name dev-instrument-inventory-strings
+    aws dynamodb delete-table --table-name dev-instrument-inventory-other
 
 create-tables:
     aws dynamodb create-table --table-name dev-instrument-inventory-bows --attribute-definitions AttributeName=id,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=3,WriteCapacityUnits=3
     aws dynamodb create-table --table-name dev-instrument-inventory-strings --attribute-definitions AttributeName=id,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=3,WriteCapacityUnits=3
+    aws dynamodb create-table --table-name dev-instrument-inventory-other --attribute-definitions AttributeName=id,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=3,WriteCapacityUnits=3
 
 pytest-sls-remote:
     pipenv run pytest -p no:warnings --remote --stage dev serverless-tests/
 
 pytest-sls-local:
-    pipenv run pytest -p no:warnings --stage dev serverless-tests/
+    serverless dynamodb start &
+    serverless dynamodb migrate
+    DYNAMODB_HOST=http://localhost:8000 pipenv run pytest -p no:warnings --stage dev serverless-tests/
+    kill -9 `ps -ef | grep "[D]ynamoDBLocal.jar" | awk '{print $2}'`

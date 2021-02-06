@@ -43,5 +43,10 @@ def ac_options():
     types = [option.value for option in api_models.Type]
     strings = [option.value for option in string_models.StringOption]
     return success(
-        {"locations": locations, "sizes": sizes, "types": types, "strings": strings,}
+        {
+            "locations": locations,
+            "sizes": sizes,
+            "types": types,
+            "strings": strings,
+        }
     )

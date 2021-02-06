@@ -44,6 +44,7 @@ package:
 provider:
   name: aws
   runtime: python3.7
+  lambdaHashingVersion: 20201221
   stage: dev
   region: us-east-1
   apiGateway:
@@ -290,7 +291,6 @@ functions:
           cors: true
           authorizer: aws_iam
 
-
   create-string:
     handler: app/strings/create.main
     tags:
@@ -334,6 +334,84 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+
+  create-other:
+    handler: app/other/create.main
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: other/create
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  get-other:
+    handler: app/other/get.main
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: other
+          method: get
+          cors: true
+          authorizer: aws_iam
+
+  use-other:
+    handler: app/other/update.use_items
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: other/use
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  add-other:
+    handler: app/other/update.add_items
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: other/add
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  sign-out-other:
+    handler: app/other/update.sign_out
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: other/sign_out
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  retrieve-other:
+    handler: app/other/update.retrieve
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: other/retrieve
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  lose-other:
+    handler: app/other/update.lose
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: other/lose
+          method: post
+          cors: true
+          authorizer: aws_iam
+
 
 resources:
   - ${file(resources/api-gateway-errors.yml)}
