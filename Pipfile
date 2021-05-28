@@ -15,7 +15,7 @@ black = "*"
 [packages]
 pynamodb = "*"
 boto3 = "*"
-pydantic = {extras = ["ujson"],version = "*"}
+pydantic = {extras = ["ujson"],version = ">=1.7.4"}
 ujson = "*"
 
 [requires]
