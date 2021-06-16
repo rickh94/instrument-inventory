@@ -72,6 +72,8 @@ class Location(str, Enum):
     spoutu = "SproutU"
     cseix = "Christina Seix Academy"
     unknown = "Unknown"
+    lost = "Lost"
+    trash = "Trash"
 
 
 class Type(str, Enum):
