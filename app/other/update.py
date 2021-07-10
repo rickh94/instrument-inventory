@@ -2,7 +2,7 @@ from app.other import api_models
 from app.other.models import OtherModel
 from app.utils.common import update_items
 from app.utils.decorators import something_might_go_wrong, load_model
-from app.utils.responses import not_found, success
+from app.utils.responses import not_found, success, failure
 
 
 @something_might_go_wrong
@@ -35,8 +35,14 @@ def sign_out(sign_out_item: api_models.SignOutItem):
         return not_found()
 
     found_item: OtherModel = found[0]
-    found_item.count -= 1
-    found_item.num_out += 1
+    if not found_item.location_counts:
+        found_item.location_counts = {}
+    if "Storage" not in found_item.location_counts:
+        found_item.location_counts["Storage"] = 0
+    elif found_item.location_counts["Storage"] >= 1:
+        found_item.location_counts["Storage"] -= 1
+    if not found_item.signed_out_to:
+        found_item.signed_out_to = []
     found_item.signed_out_to.append(sign_out_item.to)
     found_item.save()
     found_item.refresh()
@@ -54,9 +60,13 @@ def retrieve(retrieve_item: api_models.RetrieveItem):
         return not_found()
 
     found_item: OtherModel = found[0]
-    found_item.count += 1
-    found_item.num_out -= 1
     found_item.signed_out_to.remove(retrieve_item.from_)
+    if not found_item.location_counts:
+        found_item.location_counts = {}
+    if "Storage" not in found_item.location_counts:
+        found_item.location_counts["Storage"] = 1
+    elif found_item.location_counts["Storage"] >= 1:
+        found_item.location_counts["Storage"] += 1
     found_item.save()
     found_item.refresh()
 
@@ -73,8 +83,39 @@ def lose(lost_item: api_models.LostItem):
         return not_found()
 
     found_item: OtherModel = found[0]
-    found_item.num_out -= 1
     found_item.signed_out_to.remove(lost_item.from_)
+    found_item.save()
+    found_item.refresh()
+
+    return success(
+        {"item": api_models.OtherWithID.parse_obj(found_item.attribute_values).dict()}
+    )
+
+
+@something_might_go_wrong
+@load_model(api_models.MovedItems)
+def move(moved_items: api_models.MovedItems):
+    found = list(OtherModel.query(moved_items.id))
+    if not found:
+        return not_found()
+
+    found_item: OtherModel = found[0]
+    if moved_items.count > found_item.count:
+        return failure(
+            "Cannot move more items than we have. Please add them first", 400
+        )
+    if not found_item.location_counts:
+        found_item.location_counts = {}
+    if moved_items.from_location in found_item.location_counts:
+        found_item.location_counts[moved_items.from_location.value] -= moved_items.count
+    else:
+        found_item.location_counts[moved_items.from_location.value] = 0
+
+    if moved_items.to_location in found_item.location_counts:
+        found_item.location_counts[moved_items.to_location.value] += moved_items.count
+    else:
+        found_item.location_counts[moved_items.to_location.value] = moved_items.count
+
     found_item.save()
     found_item.refresh()
 

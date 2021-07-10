@@ -1,3 +1,4 @@
+import os
 import subprocess
 from pathlib import Path
 import ujson
@@ -13,6 +14,8 @@ def pytest_addoption(parser):
 @pytest.fixture
 def make_sls_cmd(pytestconfig):
     def _make(function_name, event_path):
+        os.environ["SLS_WARNING_DISABLE"] = "*"
+        os.environ["SLS_DEPRECATION_DISABLE"] = "*"
         cmd = ["pipenv", "run", "serverless", "invoke"]
         if not pytestconfig.getoption("remote"):
             cmd.append("local")

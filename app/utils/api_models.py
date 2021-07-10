@@ -52,6 +52,7 @@ class Size(str, Enum):
     sixteen_inch = '16"'
     sixteen_half_inch = '16.5"'
     seventeen_inch = '17"'
+    na = "N/A"
 
 
 class Location(str, Enum):
@@ -82,6 +83,9 @@ class Type(str, Enum):
     violin_strung_as_viola = "Violin strung as viola"
     cello = "Cello"
     bass = "Bass"
+    keyboard = "Keyboard"
+    drum = "Drum"
+    orff = "Orff Instrument"
 
 
 class Instrument(BaseModel):

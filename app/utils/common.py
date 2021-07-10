@@ -95,6 +95,16 @@ def update_items(item_updates, update_func, db_model, api_model):
         found_item.count = update_func(found_item.count, item.amount)
         if found_item.count < 0:
             found_item.count = 0
+        if hasattr(found_item, "location_counts"):
+            if not found_item.location_counts:
+                found_item.location_counts = {}
+            if "Storage" not in found_item.location_counts:
+                found_item.location_counts["Storage"] = 0
+            found_item.location_counts["Storage"] = update_func(
+                found_item.location_counts["Storage"], item.amount
+            )
+            if found_item.location_counts["Storage"] < 0:
+                found_item.location_counts["Storage"] = 0
         found_item.save()
         found_item.refresh()
         results["updated"].append(found_item.id)

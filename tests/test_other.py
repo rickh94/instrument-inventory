@@ -6,18 +6,27 @@ import ujson
 import app.other.create
 import app.other.get
 import app.other.update
+from app.utils.api_models import Location
 
 
 @pytest.fixture
 def fake_other():
     class FakeOther:
-        def __init__(self, id_, name, count, num_out=0, signed_out_to=None, notes=None):
+        def __init__(
+            self,
+            id_,
+            name,
+            count,
+            signed_out_to=None,
+            notes=None,
+            location_counts=None,
+        ):
             self.id = id_
             self.name = name
             self.count = count
-            self.num_out = num_out
             self.signed_out_to = signed_out_to
             self.notes = notes
+            self.location_counts = location_counts
 
         @property
         def attribute_values(self):
@@ -36,12 +45,17 @@ def fake_items(fake_other):
             id_="id0",
             name="Metronome",
             count=5,
-            num_out=3,
             signed_out_to=["Person1", "Person2", "Person3"],
             notes="Some Metronomes",
         ),
-        fake_other(id_="id1", name="Shoulder Rest", count=3, num_out=10),
-        fake_other(id_="id2", name="Rosin", count=4, notes="Ugh"),
+        fake_other(id_="id1", name="Shoulder Rest", count=3),
+        fake_other(
+            id_="id2",
+            name="Rosin",
+            count=4,
+            notes="Ugh",
+            location_counts={Location.westminster: 3, Location.storage: 2},
+        ),
     ]
 
 
@@ -53,16 +67,15 @@ def test_item_create_minimal(monkeypatch):
     created_item = mock.MagicMock()
     created_item.name = "Metronome"
     created_item.count = 0
-    created_item.num_out = 0
     created_item.signed_out_to = []
     created_item.notes = None
 
     created_item.attribute_values = {
         "name": "Metronome",
         "count": 0,
-        "num_out": 0,
         "signed_out_to": [],
         "notes": None,
+        "id": "id0",
     }
 
     other_mock = mock.MagicMock()
@@ -77,7 +90,7 @@ def test_item_create_minimal(monkeypatch):
     assert response["statusCode"] == 201
 
     other_mock.assert_called_once_with(
-        name="Metronome", count=0, num_out=0, signed_out_to=None, notes=None
+        name="Metronome", count=0, location_counts=None, signed_out_to=None, notes=None
     )
     created_item.save.assert_called()
 
@@ -85,10 +98,10 @@ def test_item_create_minimal(monkeypatch):
 def test_item_create_complete(monkeypatch):
     attributes = {
         "name": "Shoulder Rest",
-        "count": 0,
-        "num_out": 5,
+        "count": 6,
         "signed_out_to": ["Person1", "person2", "3person"],
         "notes": "Some things about these things",
+        "location_counts": {"Storage": 2, "Office": 1},
     }
     item_create_event = {
         "body": ujson.dumps(attributes),
@@ -97,7 +110,7 @@ def test_item_create_complete(monkeypatch):
     created_item = mock.MagicMock()
     for k, v in attributes.items():
         setattr(created_item, k, v)
-    created_item.attribute_values = attributes
+    created_item.attribute_values = {**attributes, "id": "id0"}
 
     other_mock = mock.MagicMock()
     other_mock.scan.return_value = []
@@ -109,10 +122,10 @@ def test_item_create_complete(monkeypatch):
 
     other_mock.assert_called_once_with(
         name="Shoulder Rest",
-        count=0,
-        num_out=5,
+        count=6,
         signed_out_to=["Person1", "person2", "3person"],
         notes="Some things about these things",
+        location_counts={"Storage": 2, "Office": 1},
     )
     created_item.save.assert_called()
 
@@ -161,16 +174,19 @@ def test_use_other(monkeypatch, fake_items):
     assert len(body["failed"]) == 0
 
     assert fake_items[0].count == 2
+    assert fake_items[0].location_counts["Storage"] == 0
     fake_items[0].save.assert_called()
 
     assert fake_items[1].count == 1
+    assert fake_items[1].location_counts["Storage"] == 0
     fake_items[2].save.assert_called()
 
     assert fake_items[2].count == 3
+    assert fake_items[2].location_counts["Storage"] == 1
     fake_items[2].save.assert_called()
 
 
-def test_add_items(monkeypatch, fake_items):
+def test_add_other(monkeypatch, fake_items):
     """Test adding items"""
     db_mock = mock.MagicMock()
 
@@ -200,12 +216,15 @@ def test_add_items(monkeypatch, fake_items):
     assert len(body["failed"]) == 0
 
     assert fake_items[0].count == 13
+    assert fake_items[0].location_counts["Storage"] == 8
     fake_items[0].save.assert_called()
 
     assert fake_items[1].count == 6
+    assert fake_items[1].location_counts["Storage"] == 3
     fake_items[1].save.assert_called()
 
     assert fake_items[2].count == 5
+    assert fake_items[2].location_counts["Storage"] == 3
     fake_items[2].save.assert_called()
 
 
@@ -225,10 +244,30 @@ def test_sign_out_other(monkeypatch, fake_items):
     )
 
     assert response["statusCode"] == 200
-    assert fake_items[0].count == 4
-    assert fake_items[0].num_out == 4
+    assert fake_items[0].location_counts["Storage"] == 0
     assert to in fake_items[0].signed_out_to
     fake_items[0].save.assert_called()
+
+
+def test_sign_out_other_from_storage(monkeypatch, fake_items):
+    """Test signing out an item removes it from storage"""
+    db_mock = mock.MagicMock()
+    fake_items[2].save = mock.MagicMock()
+    db_mock.query.return_value = [fake_items[2]]
+
+    monkeypatch.setattr("app.other.update.OtherModel", db_mock)
+
+    to = "Test Person"
+    id_ = "id0"
+
+    response = app.other.update.sign_out(
+        {"body": ujson.dumps({"to": to, "id": id_})}, {}
+    )
+
+    assert response["statusCode"] == 200
+    assert fake_items[2].location_counts["Storage"] == 1
+    assert to in fake_items[2].signed_out_to
+    fake_items[2].save.assert_called()
 
 
 def test_retrieve_other(monkeypatch, fake_items):
@@ -247,8 +286,8 @@ def test_retrieve_other(monkeypatch, fake_items):
     )
 
     assert response["statusCode"] == 200
-    assert fake_items[0].count == 6
-    assert fake_items[0].num_out == 2
+    assert fake_items[0].count == 5
+    assert fake_items[0].location_counts["Storage"] == 1
     assert from_ not in fake_items[0].signed_out_to
     fake_items[0].save.assert_called()
 
@@ -269,6 +308,81 @@ def test_lose_other(monkeypatch, fake_items):
 
     assert response["statusCode"] == 200
     assert fake_items[0].count == 5
-    assert fake_items[0].num_out == 2
     assert from_ not in fake_items[0].signed_out_to
     fake_items[0].save.assert_called()
+
+
+def test_move_too_many_items(monkeypatch, fake_items):
+    db_mock = mock.MagicMock()
+    fake_items[0].save = mock.MagicMock()
+    db_mock.query.return_value = [fake_items[0]]
+
+    monkeypatch.setattr("app.other.update.OtherModel", db_mock)
+
+    response = app.other.update.move(
+        {
+            "body": ujson.dumps(
+                {
+                    "id": fake_items[0].id,
+                    "count": 8,
+                    "from_location": "Storage",
+                    "to_location": "Westminster Presbyterian Church",
+                }
+            )
+        },
+        {},
+    )
+
+    assert response["statusCode"] == 400
+
+
+def test_move_other_from_storage(monkeypatch, fake_items):
+    db_mock = mock.MagicMock()
+    fake_items[0].save = mock.MagicMock()
+    db_mock.query.return_value = [fake_items[0]]
+
+    monkeypatch.setattr("app.other.update.OtherModel", db_mock)
+
+    response = app.other.update.move(
+        {
+            "body": ujson.dumps(
+                {
+                    "id": fake_items[0].id,
+                    "count": 3,
+                    "from_location": "Storage",
+                    "to_location": "Westminster Presbyterian Church",
+                }
+            )
+        },
+        {},
+    )
+
+    assert response["statusCode"] == 200
+    assert fake_items[0].location_counts["Storage"] == 0
+    assert fake_items[0].location_counts["Westminster Presbyterian Church"] == 3
+
+
+def test_move_other_to_storage(monkeypatch, fake_items):
+    db_mock = mock.MagicMock()
+    fake_items[2].save = mock.MagicMock()
+    db_mock.query.return_value = [fake_items[2]]
+
+    monkeypatch.setattr("app.other.update.OtherModel", db_mock)
+
+    response = app.other.update.move(
+        {
+            "body": ujson.dumps(
+                {
+                    "id": fake_items[2].id,
+                    "count": 2,
+                    "to_location": "Storage",
+                    "from_location": "Westminster Presbyterian Church",
+                }
+            )
+        },
+        {},
+    )
+
+    assert response["statusCode"] == 200
+    assert fake_items[2].location_counts["Storage"] == 4
+    assert fake_items[2].location_counts["Westminster Presbyterian Church"] == 1

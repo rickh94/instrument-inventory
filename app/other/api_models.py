@@ -1,7 +1,9 @@
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from pydantic import Field
 from pydantic.main import BaseModel
+
+from app.utils.api_models import Location
 
 
 class Other(BaseModel):
@@ -9,11 +11,11 @@ class Other(BaseModel):
         use_enum_values = True
 
     name: str = Field(..., title="Name", description="The name of the item in question")
-    count: int = Field(
-        ..., title="Count", description="How many of the item are in storage"
-    )
-    num_out: int = Field(
-        0, title="Number Out", description="How many have been sent out to students"
+    count: int = Field(..., title="Count", description="How many of the do we own")
+    location_counts: Dict[str, int] = Field(
+        None,
+        title="Location Count",
+        description="How many of an item are at various locations",
     )
     signed_out_to: Optional[List[str]] = Field(
         None,
@@ -61,6 +63,17 @@ class LostItem(BaseModel):
         title="Lost From",
         description="The person who lost/brok the item",
         alias="from",
+    )
+
+
+class MovedItems(BaseModel):
+    id: str = Field(..., title="Item ID")
+    count: int = Field(..., title="Count", description="How many to move")
+    from_location: Location = Field(
+        ..., title="From Location", description="Location to move items away from"
+    )
+    to_location: Location = Field(
+        ..., title="To Location", description="Location to move items to"
     )
 
 

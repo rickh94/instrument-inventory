@@ -1,6 +1,12 @@
 import os
 
-from pynamodb.attributes import UnicodeAttribute, NumberAttribute, UnicodeSetAttribute
+from pynamodb.attributes import (
+    UnicodeAttribute,
+    NumberAttribute,
+    UnicodeSetAttribute,
+    MapAttribute,
+    JSONAttribute,
+)
 from pynamodb.models import Model
 
 from app.utils.common import str_uuid
@@ -18,6 +24,6 @@ class OtherModel(Model):
     id = UnicodeAttribute(hash_key=True, default=str_uuid)
     name = UnicodeAttribute()
     count = NumberAttribute(default=0)
-    num_out = NumberAttribute(default=0)
     signed_out_to = UnicodeSetAttribute(null=True)
     notes = UnicodeAttribute(null=True)
+    location_counts = JSONAttribute(null=True)

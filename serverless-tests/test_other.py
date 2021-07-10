@@ -13,7 +13,6 @@ def test_create_other_minimal(run_sls_cmd, generate_event):
     body = ujson.loads(result_data["body"])
     assert body["item"]["name"] == "Rosin"
     assert body["item"]["count"] == 20
-    assert body["item"]["num_out"] == 0
     assert body["item"]["signed_out_to"] is None
     assert body["item"]["notes"] is None
 
@@ -22,21 +21,23 @@ def test_create_other_full(run_sls_cmd, generate_event):
     event_body = {
         "name": "Metronome",
         "count": 8,
-        "num_out": 5,
         "signed_out_to": ["Test1", "Person Number2"],
         "notes": "Some cheap metronomes",
+        "location_counts": {"Storage": 5},
     }
 
     result_data = run_sls_cmd("create-other", generate_event(event_body))
 
+    print(result_data)
     assert result_data["statusCode"] == 201
     body = ujson.loads(result_data["body"])
     assert body["item"]["name"] == "Metronome"
     assert body["item"]["count"] == 8
-    assert body["item"]["num_out"] == 5
     assert "Test1" in body["item"]["signed_out_to"]
     assert "Person Number2" in body["item"]["signed_out_to"]
     assert body["item"]["notes"] == "Some cheap metronomes"
+    assert "Storage" in body["item"]["location_counts"]
+    assert body["item"]["location_counts"]["Storage"] == 5
 
 
 def test_create_other_missing_data(run_sls_cmd, generate_event):
