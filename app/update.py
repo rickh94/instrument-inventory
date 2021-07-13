@@ -1,7 +1,7 @@
 from app.utils import api_models
 
 # from app.utils.common import delete_photos, serialize_item
-from app.utils.decorators import something_might_go_wrong, load_and_validate, load_model
+from app.utils.decorators impor()t something_might_go_wrong, load_and_validate, load_model
 from app.utils.models import InstrumentModel
 from app.utils.responses import failure, success
 

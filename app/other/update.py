@@ -106,10 +106,11 @@ def move(moved_items: api_models.MovedItems):
         )
     if not found_item.location_counts:
         found_item.location_counts = {}
-    if moved_items.from_location in found_item.location_counts:
-        found_item.location_counts[moved_items.from_location.value] -= moved_items.count
-    else:
-        found_item.location_counts[moved_items.from_location.value] = 0
+    if moved_items.count > found_item.location_counts.get(
+        moved_items.from_location.value, 0
+    ):
+        return failure("Cannot move more items than we have in the location", 400)
+    found_item.location_counts[moved_items.from_location.value] -= moved_items.count
 
     if moved_items.to_location in found_item.location_counts:
         found_item.location_counts[moved_items.to_location.value] += moved_items.count
@@ -122,3 +123,16 @@ def move(moved_items: api_models.MovedItems):
     return success(
         {"item": api_models.OtherWithID.parse_obj(found_item.attribute_values).dict()}
     )
+
+
+@something_might_go_wrong
+@load_model(api_models.OtherWithID, with_path_id=True)
+def edit(updated_item: api_models.OtherWithID, path_id):
+    item = OtherModel.get(path_id)
+    for key, value in updated_item.dict().items():
+        setattr(item, key, value)
+    item.save()
+
+    updated_item = api_models.OtherWithID(**item.attribute_values)
+
+    return success({"message": "Update Successful", "item": updated_item.dict()})
