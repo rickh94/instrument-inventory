@@ -16,7 +16,7 @@ def make_sls_cmd(pytestconfig):
     def _make(function_name, event_path):
         os.environ["SLS_WARNING_DISABLE"] = "*"
         os.environ["SLS_DEPRECATION_DISABLE"] = "*"
-        cmd = ["pipenv", "run", "serverless", "invoke"]
+        cmd = ["poetry", "run", "serverless", "invoke"]
         if not pytestconfig.getoption("remote"):
             cmd.append("local")
         if pytestconfig.getoption("stage"):

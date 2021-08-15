@@ -227,7 +227,7 @@ class SignOut(BaseModel):
         ..., title="Instrument Number", description="Instrument Number to sign out"
     )
     assignedTo: str = Field(
-        ..., title="Assigned To", description="Name of the Person to sign out to"
+        None, title="Assigned To", description="Name of the Person to sign out to"
     )
     location: Location = Field(
         ..., title="Location", description="Primary location of instrument"

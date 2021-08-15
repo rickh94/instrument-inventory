@@ -338,8 +338,8 @@ def test_move_too_many_items(monkeypatch, fake_items):
 
 def test_move_other_from_storage(monkeypatch, fake_items):
     db_mock = mock.MagicMock()
-    fake_items[0].save = mock.MagicMock()
-    db_mock.query.return_value = [fake_items[0]]
+    fake_items[2].save = mock.MagicMock()
+    db_mock.query.return_value = [fake_items[2]]
 
     monkeypatch.setattr("app.other.update.OtherModel", db_mock)
 
@@ -347,8 +347,8 @@ def test_move_other_from_storage(monkeypatch, fake_items):
         {
             "body": ujson.dumps(
                 {
-                    "id": fake_items[0].id,
-                    "count": 3,
+                    "id": fake_items[2].id,
+                    "count": 2,
                     "from_location": "Storage",
                     "to_location": "Westminster Presbyterian Church",
                 }
@@ -358,8 +358,8 @@ def test_move_other_from_storage(monkeypatch, fake_items):
     )
 
     assert response["statusCode"] == 200
-    assert fake_items[0].location_counts["Storage"] == 0
-    assert fake_items[0].location_counts["Westminster Presbyterian Church"] == 3
+    assert fake_items[2].location_counts["Storage"] == 0
+    assert fake_items[2].location_counts["Westminster Presbyterian Church"] == 5
 
 
 def test_move_other_to_storage(monkeypatch, fake_items):

@@ -11,7 +11,8 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: true
-    usePipenv: true
+    usePipenv: false
+    usePoetry: true
     slim: true
     slimPatterns:
       - "**/examples*"
@@ -36,14 +37,28 @@ custom:
       - dev
 
 package:
-  exclude:
-    - ./**
-  include:
-    - app/**
+  patterns:
+    - "!.dynamodb"
+    - "!.pytest_cache"
+    - "!mocks"
+    - "!node_modules"
+    - "!resources"
+    - "!serverless-tests"
+    - "!tests"
+    - "!.pre-commit-config.yaml"
+    - "!Justfile"
+    - "!migrate.py"
+    - "!package.json"
+    - "!package-lock.json"
+    - "!poetry.lock"
+    - "!pyproject.toml"
+    - "!serverless.yml"
+    - "!__pycache__"
+    - "!docker-compose.yml"
 
 provider:
   name: aws
-  runtime: python3.7
+  runtime: python3.8
   lambdaHashingVersion: 20201221
   stage: dev
   region: us-east-1
@@ -56,30 +71,32 @@ provider:
     BOWS_TABLE_NAME: ${self:custom.tableNames.bows}
     STRINGS_TABLE_NAME: ${self:custom.tableNames.strings}
     OTHER_TABLE_NAME: ${self:custom.tableNames.other}
-    VERSION: '19.8.1'
+    VERSION: '21.8.1'
 
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:DescribeTable
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-        - dynamodb:PutItem
-      Resource:
-        - Fn::Sub: "#{TodosTable.Arn}"
-        - Fn::Sub: "#{InstrumentsTable.Arn}"
-        - Fn::Sub: "#{BowsTable.Arn}"
-        - Fn::Sub: "#{StringsTable.Arn}"
-        - Fn::Sub: "#{OtherTable.Arn}"
-    - Effect: Allow
-      Action:
-        - s3:*
-      Resource:
-        - Fn::Sub: "#{PhotosPermanentBucket.Arn}"
-        - Fn::Sub: "#{PhotosPermanentBucket.Arn}/*"
+  iam:
+    role:
+      statements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DescribeTable
+          - dynamodb:Query
+          - dynamodb:Scan
+          - dynamodb:GetItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
+          - dynamodb:PutItem
+        Resource:
+          - Fn::Sub: "#{TodosTable.Arn}"
+          - Fn::Sub: "#{InstrumentsTable.Arn}"
+          - Fn::Sub: "#{BowsTable.Arn}"
+          - Fn::Sub: "#{StringsTable.Arn}"
+          - Fn::Sub: "#{OtherTable.Arn}"
+#      - Effect: Allow
+#        Action:
+#          - s3:*
+#        Resource:
+#          - Fn::Sub: "#{PhotosPermanentBucket.Arn}"
+#          - Fn::Sub: "#{PhotosPermanentBucket.Arn}/*"
 
 functions:
   create:
@@ -177,6 +194,17 @@ functions:
     events:
       - http:
           path: sign-out/multiple
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  filter:
+    handler: app/filter.main
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: filter
           method: post
           cors: true
           authorizer: aws_iam

@@ -151,6 +151,7 @@ def test_update_full(run_sls_cmd, generate_event, instrument1):
     assert result_data["statusCode"] == 200
 
 
+@pytest.mark.skip
 def test_delete(run_sls_cmd, generate_event, instrument1, make_sls_cmd):
     """Integration test for deleting an instrument"""
     path_parameters = {"id": instrument1["id"]}
