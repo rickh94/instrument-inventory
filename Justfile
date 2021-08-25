@@ -42,5 +42,4 @@ pytest-sls-local:
     docker-compose up -d
     sls dynamodb migrate
     DYNAMODB_HOST=http://localhost:8000 poetry run pytest -p no:warnings --stage dev serverless-tests/
-    kill -9 `ps -ef | grep "[D]ynamoDBLocal.jar" | awk '{print $2}'`
     docker-compose down
