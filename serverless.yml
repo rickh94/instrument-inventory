@@ -11,6 +11,7 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: true
+    dockerImage: amd64/python:3.8
     usePipenv: false
     usePoetry: true
     slim: true
