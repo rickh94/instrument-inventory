@@ -39,6 +39,7 @@ pytest-sls-remote:
     poetry run pytest -p no:warnings --remote --stage dev serverless-tests/
 
 pytest-sls-local:
+    #!/usr/bin/env bash
     docker-compose up -d
     sls dynamodb migrate
     DYNAMODB_HOST=http://localhost:8000 poetry run pytest -p no:warnings --stage dev serverless-tests/

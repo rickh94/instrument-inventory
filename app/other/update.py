@@ -107,15 +107,15 @@ def move(moved_items: api_models.MovedItems):
     if not found_item.location_counts:
         found_item.location_counts = {}
     if moved_items.count > found_item.location_counts.get(
-        moved_items.from_location.value, 0
+        moved_items.from_location, 0
     ):
         return failure("Cannot move more items than we have in the location", 400)
-    found_item.location_counts[moved_items.from_location.value] -= moved_items.count
+    found_item.location_counts[moved_items.from_location] -= moved_items.count
 
     if moved_items.to_location in found_item.location_counts:
-        found_item.location_counts[moved_items.to_location.value] += moved_items.count
+        found_item.location_counts[moved_items.to_location] += moved_items.count
     else:
-        found_item.location_counts[moved_items.to_location.value] = moved_items.count
+        found_item.location_counts[moved_items.to_location] = moved_items.count
 
     found_item.save()
     found_item.refresh()

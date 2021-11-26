@@ -177,6 +177,18 @@ functions:
           cors: true
           authorizer: aws_iam
 
+
+  move-multiple:
+    handler: app/move.multiple
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: move-multiple
+          method: post
+          cors: true
+          authorizer: aws_iam
+
   sign-out:
     handler: app/sign_out.main
     tags:
@@ -441,7 +453,6 @@ functions:
           cors: true
           authorizer: aws_iam
 
-
   move-other:
     handler: app/other/update.move
     tags:
@@ -449,6 +460,17 @@ functions:
     events:
       - http:
           path: other/move
+          method: post
+          cors: true
+          authorizer: aws_iam
+
+  edit-other:
+    handler: app/other/update.edit
+    tags:
+      CostCenter: 'Instrument Inventory'
+    events:
+      - http:
+          path: other/edit
           method: post
           cors: true
           authorizer: aws_iam

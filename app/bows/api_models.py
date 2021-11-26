@@ -5,7 +5,6 @@ from pydantic.main import BaseModel
 
 from app.utils.api_models import Size, Type
 
-
 class Bow(BaseModel):
     class Config:
         use_enum_values = True

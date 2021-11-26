@@ -67,6 +67,9 @@ class LostItem(BaseModel):
 
 
 class MovedItems(BaseModel):
+    class Config:
+        use_enum_values = True
+
     id: str = Field(..., title="Item ID")
     count: int = Field(..., title="Count", description="How many to move")
     from_location: Location = Field(

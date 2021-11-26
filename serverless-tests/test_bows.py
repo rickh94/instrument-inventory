@@ -11,6 +11,8 @@ def test_create_bow_minimal(run_sls_cmd, generate_event):
     result_data = run_sls_cmd("create-bow", event_path)
 
     assert result_data["statusCode"] == 201
+    print(result_data)
+    print(result_data["body"])
     body = ujson.loads(result_data["body"])
     assert body["item"]["type"] == event_body["type"]
     assert body["item"]["size"] == event_body["size"]

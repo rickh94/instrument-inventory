@@ -1,6 +1,9 @@
 import os
 
-from pynamodb.attributes import UnicodeAttribute, BooleanAttribute, NumberAttribute
+from pynamodb.attributes import (
+    UnicodeAttribute, BooleanAttribute, NumberAttribute,
+    UTCDateTimeAttribute,
+)
 from pynamodb.models import Model
 
 from app.utils.common import str_uuid
@@ -45,3 +48,5 @@ class InstrumentModel(Model):
     photo = UnicodeAttribute(null=True)
     history = UnicodeAttribute(null=True)
     archived = BooleanAttribute(default=False)
+    discarded_on = UTCDateTimeAttribute(null=True)
+    discarded_reason = UnicodeAttribute(null=True)

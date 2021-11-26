@@ -47,6 +47,6 @@ class AddStrings(BaseModel):
 
 
 class UseStrings(BaseModel):
-    string_updates: List[AddString] = Field(
+    string_updates: List[UseString] = Field(
         ..., title="String Updates", description="Ids and counts of strings to use"
     )

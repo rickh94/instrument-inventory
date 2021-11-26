@@ -39,6 +39,7 @@ def run_sls_cmd(make_sls_cmd):
     def _run(function_name, event_path):
         cmd = make_sls_cmd(function_name, event_path)
         result = subprocess.run(cmd, stdout=subprocess.PIPE)
+        print(result)
         return ujson.loads(result.stdout)
 
     return _run

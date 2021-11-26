@@ -5,7 +5,7 @@ import uuid
 
 import boto3
 
-from app.utils.responses import bad_request, success
+from .responses import bad_request, success
 
 
 def validate_request(body: dict, required_fields: dict):

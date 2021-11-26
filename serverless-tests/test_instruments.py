@@ -188,6 +188,19 @@ def test_retrieve_multiple(run_sls_cmd, generate_event, instrument1, instrument2
     assert result_data["statusCode"] == 200
 
 
+def test_move_multiple(run_sls_cmd, generate_event, instrument1, instrument2):
+    """Integration test for retrieving multiple instruments"""
+    event_body = {
+        "numbers": [instrument1["number"], instrument2["number"]],
+        "location": "Office",
+    }
+    event_path = generate_event(body=event_body)
+
+    result_data = run_sls_cmd("move-multiple", event_path)
+
+    assert result_data["statusCode"] == 200
+
+
 def test_sign_out(run_sls_cmd, generate_event, instrument1):
     """Integration test for signing out an instrument"""
     event_body = {

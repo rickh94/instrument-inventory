@@ -1,9 +1,10 @@
+import datetime
 from enum import Enum
 from typing import List, Dict, Iterable
 
 from pydantic import BaseModel, Field, AnyUrl, Json, ValidationError
 
-from app.utils.common import MissingValue
+from .common import MissingValue
 
 
 class Todo(BaseModel):
@@ -153,6 +154,15 @@ class InstrumentOut(InstrumentWithID):
     )
 
 
+class DiscardedInstrument(InstrumentWithID):
+    discarded_on: datetime.date = Field(
+        ..., title="Discarded Date", description="The date an instrument was discarded"
+    )
+    discarded_reason: str = Field(
+        ..., title="Discarded Reason", description="Reason for discarding instrument"
+    )
+
+
 locations = {m.name: m.value for m in Location}
 locations["none"] = None
 
@@ -208,6 +218,17 @@ class RetrieveMultiple(BaseModel):
         ...,
         title="Instrument Numbers",
         description="A list of instrument numbers to retrieve",
+    )
+
+
+class MoveMultiple(BaseModel):
+    numbers: List[str] = Field(
+        ...,
+        title="Instrument Numbers",
+        description="A list of instrument numbers to move",
+    )
+    location: Location = Field(
+        ..., title="Location", description="The Location to move the instruments to"
     )
 
 
